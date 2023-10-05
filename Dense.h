@@ -9,6 +9,8 @@
 #include <ostream>
 #include <vector>
 
+#define BOUNDS_CHECK
+
 template<class T>
 class Dense {
 public:
@@ -24,8 +26,13 @@ public:
         return os;
     }
 
-    // TODO: Bounds check or maybe overload [] operator
     T getValue(int x, int y) {
+#ifdef BOUNDS_CHECK
+        if(x < 0 || x >= matrix.size() || y < 0 || y >= matrix.size()) {
+            std::cerr << "Invalid index access " << x << " " << y << std::endl;
+            exit(0);
+        }
+#endif
         return matrix[x][y];
     }
 
@@ -33,10 +40,15 @@ public:
         return this->matrix.size();
     }
 
-    // TODO: Bounds check
     unsigned int getCols() const {
+#ifdef BOUNDS_CHECK
+        if(matrix.empty()) {
+            return 0;
+        }
+#endif
         return this->matrix[0].size();
     };
+
 
 private:
     std::vector<std::vector<T>> matrix;

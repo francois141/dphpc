@@ -13,13 +13,9 @@
 template<class T>
 class CSR {
 public:
-    CSR(std::vector<std::pair<int,int>> &positions, std::vector<T> values);
+    CSR(int rows, int cols, std::vector<std::pair<int,int>> &positions, std::vector<T> values);
 
-    CSR(const CSR &other) {
-        this->values = other.values;
-        this->colPositions = other.colPositions;
-        this->rowPositions = other.rowPositions;
-    }
+    CSR(const CSR &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
 
     friend std::ostream &operator<<(std::ostream &os, const CSR &csr) {
         for(const T& value: csr.values) {
@@ -38,12 +34,18 @@ public:
         return os;
     }
 
+    int getRows() const {
+        return this->rows;
+    }
+
+    int getCols() const {
+        return this->cols;
+    }
+
     void clearValues() {
         std::fill(this->values.begin(), this->values.end(), 0);
     }
-private:
-    std::vector<T> values;
-public:
+
     const std::vector<T> &getValues();
 
     void setValues(const std::vector<T> &values);
@@ -56,9 +58,16 @@ public:
 
     void setRowPositions(const std::vector<int> &rowPositions);
 
+    T *getValue(int j) {
+        return &values[j];
+    }
+
 private:
     std::vector<int> colPositions;
     std::vector<int> rowPositions;
+    std::vector<T> values;
+    int rows;
+    int cols;
 };
 
 #endif //DPHPC_CSR_H

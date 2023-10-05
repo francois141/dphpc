@@ -1,39 +1,38 @@
 #include <iostream>
 #include <vector>
+#include <assert.h>
 #include "Dense.h"
 #include "Dense.cpp"
 #include "CSR.h"
 #include "CSR.cpp"
 
-// TODO: Check bounds
 // TODO: Optimize naive version
 template<typename T>
 CSR<T> SequentialSDDMM(CSR<T> &S, Dense<T> &A, Dense<T> &B) {
     CSR<T> P(S);
     P.clearValues();
 
+    // TODO: Do we want assertions?
+    assert(A.getCols() == B.getCols());
+    assert(A.getRows() == P.getRows());
+    assert(B.getCols() == P.getCols());
+
     const unsigned int K = B.getCols();
-    // TODO: Create a more clean code
-    const unsigned int M = S.getRowPositions().size()-1;
+    const unsigned int M = S.getRows();
 
     for(int i = 0; i < M;i++) {
         for(int j = S.getRowPositions()[i]; j < S.getRowPositions()[i+1];j++) {
             for(int k = 0; k < K; k++) {
-                // TODO: Rewrite this hugly and slow code
-                T res = A.getValue(i,k) * B.getValue(S.getColPositions()[j],k);
-                std::vector<T> values = P.getValues();
-                values[j] += res;
-                P.setValues(values);
+                // TODO: Can we do better in c++?
+                (*P.getValue(j)) = A.getValue(i,k) * B.getValue(S.getColPositions()[j],k);
             }
         }
     }
 
     for(int i = 0; i < S.getRowPositions().size() - 1;i++) {
         for(int j = S.getColPositions()[i]; j < S.getRowPositions()[i+1]; j++){
-            // TODO: Rewrite this slow and hugly code
-            std::vector<T> values = P.getValues();
-            values[j] *= S.getValues()[j];
-            P.setValues(values);
+            // TODO: Can we do better in c++?
+            (*P.getValue(j)) *= S.getValues()[j];
         }
     }
 
@@ -48,7 +47,7 @@ int main() {
 
     std::vector<int> values = {1,1,1,1};
     std::vector<std::pair<int,int>> positions = {{0,0},{0,1},{1,0},{1,1}};
-    CSR<int> sparseMatrix(positions, values);
+    CSR<int> sparseMatrix(2,2,positions, values);
 
     std::cout << "SDDMM Operation" << std::endl;
     std::cout << SequentialSDDMM(sparseMatrix, d, d) << std::endl;

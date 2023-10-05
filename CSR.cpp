@@ -6,8 +6,10 @@
 
 // TODO: Check bounds and size > 1 or don't execute everything in the code
 template<class T>
-CSR<T>::CSR(std::vector<std::pair<int,int>> &positions, std::vector<T> values) {
+CSR<T>::CSR(int rows, int cols, std::vector<std::pair<int,int>> &positions, std::vector<T> values) {
     this->values = values;
+    this->rows = rows;
+    this->cols = cols;
 
     auto comp = [](const std::pair<int,int> pos1, const std::pair<int,int> pos2) -> bool {
         return pos1.first < pos2.first || (pos1.first == pos2.first && pos1.second < pos2.second);
