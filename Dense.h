@@ -24,6 +24,20 @@ public:
         return os;
     }
 
+    // TODO: Bounds check or maybe overload [] operator
+    T getValue(int x, int y) {
+        return matrix[x][y];
+    }
+
+    unsigned int getRows() const {
+        return this->matrix.size();
+    }
+
+    // TODO: Bounds check
+    unsigned int getCols() const {
+        return this->matrix[0].size();
+    };
+
 private:
     std::vector<std::vector<T>> matrix;
 };

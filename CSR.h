@@ -15,6 +15,12 @@ class CSR {
 public:
     CSR(std::vector<std::pair<int,int>> &positions, std::vector<T> values);
 
+    CSR(const CSR &other) {
+        this->values = other.values;
+        this->colPositions = other.colPositions;
+        this->rowPositions = other.rowPositions;
+    }
+
     friend std::ostream &operator<<(std::ostream &os, const CSR &csr) {
         for(const T& value: csr.values) {
             std::cout << value << " ";
@@ -31,8 +37,26 @@ public:
         }
         return os;
     }
+
+    void clearValues() {
+        std::fill(this->values.begin(), this->values.end(), 0);
+    }
 private:
     std::vector<T> values;
+public:
+    const std::vector<T> &getValues();
+
+    void setValues(const std::vector<T> &values);
+
+    const std::vector<int> &getColPositions();
+
+    void setColPositions(const std::vector<int> &colPositions);
+
+    const std::vector<int> &getRowPositions();
+
+    void setRowPositions(const std::vector<int> &rowPositions);
+
+private:
     std::vector<int> colPositions;
     std::vector<int> rowPositions;
 };
