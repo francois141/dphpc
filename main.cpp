@@ -40,7 +40,6 @@ CSR<T> SequentialSDDMM(CSR<T> &S, Dense<T> &A, Dense<T> &B) {
 }
 
 // TODO: Add benchmark infrastructure in the code
-// TODO: Write unit tests - use google framework for example
 int main() {
     std::vector<std::vector<int>> matrix(2, std::vector<int>(2,1));
     Dense<int> d(matrix);
