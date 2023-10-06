@@ -6,7 +6,7 @@
 
 // TODO: Check bounds and size > 1 or don't execute everything in the code
 template<class T>
-CSR<T>::CSR(int rows, int cols, std::vector<std::pair<int,int>> &positions, std::vector<T> values) {
+CSR<T>::CSR(int rows, int cols, std::vector<std::pair<int,int>> positions, std::vector<T> values) {
     this->values = values;
     this->rows = rows;
     this->cols = cols;

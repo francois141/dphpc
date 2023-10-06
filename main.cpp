@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <assert.h>
 #include "Dense.h"
 #include "Dense.cpp"
 #include "CSR.h"

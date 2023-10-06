@@ -13,7 +13,7 @@
 template<class T>
 class CSR {
 public:
-    CSR(int rows, int cols, std::vector<std::pair<int,int>> &positions, std::vector<T> values);
+    CSR(int rows, int cols, std::vector<std::pair<int,int>> positions, std::vector<T> values);
 
     CSR(const CSR &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
 
@@ -32,6 +32,14 @@ public:
             std::cout << value << " ";
         }
         return os;
+    }
+
+    friend bool operator==(const CSR &lhs, const CSR &rhs) {
+        return lhs.colPositions == rhs.colPositions &&
+               lhs.rowPositions == rhs.rowPositions &&
+               lhs.values == rhs.values &&
+               lhs.rows == rhs.rows &&
+               lhs.cols == rhs.cols;
     }
 
     int getRows() const {
