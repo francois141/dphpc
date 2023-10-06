@@ -22,7 +22,7 @@ CSR<T> SequentialSDDMM(CSR<T> &S, Dense<T> &A, Dense<T> &B) {
         for(int j = S.getRowPositions()[i]; j < S.getRowPositions()[i+1];j++) {
             for(int k = 0; k < K; k++) {
                 // TODO: Can we do better in c++?
-                (*P.getValue(j)) = A.getValue(i,k) * B.getValue(S.getColPositions()[j],k);
+                (*P.getValue(j)) += A.getValue(i,k) * B.getValue(S.getColPositions()[j],k);
             }
         }
     }
