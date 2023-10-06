@@ -4,32 +4,37 @@
 
 #include "CSR.h"
 
-// TODO: Check bounds and size > 1 or don't execute everything in the code
 template<class T>
-CSR<T>::CSR(int rows, int cols, std::vector<std::pair<int,int>> positions, std::vector<T> values) {
-    this->values = values;
+CSR<T>::CSR(int rows, int cols, std::vector<Triplet<T>> values) {
+    assert(values.size() > 0);
+
     this->rows = rows;
     this->cols = cols;
 
-    auto comp = [](const std::pair<int,int> pos1, const std::pair<int,int> pos2) -> bool {
-        return pos1.first < pos2.first || (pos1.first == pos2.first && pos1.second < pos2.second);
+    auto comp = [](const Triplet<T> t1, const Triplet<T> t2) -> bool {
+        return t1.y < t2.y || (t1.y == t2.y && t1.x < t2.x);
     };
 
-    sort(positions.begin(), positions.end(), comp);
+    sort(values.begin(), values.end(), comp);
 
-    this->rowPositions = std::vector<T>(0);
-    this->colPositions = std::vector<T>(0);
-    this->colPositions.reserve(this->values.size());
+    this->rowPositions = std::vector<int>(0);
+    this->colPositions = std::vector<int>(0);
+    this->values       = std::vector<T>(0);
+
+    this->colPositions.reserve(values.size());
+    this->values.reserve(values.size());
 
     this->rowPositions.emplace_back(0);
-    this->colPositions.push_back(positions[0].second);
+    this->colPositions.push_back(values[0].x);
+    this->values.push_back(values[0].value);
 
-    for(int i = 1; i < positions.size();i++) {
-        const std::pair<int,int> &entry = positions[i];
-        this->colPositions.emplace_back(entry.second);
-        if(entry.first != positions[i-1].first) {
+    for(int i = 1; i < values.size();i++) {
+        this->colPositions.emplace_back(values[i].x);
+        if(values[i].y != values[i-1].y) {
             this->rowPositions.emplace_back(i);
         }
+
+        this->values.push_back(values[i].value);
     }
 
     this->rowPositions.emplace_back(this->values.size());

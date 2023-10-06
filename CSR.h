@@ -10,10 +10,17 @@
 #include <vector>
 #include <algorithm>
 
+template <typename T>
+struct Triplet {
+    int x;
+    int y;
+    T value;
+};
+
 template<class T>
 class CSR {
 public:
-    CSR(int rows, int cols, std::vector<std::pair<int,int>> positions, std::vector<T> values);
+    CSR(int rows, int cols, std::vector<Triplet<T>> values);
 
     CSR(const CSR &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
 
@@ -77,5 +84,6 @@ private:
     int rows;
     int cols;
 };
+
 
 #endif //DPHPC_CSR_H
