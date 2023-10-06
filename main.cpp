@@ -15,5 +15,5 @@ int main() {
     CSR<int> sparseMatrix(2,2, triplets);
 
     std::cout << "SDDMM Operation" << std::endl;
-    std::cout << SequentialSDDMM(sparseMatrix, d, d) << std::endl;
+    std::cout << SDDMM::Basic(sparseMatrix, d, d) << std::endl;
 }
