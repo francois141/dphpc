@@ -15,7 +15,6 @@ CSR<T>::CSR(int rows, int cols, std::vector<std::pair<int,int>> positions, std::
         return pos1.first < pos2.first || (pos1.first == pos2.first && pos1.second < pos2.second);
     };
 
-    // TODO: Not optimal, we sort input positions and this is a pass by reference
     sort(positions.begin(), positions.end(), comp);
 
     this->rowPositions = std::vector<T>(0);

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <ostream>
 #include <vector>
+#include <assert.h>
 
 #define BOUNDS_CHECK
 
@@ -27,12 +28,7 @@ public:
     }
 
     T getValue(int x, int y) {
-#ifdef BOUNDS_CHECK
-        if(x < 0 || x >= matrix.size() || y < 0 || y >= matrix.size()) {
-            std::cerr << "Invalid index access " << x << " " << y << std::endl;
-            exit(0);
-        }
-#endif
+        assert(!(x < 0 || x >= matrix.size() || y < 0 || y >= matrix.size()));
         return matrix[x][y];
     }
 
@@ -41,11 +37,7 @@ public:
     }
 
     unsigned int getCols() const {
-#ifdef BOUNDS_CHECK
-        if(matrix.empty()) {
-            return 0;
-        }
-#endif
+        assert(!matrix.empty());
         return this->matrix[0].size();
     };
 
