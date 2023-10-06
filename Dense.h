@@ -10,8 +10,6 @@
 #include <vector>
 #include <assert.h>
 
-#define BOUNDS_CHECK
-
 template<class T>
 class Dense {
 public:
