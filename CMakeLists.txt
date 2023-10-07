@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.22)
 project(dphpc)
 
+enable_language(CUDA)
+
 include_directories(.)
 
 # Quickstart tutorial : http://google.github.io/googletest/quickstart-cmake.html
@@ -35,5 +37,5 @@ add_executable(dphpc
         CSR.h
         Dense.cpp
         Dense.h
-        main.cpp)
+        main.cu)
 

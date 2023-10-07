@@ -5,6 +5,7 @@
 #include "CSR.h"
 #include "CSR.cpp"
 #include "sddmm.hpp"
+#include "kernel.cu"
 
 // TODO: Add benchmark infrastructure in the code
 int main() {
@@ -16,4 +17,6 @@ int main() {
 
     std::cout << "SDDMM Operation" << std::endl;
     std::cout << SDDMM::Basic(sparseMatrix, d, d) << std::endl;
+
+    myKernel<<<1,1>>>();
 }
