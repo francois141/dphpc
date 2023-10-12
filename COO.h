@@ -2,8 +2,8 @@
 // Created by francois on 04.10.23.
 //
 
-#ifndef DPHPC_CSR_H
-#define DPHPC_CSR_H
+#ifndef DPHPC_COO_H
+#define DPHPC_COO_H
 
 #include <iostream>
 #include <ostream>
@@ -12,30 +12,30 @@
 #include "triplet.h"
 
 template<class T>
-class CSR {
+class COO {
 public:
-    CSR(int rows, int cols, std::vector<Triplet<T>> values);
+    COO(int rows, int cols, std::vector<Triplet<T>> values);
 
-    CSR(const CSR &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
+    COO(const COO &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
 
-    friend std::ostream &operator<<(std::ostream &os, const CSR &csr) {
-        for(const T& value: csr.values) {
+    friend std::ostream &operator<<(std::ostream &os, const COO &COO) {
+        for(const T& value: COO.values) {
             std::cout << value << " ";
         }
         std::cout << "\n";
 
-        for(const T& value: csr.colPositions) {
+        for(const T& value: COO.colPositions) {
             std::cout << value << " ";
         }
         std::cout << "\n";
 
-        for(const T& value: csr.rowPositions) {
+        for(const T& value: COO.rowPositions) {
             std::cout << value << " ";
         }
         return os;
     }
 
-    friend bool operator==(const CSR &lhs, const CSR &rhs) {
+    friend bool operator==(const COO &lhs, const COO &rhs) {
         return lhs.colPositions == rhs.colPositions &&
                lhs.rowPositions == rhs.rowPositions &&
                lhs.values == rhs.values &&
@@ -80,4 +80,4 @@ private:
 };
 
 
-#endif //DPHPC_CSR_H
+#endif //DPHPC_COO_H

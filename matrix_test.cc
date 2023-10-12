@@ -4,6 +4,8 @@
 #include "CSR.h"
 #include "CSR.cpp"
 #include "sddmm.hpp"
+#include "COO.h"
+#include "COO.cpp"
 
 // Smoke test
 TEST(BasicTest, SmokeTest) {
@@ -19,5 +21,14 @@ TEST(BasicTest, SmokeTest) {
     const CSR<int> expected(2,2,triplets2);
 
     EXPECT_EQ(sddmmResult, expected);
+}
+
+TEST(BasicTest, COO) {
+    std::vector<Triplet<int>> triplets{{0,0,1},{0,1,1},{1,0,1},{1,1,1}};
+    COO<int> coo(2, 2, triplets);
+
+    EXPECT_EQ(4, coo.getValues().size());
+    EXPECT_EQ(4, coo.getRowPositions().size());
+    EXPECT_EQ(4, coo.getColPositions().size());
 }
 

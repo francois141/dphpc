@@ -37,5 +37,7 @@ add_executable(dphpc
         CSR.h
         Dense.cpp
         Dense.h
+        COO.cpp
+        COO.h
         main.cu)
 
