@@ -16,10 +16,13 @@ int main(int argc, char* argv[]) {
     std::vector<std::vector<double>> matrixB(2, std::vector<double>(2,1));
     Dense<double> B(matrixB); 
 
-    std::vector<Triplet<double>> triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
-    COO<double> S(2, 2, triplets);
+    std::vector<Triplet<double>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
+    COO<double> S(2, 2, S_triplets);
 
-    SDDMM::Dataset<double> dataset(A, B, S);
+    std::vector<Triplet<double>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
+    COO<double> P(2, 2, P_triplets); // expected result
+
+    SDDMM::Dataset<double> dataset(A, B, S, P);
     SDDMM::Benchmark<double> benchmark(dataset);
 
     /* CPU Competitors */

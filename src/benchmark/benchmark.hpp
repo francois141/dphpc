@@ -5,6 +5,9 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <functional>
+#include <chrono>
+#include <cmath>
 
 #include "competitor.hpp"
 #include "dataset.hpp"
@@ -13,10 +16,6 @@ namespace SDDMM {
 
     template<typename T>
     class Benchmark {
-        private:
-            std::vector<std::shared_ptr<Competitor<T>>> competitors;
-            SDDMM::Dataset<T> &dataset;
-
         public:
                                 
             Benchmark(Dataset<T> &dataset)
@@ -41,32 +40,50 @@ namespace SDDMM {
             void benchmark() {
                 std::for_each(competitors.begin(), competitors.end(), [this](std::shared_ptr<Competitor<T>> competitor_ptr) {
                     auto competitor = competitor_ptr.get();
+                    uint64_t ns;
 
                     /* Sparse matrices in CSR format */
                     std::cout << "Running competitor " << competitor->name << " (Sparse matrices represented as CSR)" << std::endl;
 
-                    CSR<T> P_csr(this->dataset.getS_CSR());
+                    CSR<T> P_csr(this->getDataset().getS_CSR());
                     P_csr.clearValues();
 
-                    // TODO: Start timing (Cold/Warm Cache? CPU Calibration?)
-                    competitor->run_csr(this->dataset.getA(), this->dataset.getB(), this->dataset.getS_CSR(), P_csr);
-                    // TODO: End timing
+                    ns = timing([&] { // TODO: Cold/Warm Cache? CPU Calibration?
+                        competitor->run_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr);
+                    });
+                    std::cout << "Execution took " << ((double) ns / 1e9) << " seconds (" << ns << "ns)" << std::endl << std::endl;
 
-                    // TODO: Check correctness
+                    if (competitor->csr_supported() && this->getDataset().hasExpected_CSR()) {
+                        assert(P_csr == this->getDataset().getExpected_CSR());
+                    }
 
                     /* Sparse matrices in COO format */
                     std::cout << "Running competitor " << competitor->name << " (Sparse matrices represented as COO)" << std::endl;
                     
-                    COO<T> P_coo(this->dataset.getS_COO());
+                    COO<T> P_coo(this->getDataset().getS_COO());
                     P_coo.clearValues();
 
-                    // TODO: Start timing (Cold/Warm Cache? CPU Calibration?)
-                    competitor->run_coo(this->dataset.getA(), this->dataset.getB(), this->dataset.getS_COO(), P_coo);
-                    // TODO: End timing
+                    ns = timing([&] { // TODO: Cold/Warm Cache? CPU Calibration?
+                        competitor->run_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo);
+                    });
+                    std::cout << "Execution took " << ((double) ns / 1e9) << " seconds (" << ns << "ns)" << std::endl << std::endl;
 
-                    // TODO: Check correctness
+                    if (competitor->coo_supported() && this->getDataset().hasExpected_COO()) {
+                        assert(P_coo == this->getDataset().getExpected_COO());
+                    }
                 });
             }
             
+        private:
+            std::vector<std::shared_ptr<Competitor<T>>> competitors;
+            SDDMM::Dataset<T> &dataset;
+
+            
+            uint64_t timing(std::function<void()> fn) {
+                const auto start = std::chrono::high_resolution_clock::now();
+                fn();
+                const auto end = std::chrono::high_resolution_clock::now();
+                return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            }
     };
 }

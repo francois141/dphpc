@@ -26,7 +26,7 @@ add_executable(dphpc
 
         # GPU Competitors
         competitors/gpu/gpu_basic.cu
-        competitors/gpu/gpu_basic.h
+        competitors/gpu/gpu_basic.hpp
 
         # Main
         main.cpp)

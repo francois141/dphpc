@@ -21,9 +21,11 @@ namespace Competitors {
                 std::cout << "(Not supported)" << std::endl;
             }
 
-            // TODO - implement one of these by calling library func
-            // TODO - timing measurements might be negatively affected if we need to convert to other data types
+            // TODO - implement at least one of these by calling library func
+            // timing measurements might be negatively affected if we need to convert to other data types
 
+            virtual bool csr_supported() { return false; };
+            virtual bool coo_supported() { return false; };
     };
 
 }

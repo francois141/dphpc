@@ -72,19 +72,19 @@ namespace SDDMM {
             }
 
             bool hasExpected_CSR() {
-                return this->expected_csr.getRows() > 0;
+                return this->P_csr.getRows() > 0;
             }
 
             CSR<T> &getExpected_CSR() {
-                return this->expected_csr;
+                return this->P_csr;
             }
 
             const bool hasExpected_COO() {
-                return this->expected_coo.getRows() > 0;
+                return this->P_coo.getRows() > 0;
             }
 
             COO<T> &getExpected_COO() {
-                return this->expected_coo;
+                return this->P_coo;
             }
     };
 }

@@ -49,6 +49,9 @@ namespace Competitors {
                 }
             }
 
+            virtual bool csr_supported() { return true; };
+            virtual bool coo_supported() { return true; };
+
     };
 
 }
