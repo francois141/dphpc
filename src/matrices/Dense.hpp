@@ -13,7 +13,9 @@
 template<class T>
 class Dense {
 public:
-    Dense(std::vector<std::vector<T>> &matrix);
+    Dense(std::vector<std::vector<T>> &matrix)
+    : matrix(matrix)
+    {}
 
     friend std::ostream &operator<<(std::ostream &os, const Dense &dense) {
         for(const std::vector<T> &v : dense.matrix) {

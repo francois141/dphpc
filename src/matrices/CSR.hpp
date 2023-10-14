@@ -1,0 +1,163 @@
+//
+// Created by francois on 04.10.23.
+//
+
+#ifndef DPHPC_CSR_H
+#define DPHPC_CSR_H
+
+#include <iostream>
+#include <ostream>
+#include <vector>
+#include <algorithm>
+
+#include "triplet.h"
+#include "COO.hpp"
+
+template<class T>
+class COO;
+
+template<class T>
+class CSR {
+public:
+    
+    CSR() {
+        this->rows = 0;
+        this->cols = 0;
+
+        this->rowPositions = std::vector<int>(0);
+        this->colPositions = std::vector<int>(0);
+        this->values       = std::vector<T>(0);
+    }
+
+    CSR(int rows, int cols, std::vector<Triplet<T>> values) {
+        this->rows = rows;
+        this->cols = cols;
+
+        init_csr(values);
+    }
+
+    CSR(const CSR &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
+
+    CSR(COO<T> &coo) {
+        this->rows = coo.getRows();
+        this->cols = coo.getCols();
+
+        std::vector<Triplet<T>> triplets(coo.getValues().size());
+        
+        for (int i = 0; i < coo.getValues().size(); i++) {
+            triplets[i].x = coo.getColPositions()[i];
+            triplets[i].y = coo.getRowPositions()[i];
+            triplets[i].value = coo.getValues()[i];
+        }
+        init_csr(triplets);
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const CSR &csr) {
+        for(const T& value: csr.rowPositions) {
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+
+        for(const T& value: csr.colPositions) {
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+
+        for(const T& value: csr.values) {
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+        
+        return os;
+    }
+
+    friend bool operator==(const CSR &lhs, const CSR &rhs) {
+        return lhs.colPositions == rhs.colPositions &&
+               lhs.rowPositions == rhs.rowPositions &&
+               lhs.values == rhs.values &&
+               lhs.rows == rhs.rows &&
+               lhs.cols == rhs.cols;
+    }
+
+    int getRows() const {
+        return this->rows;
+    }
+
+    int getCols() const {
+        return this->cols;
+    }
+
+    void clearValues() {
+        std::fill(this->values.begin(), this->values.end(), 0);
+    }
+
+    const std::vector<T> &getValues() {
+        return this->values;
+    }
+
+    void setValues(const std::vector<T> &values) {
+        this->values = values;
+    }
+
+    const std::vector<int> &getColPositions() {
+        return this->colPositions;
+    }
+
+    void setColPositions(const std::vector<int> &colPositions) {
+        this->colPositions = colPositions;
+    }
+
+    const std::vector<int> &getRowPositions() {
+        return this->rowPositions;
+    }
+
+    void setRowPositions(const std::vector<int> &rowPositions) {
+        this->rowPositions = rowPositions;
+    }
+
+    T *getValue(int j) {
+        return &values[j];
+    }
+
+private:
+    std::vector<int> colPositions;
+    std::vector<int> rowPositions;
+    std::vector<T> values;
+    int rows;
+    int cols;
+
+    void init_csr(std::vector<Triplet<T>> values) {
+        assert(values.size() > 0);
+
+        auto comp = [](const Triplet<T> t1, const Triplet<T> t2) -> bool {
+            return t1.y < t2.y || (t1.y == t2.y && t1.x < t2.x);
+        };
+
+        std::sort(values.begin(), values.end(), comp);
+
+        this->rowPositions = std::vector<int>(0);
+        this->colPositions = std::vector<int>(0);
+        this->values       = std::vector<T>(0);
+
+        this->colPositions.reserve(values.size());
+        this->values.reserve(values.size());
+
+        this->rowPositions.emplace_back(0);
+        this->colPositions.push_back(values[0].x);
+        this->values.push_back(values[0].value);
+
+        for(int i = 1; i < values.size(); i++) {
+            this->colPositions.emplace_back(values[i].x);
+            if(values[i].y != values[i-1].y) {
+                this->rowPositions.emplace_back(i);
+            }
+
+            this->values.push_back(values[i].value);
+        }
+
+        this->rowPositions.emplace_back(this->values.size());
+    }
+};
+
+
+#endif //DPHPC_CSR_H
