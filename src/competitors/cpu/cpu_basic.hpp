@@ -40,7 +40,7 @@ namespace Competitors {
 
                 for (int i = 0; i < S.getValues().size(); i++) {
                     for (int k = 0; k < K; k++) {
-                        (*P.getValue(i)) += A.getValue(S.getRowPositions()[i], k) * B.getValue(S.getColPositions()[i], k);
+                        (*P.getValue(i)) += A.getValue(k, S.getRowPositions()[i]) * B.getValue(S.getColPositions()[i], k);
                     }
                 }
 

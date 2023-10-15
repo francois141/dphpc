@@ -35,8 +35,8 @@ public:
         return os;
     }
 
-    T getValue(int x, int y) {
-        return this->matrix[x * cols + y];
+    T& getValue(int x, int y) {
+        return this->matrix[y * cols + x];
     }
 
     unsigned int getRows() const {

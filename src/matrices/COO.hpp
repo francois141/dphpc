@@ -112,7 +112,7 @@ public:
         std::fill(this->values.begin(), this->values.end(), 0);
     }
 
-    const std::vector<T> &getValues() {
+    std::vector<T> &getValues() {
         return this->values;
     }
 
