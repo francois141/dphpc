@@ -13,6 +13,11 @@
 template<class T>
 class Dense {
 public:
+    
+    Dense()
+    : matrix(std::vector<std::vector<T>>())
+    {}
+
     Dense(std::vector<std::vector<T>> &matrix)
     : matrix(matrix)
     {}
@@ -37,7 +42,8 @@ public:
     }
 
     unsigned int getCols() const {
-        assert(!matrix.empty());
+        if (matrix.empty()) return 0;
+        
         return this->matrix[0].size();
     };
 

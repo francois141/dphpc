@@ -8,4 +8,12 @@ struct Triplet {
     T value;
 };
 
+
+template <typename S>
+std::ostream& operator<<(std::ostream& os, const Triplet<S>& triplet) {
+    os << triplet.x << " " << triplet.y << " " << triplet.value;
+    return os;
+}
+ 
+
 #endif

@@ -20,7 +20,7 @@ namespace Competitors {
                 const unsigned int M = S.getRows();
 
                 for (int i = 0; i < M; i++) {
-                    for (int j = S.getRowPositions()[i]; j < S.getRowPositions()[i+1];j++) {
+                    for (int j = S.getRowPositions()[i]; j < S.getRowPositions()[i+1]; j++) {
                         for (int k = 0; k < K; k++) {
                             (*P.getValue(j)) += A.getValue(i,k) * B.getValue(S.getColPositions()[j],k);
                         }
@@ -28,10 +28,11 @@ namespace Competitors {
                 }
 
                 for (int i = 0; i < S.getRowPositions().size() - 1; i++) {
-                    for (int j = S.getColPositions()[i]; j < S.getRowPositions()[i+1]; j++) {
+                    for (int j = S.getRowPositions()[i]; j < S.getRowPositions()[i+1]; j++) {
                         (*P.getValue(j)) *= S.getValues()[j];
                     }
                 }
+
             }
 
             virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {
