@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "util.hpp"
 #include "benchmark/competitor.hpp"
 #include "matrices/matrices.h"
 
@@ -14,11 +15,11 @@ namespace Competitors {
             {}
 
             virtual inline void run_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) {
-                std::cout << "(Not supported)" << std::endl;
+                DEBUG_OUT(" - (Not supported)" << std::endl);
             }
 
             virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {
-                std::cout << "(Not supported)" << std::endl;
+                DEBUG_OUT(" - (Not supported)" << std::endl);
             }
 
             // TODO - implement at least one of these by calling library func

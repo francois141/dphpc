@@ -2,28 +2,39 @@
 #include <vector>
 
 #include "benchmark/benchmark.hpp"
+#include "benchmark/dataset.hpp"
 #include "competitors/competitors.h"
 
 #include "matrices/matrices.h"
 
-#define DATASET_PATH "data/dataset_1/"
+/* =========================== */
+/* Benchmark the dummy dataset */
+/* =========================== */
+void benchmark_dummy() {
+    SDDMM::DummyDataset dataset;
+    SDDMM::Benchmark<int> benchmark(dataset);
 
-int main(int argc, char* argv[]) {
+    /* CPU Competitors */
+    auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<int>>(new Competitors::CPUBasic<int>);
+    benchmark.add_competitor(cpu_basic);
 
-    std::vector<std::vector<double>> matrixA(2, std::vector<double>(2,1));
-    Dense<double> A(matrixA); 
+    auto cpu_pytorch = std::shared_ptr<Competitors::CPUPyTorch<int>>(new Competitors::CPUPyTorch<int>);
+    benchmark.add_competitor(cpu_pytorch);
 
-    std::vector<std::vector<double>> matrixB(2, std::vector<double>(2,1));
-    Dense<double> B(matrixB); 
+    /* GPU Competitors */
+    auto gpu_basic = std::shared_ptr<Competitors::GPUBasic<int>>(new Competitors::GPUBasic<int>);
+    benchmark.add_competitor(gpu_basic);
 
-    std::vector<Triplet<double>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
-    COO<double> S(2, 2, S_triplets);
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
 
-    std::vector<Triplet<double>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
-    COO<double> P(2, 2, P_triplets); // expected result
-
-    SDDMM::Dataset<double> dataset(A, B, S, P);
-    SDDMM::Benchmark<double> benchmark(dataset);
+/* ========================== */
+/* Benchmark the NIPS dataset */
+/* ========================== */
+void benchmark_NIPS(const std::string& data_folder, const int K) {
+    SDDMM::NIPSDataset<double> nips_dataset(data_folder, K);
+    SDDMM::Benchmark<double> benchmark(nips_dataset);
 
     /* CPU Competitors */
     auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
@@ -38,6 +49,46 @@ int main(int argc, char* argv[]) {
 
     /* Run the benchmark */
     benchmark.benchmark();
+}
+
+/* ================================= */
+/* Benchmark the EMail-Enron dataset */
+/* ==================================*/
+void benchmark_email_enron(const std::string& data_folder, const int K) {
+    SDDMM::EMailEnronDataset<double> email_enron_dataset(data_folder, K);
+    SDDMM::Benchmark<double> benchmark(email_enron_dataset);
+
+    /* CPU Competitors */
+    auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
+    benchmark.add_competitor(cpu_basic);
+
+    auto cpu_pytorch = std::shared_ptr<Competitors::CPUPyTorch<double>>(new Competitors::CPUPyTorch<double>);
+    benchmark.add_competitor(cpu_pytorch);
+
+    /* GPU Competitors */
+    auto gpu_basic = std::shared_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
+    benchmark.add_competitor(gpu_basic);
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+int main(int argc, char* argv[]) {
+
+    const int K = 32; // 32 // 128 // 512 // TODO: read from args
+
+    const std::string data_folder = "../data/"; // TODO: read from args
+
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_dummy();
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+
+    benchmark_NIPS(data_folder, K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+
+    benchmark_email_enron(data_folder, K);    
 
     return 0;
 }

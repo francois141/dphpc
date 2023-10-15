@@ -27,7 +27,7 @@ namespace Competitors {
                 gpu_basic_coo_wrapper(A, B, S, P);
             }
 
-            virtual bool csr_supported() { return false; };
+            virtual bool csr_supported() { return false; }; 
             virtual bool coo_supported() { return true; };
 
     };

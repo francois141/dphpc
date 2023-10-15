@@ -29,11 +29,11 @@ public:
         this->values       = std::vector<T>(0);
     }
 
-    CSR(int rows, int cols, std::vector<Triplet<T>> values) {
+    CSR(int rows, int cols, std::vector<Triplet<T>> triplets) {
         this->rows = rows;
         this->cols = cols;
 
-        init_csr(values);
+        init_csr(triplets);
     }
 
     CSR(const CSR &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
@@ -126,33 +126,33 @@ private:
     int rows;
     int cols;
 
-    void init_csr(std::vector<Triplet<T>> values) {
-        assert(values.size() > 0);
+    void init_csr(std::vector<Triplet<T>> triplets) {
+        assert(triplets.size() > 0);
 
         auto comp = [](const Triplet<T> t1, const Triplet<T> t2) -> bool {
             return t1.y < t2.y || (t1.y == t2.y && t1.x < t2.x);
         };
 
-        std::sort(values.begin(), values.end(), comp);
+        std::sort(triplets.begin(), triplets.end(), comp);
 
         this->rowPositions = std::vector<int>(0);
         this->colPositions = std::vector<int>(0);
         this->values       = std::vector<T>(0);
 
-        this->colPositions.reserve(values.size());
-        this->values.reserve(values.size());
+        this->colPositions.reserve(triplets.size());
+        this->values.reserve(triplets.size());
 
         this->rowPositions.emplace_back(0);
-        this->colPositions.push_back(values[0].x);
-        this->values.push_back(values[0].value);
+        this->colPositions.push_back(triplets[0].x);
+        this->values.push_back(triplets[0].value);
 
-        for(int i = 1; i < values.size(); i++) {
-            this->colPositions.emplace_back(values[i].x);
-            if(values[i].y != values[i-1].y) {
+        for (int i = 1; i < triplets.size(); i++) {
+            this->colPositions.emplace_back(triplets[i].x);
+            if (triplets[i].y != triplets[i-1].y) {
                 this->rowPositions.emplace_back(i);
             }
 
-            this->values.push_back(values[i].value);
+            this->values.push_back(triplets[i].value);
         }
 
         this->rowPositions.emplace_back(this->values.size());

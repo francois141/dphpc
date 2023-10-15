@@ -13,6 +13,11 @@
 template<class T>
 class Dense {
 public:
+    
+    Dense()
+    : matrix(std::vector<T>())
+    {}
+
     Dense(std::vector<std::vector<T>> &matrix_in) {
         assert(matrix_in.size() > 0);
 
