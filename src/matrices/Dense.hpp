@@ -13,14 +13,22 @@
 template<class T>
 class Dense {
 public:
-    Dense(std::vector<std::vector<T>> &matrix)
-    : matrix(matrix)
-    {}
+    Dense(std::vector<std::vector<T>> &matrix_in) {
+        assert(matrix_in.size() > 0);
+
+        this->rows = matrix_in.size();
+        this->cols = matrix_in[0].size();
+        this->matrix.reserve(matrix_in.size() * matrix_in[0].size());
+
+        for(const std::vector<T> &row : matrix_in) {
+            std::copy(row.begin(), row.end(), std::back_inserter(this->matrix));
+        }
+    }
 
     friend std::ostream &operator<<(std::ostream &os, const Dense &dense) {
-        for(const std::vector<T> &v : dense.matrix) {
-            for(const T &value: v) {
-                std::cout << value << " ";
+        for(int i = 0; i < dense.rows;i++) {
+            for(int j = 0; j < dense.cols;j++) {
+                std::cout << dense.matrix[i*dense.cols + j] << " ";
             }
             std::cout << "\n";
         }
@@ -28,22 +36,22 @@ public:
     }
 
     T getValue(int x, int y) {
-        assert(!(x < 0 || x >= matrix.size() || y < 0 || y >= matrix.size()));
-        return matrix[x][y];
+        return this->matrix[x * cols + y];
     }
 
     unsigned int getRows() const {
-        return this->matrix.size();
+        return this->rows;
     }
 
     unsigned int getCols() const {
-        assert(!matrix.empty());
-        return this->matrix[0].size();
+        return this->cols;
     };
 
 
 private:
-    std::vector<std::vector<T>> matrix;
+    unsigned int rows;
+    unsigned int cols;
+    std::vector<T> matrix;
 };
 
 
