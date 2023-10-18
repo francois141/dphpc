@@ -30,5 +30,9 @@ add_executable(dphpc
         competitors/gpu/gpu_basic.cu
         competitors/gpu/gpu_basic.hpp
 
+        #Helpers
+        utils/random_generator.hpp
+        utils/helpers.hpp
+
         # Main
         main.cpp)

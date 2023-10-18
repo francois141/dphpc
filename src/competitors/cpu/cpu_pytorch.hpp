@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "util.hpp"
+#include "utils/util.hpp"
 #include "benchmark/competitor.hpp"
 #include "matrices/matrices.h"
 

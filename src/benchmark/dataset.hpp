@@ -8,8 +8,9 @@
 #include <algorithm>
 #include <memory>
 
-#include "util.hpp"
+#include "utils/util.hpp"
 #include "matrices/matrices.h"
+#include "utils/random_generator.hpp"
 
 namespace SDDMM {
 
@@ -118,25 +119,25 @@ namespace SDDMM {
             }
     };
 
-    class DummyDataset : public Dataset<int> {
+    class DummyDataset : public Dataset<long> {
         public:
 
             DummyDataset()
             : Dataset("Dummy")
             {
-                std::vector<std::vector<int>> matrixA(2, std::vector<int>(2,1));
-                this->A = Dense<int>(matrixA); 
+                std::vector<std::vector<long>> matrixA(2, std::vector<long>(2,1));
+                this->A = Dense<long>(matrixA);
 
-                std::vector<std::vector<int>> matrixB(2, std::vector<int>(2,1));
-                this->B = Dense<int>(matrixB); 
+                std::vector<std::vector<long>> matrixB(2, std::vector<long>(2,1));
+                this->B = Dense<long>(matrixB);
 
-                std::vector<Triplet<int>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
-                this->S_coo = COO<int>(2, 2, S_triplets);
-                this->S_csr = CSR<int>(this->S_coo);
+                std::vector<Triplet<long>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
+                this->S_coo = COO<long>(2, 2, S_triplets);
+                this->S_csr = CSR<long>(this->S_coo);
 
-                std::vector<Triplet<int>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
-                this->P_coo = COO<int>(2, 2, P_triplets);
-                this->P_csr = CSR<int>(this->P_coo);
+                std::vector<Triplet<long>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
+                this->P_coo = COO<long>(2, 2, P_triplets);
+                this->P_csr = CSR<long>(this->P_coo);
             }
 
     };

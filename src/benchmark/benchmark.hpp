@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -11,6 +12,10 @@
 
 #include "competitor.hpp"
 #include "dataset.hpp"
+#include "utils/file_writer.hpp"
+#include "utils/helpers.hpp"
+
+#define header "algorithm; size; time"
 
 namespace SDDMM {
 
@@ -18,12 +23,13 @@ namespace SDDMM {
     class Benchmark {
         public:
                                 
-            Benchmark(Dataset<T> &dataset)
-            : dataset(dataset)
-            {}
+            Benchmark(Dataset<T> &dataset, std::string path)
+            : dataset(dataset), path(path)
+            {
+                output = std::make_unique<SDDMM::CSVWriter>(path, header);
+            }
 
-            ~Benchmark() 
-            {}
+            ~Benchmark() = default;
 
             Dataset<T> &getDataset() {
                 return this->dataset;
@@ -74,7 +80,7 @@ namespace SDDMM {
                         assert(P_csr == this->getDataset().getExpected_CSR());
                         DEBUG_OUT(" - Correction of results asserted." << std::endl);
                     }
-                    DEBUG_OUT(" - Execution took " << ((double) ns / 1e9) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                    DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
 
                     // Format: name,dataset,CSR,M,N,K,time
                     FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << std::endl);
@@ -96,7 +102,10 @@ namespace SDDMM {
                         assert(P_coo == this->getDataset().getExpected_COO());
                         DEBUG_OUT(" - Correction of results asserted." << std::endl);
                     }
-                    DEBUG_OUT(" - Execution took " << ((double) ns / 1e9) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                    DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+
+                    // TODO: Make size dynamic
+                    this->output->writeLine(competitor->name, "10", std::to_string(MICROSECOND(ns)));
 
                     // Format: name,COO,M,N,K,time
                     FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << std::endl);
@@ -107,8 +116,9 @@ namespace SDDMM {
         private:
             std::vector<std::shared_ptr<Competitor<T>>> competitors;
             SDDMM::Dataset<T> &dataset;
+            std::string path;
+            std::unique_ptr<SDDMM::Output> output;
 
-            
             uint64_t timing(std::function<void()> fn) {
                 const auto start = std::chrono::high_resolution_clock::now();
                 fn();
