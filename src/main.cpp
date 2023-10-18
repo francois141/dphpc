@@ -13,7 +13,7 @@
 /* =========================== */
 void benchmark_dummy() {
     SDDMM::DummyDataset dataset;
-    SDDMM::Benchmark<long> benchmark(dataset, "dummy_measures.txt");
+    SDDMM::Benchmark<long> benchmark(dataset, "dummy_measures.csv");
 
     /* CPU Competitors */
     auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<long>>(new Competitors::CPUBasic<long>);
@@ -35,7 +35,7 @@ void benchmark_dummy() {
 /* ========================== */
 void benchmark_NIPS(const std::string& data_folder, const int K) {
     SDDMM::NIPSDataset<double> nips_dataset(data_folder, K);
-    SDDMM::Benchmark<double> benchmark(nips_dataset, "nips_measures.txt");
+    SDDMM::Benchmark<double> benchmark(nips_dataset, "nips_measures.csv");
 
     /* CPU Competitors */
     auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
@@ -57,7 +57,7 @@ void benchmark_NIPS(const std::string& data_folder, const int K) {
 /* ==================================*/
 void benchmark_email_enron(const std::string& data_folder, const int K) {
     SDDMM::EMailEnronDataset<double> email_enron_dataset(data_folder, K);
-    SDDMM::Benchmark<double> benchmark(email_enron_dataset, "enron-measures.txt");
+    SDDMM::Benchmark<double> benchmark(email_enron_dataset, "enron-measures.csv");
 
     /* CPU Competitors */
     auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
