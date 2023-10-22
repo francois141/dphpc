@@ -84,11 +84,11 @@ int main(int argc, char* argv[]) {
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
 
-    //benchmark_NIPS(data_folder, K);
+    benchmark_NIPS(data_folder, K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
 
-    //benchmark_email_enron(data_folder, K);
+    benchmark_email_enron(data_folder, K);
 
     return 0;
 }

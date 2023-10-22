@@ -1,11 +1,7 @@
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# FILE(GLOB_RECURSE cppSources *.cpp *.hpp *.h)
-# FILE(GLOB_RECURSE cudaFiles *.cu)
-# add_executable(dphpc ${cppSources} ${cudaFiles})
-
-# set(CMAKE_BUILD_TYPE Debug) # TODO: Remove for measurements
+# set(CMAKE_BUILD_TYPE Debug) # Remove for measurements
 
 add_executable(dphpc
         # Matrix representations 

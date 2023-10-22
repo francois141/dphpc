@@ -33,7 +33,8 @@ namespace Competitors {
                 
                 // create tensors out of flat vector, by setting (row_stride, col_stride) to (num_cols, 1)
                 torch::Tensor A_tensor = torch::from_blob(A.get_pointer(), {A_row, A_col}, {A_col, 1}, scalar_type);
-                torch::Tensor B_tensor = torch::from_blob(B.get_pointer(), {B_row, B_col}, {B_col, 1}, scalar_type);
+                torch::Tensor B_tensor = at::transpose(torch::from_blob(B.get_pointer(), {B_row, B_col}, {B_col, 1}, scalar_type), 0, 1);
+
                 
                 // create sparse CSR tensor for CPU
                 torch::Tensor crow_indices = torch::tensor(S.getRowPositions(), torch::kInt);
@@ -43,9 +44,11 @@ namespace Competitors {
                 at::TensorOptions options = torch::device(torch::kCPU).dtype(scalar_type);
                 torch::Tensor sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, options);
 
-                torch::Tensor result = at::native::sparse_sampled_addmm_sparse_csr_cpu(sparse_tensor, A_tensor, B_tensor, 0, 1);
+                torch::Tensor result = at::native::sparse_sampled_addmm_sparse_csr_cpu(sparse_tensor, A_tensor, B_tensor, 0, 1).to_sparse_csr();
 
-                P.setValues(std::vector<T>(result.values().data_ptr<T>(), result.values().data_ptr<T>() + result.numel()));
+                P.setRowPositions(std::vector<int>(result.crow_indices().data_ptr<long int>(), result.crow_indices().data_ptr<long int>() + result.crow_indices().numel()));
+                P.setColPositions(std::vector<int>(result.col_indices().data_ptr<long int>(), result.col_indices().data_ptr<long int>() + result.col_indices().numel()));
+                P.setValues(std::vector<T>(result.values().data_ptr<T>(), result.values().data_ptr<T>() + result.values().numel()));
             }
 
             virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {
