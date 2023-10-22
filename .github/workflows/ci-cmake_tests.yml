@@ -13,6 +13,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Download and unzip pytorch C++ distribution
+      run: |
+        wget -O ~/ https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
+        unzip ~/libtorch-shared-with-deps-latest.zip -d ~/
+        rm ~/libtorch-shared-with-deps-latest.zip
+      working-directory: ${{runner.workspace}}
+
     - name: Configure CMake
       run: cmake -S $GITHUB_WORKSPACE -B ${{runner.workspace}}/build
 
