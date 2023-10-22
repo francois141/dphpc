@@ -44,6 +44,10 @@ public:
         return this->matrix[y * cols + x];
     }
 
+    T* get_pointer() {
+        return this->matrix.data();
+    }
+
     unsigned int getRows() const {
         return this->rows;
     }
