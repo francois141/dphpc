@@ -13,17 +13,17 @@
 /* =========================== */
 void benchmark_dummy() {
     SDDMM::DummyDataset dataset;
-    SDDMM::Benchmark<long> benchmark(dataset, "dummy_measures.csv");
+    SDDMM::Benchmark<double> benchmark(dataset, "dummy_measures.csv");
 
     /* CPU Competitors */
-    auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<long>>(new Competitors::CPUBasic<long>);
+    auto cpu_basic = std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
     benchmark.add_competitor(cpu_basic);
 
-    auto cpu_pytorch = std::shared_ptr<Competitors::CPUPyTorch<long>>(new Competitors::CPUPyTorch<long>);
+    auto cpu_pytorch = std::shared_ptr<Competitors::CPUPyTorch<double>>(new Competitors::CPUPyTorch<double>);
     benchmark.add_competitor(cpu_pytorch);
 
     /* GPU Competitors */
-    auto gpu_basic = std::shared_ptr<Competitors::GPUBasic<long>>(new Competitors::GPUBasic<long>);
+    auto gpu_basic = std::shared_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
     benchmark.add_competitor(gpu_basic);
 
     /* Run the benchmark */

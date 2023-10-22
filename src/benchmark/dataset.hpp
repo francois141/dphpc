@@ -119,25 +119,25 @@ namespace SDDMM {
             }
     };
 
-    class DummyDataset : public Dataset<long> {
+    class DummyDataset : public Dataset<double> {
         public:
 
             DummyDataset()
             : Dataset("Dummy")
             {
-                std::vector<std::vector<long>> matrixA(2, std::vector<long>(2,1));
-                this->A = Dense<long>(matrixA);
+                std::vector<std::vector<double>> matrixA(2, std::vector<double>(2,1));
+                this->A = Dense<double>(matrixA);
 
-                std::vector<std::vector<long>> matrixB(2, std::vector<long>(2,1));
-                this->B = Dense<long>(matrixB);
+                std::vector<std::vector<double>> matrixB(2, std::vector<double>(2,1));
+                this->B = Dense<double>(matrixB);
 
-                std::vector<Triplet<long>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
-                this->S_coo = COO<long>(2, 2, S_triplets);
-                this->S_csr = CSR<long>(this->S_coo);
+                std::vector<Triplet<double>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
+                this->S_coo = COO<double>(2, 2, S_triplets);
+                this->S_csr = CSR<double>(this->S_coo);
 
-                std::vector<Triplet<long>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
-                this->P_coo = COO<long>(2, 2, P_triplets);
-                this->P_csr = CSR<long>(this->P_coo);
+                std::vector<Triplet<double>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
+                this->P_coo = COO<double>(2, 2, P_triplets);
+                this->P_csr = CSR<double>(this->P_coo);
             }
 
     };
