@@ -24,8 +24,8 @@ namespace SDDMM {
     class Benchmark {
         public:
                                 
-            Benchmark(Dataset<T> &dataset, std::string path)
-            : dataset(dataset), path(path)
+            Benchmark(Dataset<T> &dataset, std::vector<std::shared_ptr<Competitor<T>>> &competitors, std::string path)
+            : dataset(dataset), competitors(competitors), path(path)
             {
                 output = std::make_unique<SDDMM::CSVWriter>(path, header);
             }
@@ -34,16 +34,7 @@ namespace SDDMM {
 
             Dataset<T> &getDataset() {
                 return this->dataset;
-            }
-            
-            void add_competitor(std::shared_ptr<Competitor<T>> competitor) {
-                competitors.push_back(competitor);
-            }
-
-            void clear_competitors() {
-                competitors.clear();
-            }
-            
+            }           
 
             void benchmark() {
 
@@ -113,8 +104,9 @@ namespace SDDMM {
             }
             
         private:
+            SDDMM::Dataset<T> dataset;
             std::vector<std::shared_ptr<Competitor<T>>> competitors;
-            SDDMM::Dataset<T> &dataset;
+
             std::string path;
             std::unique_ptr<SDDMM::Output> output;
 
