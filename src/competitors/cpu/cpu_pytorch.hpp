@@ -53,7 +53,7 @@ namespace Competitors {
 
             virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {
                 // https://pytorch.org/docs/stable/generated/torch.sparse.sampled_addmm.html
-                DEBUG_OUT("PyTorch SDDMM kernel only supports CSR format." << std::endl);
+                DEBUG_OUT(" - PyTorch SDDMM kernel only supports CSR format." << std::endl);
             }
 
             virtual bool csr_supported() { return true; };

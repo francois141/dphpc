@@ -12,6 +12,7 @@
 
 #include "competitor.hpp"
 #include "dataset.hpp"
+#include "utils/util.hpp"
 #include "utils/file_writer.hpp"
 #include "utils/helpers.hpp"
 
@@ -61,6 +62,7 @@ namespace SDDMM {
                 std::for_each(competitors.begin(), competitors.end(), [this](std::shared_ptr<Competitor<T>> competitor_ptr) {
                     auto competitor = competitor_ptr.get();
                     uint64_t ns;
+                    bool csr_correctness = false, coo_correcntess = false;
 
                     /* ============================= */
                     /* Sparse matrices in CSR format */
@@ -77,13 +79,12 @@ namespace SDDMM {
 
                     // Checking correctness if available
                     if (competitor->csr_supported() && this->getDataset().hasExpected()) {
-                        assert(P_csr == this->getDataset().getExpected_CSR());
-                        DEBUG_OUT(" - Correction of results asserted." << std::endl);
+                        csr_correctness = (P_csr == this->getDataset().getExpected_CSR());
+                        if (csr_correctness) { DEBUG_OUT(" - Calculated correct results." << std::endl); }
+                        else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
                     }
                     DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
-
-                    // Format: name,dataset,CSR,M,N,K,time
-                    FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << std::endl);
+                    FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR," << competitor->csr_supported() << "," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << csr_correctness << std::endl);
 
                     /* ============================= */
                     /* Sparse matrices in COO format */
@@ -99,17 +100,15 @@ namespace SDDMM {
 
                     // Checking correctness if available
                      if (competitor->coo_supported() && this->getDataset().hasExpected()) {
-                        assert(P_coo == this->getDataset().getExpected_COO());
-                        DEBUG_OUT(" - Correction of results asserted." << std::endl);
+                        coo_correcntess = (P_coo == this->getDataset().getExpected_COO());
+                        if (coo_correcntess) { DEBUG_OUT(" - Calculated correct results." << std::endl); }
+                        else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
                     }
                     DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                    FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO," << competitor->coo_supported() << "," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << coo_correcntess << std::endl);
 
                     // TODO: Make size dynamic
                     this->output->writeLine(competitor->name, "10", std::to_string(MICROSECOND(ns)));
-
-                    // Format: name,COO,M,N,K,time
-                    FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << std::endl);
-                   
                 });
             }
             
