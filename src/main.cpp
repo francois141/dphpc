@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vector>
+
+#ifndef _WIN32
 #include <getopt.h>
+#endif
 
 #include "benchmark/benchmark.hpp"
 #include "benchmark/dataset.hpp"
@@ -61,17 +64,13 @@ void benchmark_email_enron(const std::string& data_folder, const int K) {
 
 /* ====================================================================================================================== */
 
-struct config_t {
+struct Config {
     std::string data_folder;
-	int K; // 32 // 128 // 512
+    // 32 // 128 // 512
+	int K;
 };
 
-struct config_t config = { // default values
-    std::string("../data/"),
-    32
-};
-
-static void print_config(void) {
+static void print_config(Config config) {
     DEBUG_OUT("----------------------------------------" << std::endl);
     DEBUG_OUT("Program configuration" << std::endl);
     DEBUG_OUT("  Data Folder: " << config.data_folder << std::endl);
@@ -92,6 +91,13 @@ static void usage(const char *argv0) {
 // Runs by default with: ./src/dphpc -data_folder ../data/ -K 32
 
 int main(int argc, char* argv[]) {
+    // default values config
+    Config config = {
+        std::string("../data/"),
+        32
+    };
+
+    #ifndef _WIN32
     int K = 32;
     static struct option long_options[] = {
         { .name = "data_folder", .has_arg = 1, .val = 'd' },
@@ -110,8 +116,9 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 	}
+    #endif
 
-    print_config();
+    print_config(config);
 
     init_double_competitors();
 

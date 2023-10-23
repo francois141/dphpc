@@ -1,9 +1,8 @@
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(CMAKE_BUILD_TYPE Debug) # Remove for measurements
-
-add_executable(dphpc
+set(SRC_FILES
         # Matrix representations 
         matrices/Dense.hpp
         matrices/CSR.hpp
@@ -21,17 +20,26 @@ add_executable(dphpc
 
         # CPU Competitors
         competitors/cpu/cpu_basic.hpp
+        competitors/cpu/cpu_pytorch.hpp
 
         # GPU Competitors
         competitors/gpu/gpu_basic.cu
         competitors/gpu/gpu_basic.hpp
 
         #Helpers
+        utils/util.hpp
         utils/random_generator.hpp
         utils/helpers.hpp
+        utils/file_writer.hpp
 
         # Main
         main.cpp)
+
+add_executable(dphpc ${SRC_FILES})
+
+if(MSVC)
+    source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
+endif()
 
 find_package(Torch REQUIRED)
 

@@ -1,5 +1,5 @@
 # Quickstart tutorial : http://google.github.io/googletest/quickstart-cmake.html
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
@@ -13,14 +13,13 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(
-        matrix_test
-        matrix_test.cc
-)
+add_executable(matrix_test 
+        ../src/competitors/gpu/gpu_basic.cu
+        matrix_test.cc)
+
 target_link_libraries(
         matrix_test
-        GTest::gtest_main
-)
+        GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(matrix_test)

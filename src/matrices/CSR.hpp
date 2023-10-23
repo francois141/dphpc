@@ -164,13 +164,13 @@ private:
         for (int i = 1; i < triplets.size(); i++) {
             this->colPositions.emplace_back(triplets[i].x);
             if (triplets[i].y != triplets[i-1].y) {
-                this->rowPositions.emplace_back(i);
+                this->rowPositions.emplace_back(static_cast<int>(i));
             }
 
             this->values.push_back(triplets[i].value);
         }
 
-        this->rowPositions.emplace_back(this->values.size());
+        this->rowPositions.emplace_back(static_cast<int>(this->values.size()));
     }
 };
 

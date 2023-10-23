@@ -19,8 +19,8 @@ TEST(BasicTest, SmokeTest) {
 }
 
 TEST(BasicTest, COO) {
-    std::vector<Triplet<int>> triplets{{0,0,1},{0,1,1},{1,0,1},{1,1,1}};
-    COO<int> coo(2, 2, triplets);
+    std::vector<Triplet<double>> triplets{{0,0,1.0},{0,1,1.0},{1,0,1.0},{1,1,1.0}};
+    COO<double> coo(2, 2, triplets);
 
     EXPECT_EQ(4, coo.getValues().size());
     EXPECT_EQ(4, coo.getRowPositions().size());
@@ -29,14 +29,14 @@ TEST(BasicTest, COO) {
 
 TEST(BasicTest, RepresentationConversion) {
     
-    std::vector<Triplet<int>> triplets_csr{{0,0,1},{0,1,1},{1,0,1},{1,1,1}};
-    CSR<int> csr_mat(2,2,triplets_csr);
+    std::vector<Triplet<double>> triplets_csr{{0,0,1.0},{0,1,1.0},{1,0,1.0},{1,1,1.0}};
+    CSR<double> csr_mat(2,2,triplets_csr);
 
-    std::vector<Triplet<int>> triplets{{0,0,1}, {1,0,1}, {0,1,1}, {1,1,1}};
-    COO<int> coo_mat(2, 2, triplets);
+    std::vector<Triplet<double>> triplets{{0,0,1.0}, {1,0,1.0}, {0,1,1.0}, {1,1,1.0}};
+    COO<double> coo_mat(2, 2, triplets);
 
-    CSR<int> csr_converted(coo_mat);
-    COO<int> coo_converted(csr_mat);
+    CSR<double> csr_converted(coo_mat);
+    COO<double> coo_converted(csr_mat);
     
     // std::cout << csr_mat << std::endl;
     // std::cout << coo_mat << std::endl;

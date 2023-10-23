@@ -46,8 +46,8 @@ namespace Competitors {
 
                 torch::Tensor result = at::native::sparse_sampled_addmm_sparse_csr_cpu(sparse_tensor, A_tensor, B_tensor, 0, 1).to_sparse_csr();
 
-                P.setRowPositions(std::vector<int>(result.crow_indices().data_ptr<long int>(), result.crow_indices().data_ptr<long int>() + result.crow_indices().numel()));
-                P.setColPositions(std::vector<int>(result.col_indices().data_ptr<long int>(), result.col_indices().data_ptr<long int>() + result.col_indices().numel()));
+                P.setRowPositions(std::vector<int>(result.crow_indices().data_ptr<int>(), result.crow_indices().data_ptr<int>() + result.crow_indices().numel()));
+                P.setColPositions(std::vector<int>(result.col_indices().data_ptr<int>(), result.col_indices().data_ptr<int>() + result.col_indices().numel()));
                 P.setValues(std::vector<T>(result.values().data_ptr<T>(), result.values().data_ptr<T>() + result.values().numel()));
             }
 

@@ -92,6 +92,4 @@ void gpu_basic_coo_wrapper(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) {
 template void gpu_basic_csr_wrapper<double>(Dense<double>& A, Dense<double>& B, CSR<double>& S, CSR<double>& P);
 template void gpu_basic_coo_wrapper<double>(Dense<double>& A, Dense<double>& B, COO<double>& S, COO<double>& P);
 
-template void gpu_basic_csr_wrapper<long>(Dense<long>& A, Dense<long>& B, CSR<long>& S, CSR<long>& P);
-template void gpu_basic_coo_wrapper<long>(Dense<long>& A, Dense<long>& B, COO<long>& S, COO<long>& P);
 

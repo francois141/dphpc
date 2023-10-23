@@ -15,7 +15,7 @@ class Dense {
 public:
     
     Dense()
-    : matrix(std::vector<T>())
+    : rows(0), cols(0), matrix(std::vector<T>())
     {}
 
     Dense(std::vector<std::vector<T>> &matrix_in) {
