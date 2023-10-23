@@ -226,7 +226,7 @@ namespace SDDMM {
 
                 int i = 0; // 9 is ASCII value for TAB
                 Triplet<T> triplet = { 0, 0, 1 };
-                while (data_file >> triplet.y && data_file.ignore(1, 9) && data_file >> triplet.x && data_file.ignore(1, '\n')) {
+                while (data_file >> triplet.row && data_file.ignore(1, 9) && data_file >> triplet.col && data_file.ignore(1, '\n')) {
                     triplets.push_back(triplet);
                     i++;
                 }

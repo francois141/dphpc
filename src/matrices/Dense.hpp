@@ -40,8 +40,8 @@ public:
         return os;
     }
 
-    T& getValue(int x, int y) {
-        return this->matrix[y * cols + x];
+    T& getValue(int row, int col) {
+        return this->matrix[row * cols + col];
     }
 
     T* get_pointer() {

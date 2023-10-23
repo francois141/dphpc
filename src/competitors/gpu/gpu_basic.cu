@@ -7,8 +7,8 @@ __global__ void gpu_basic_csr_kernel(void) {
 
 }
 
-// perform SDDMM, compute P = (A*B) dot S (where dot is the term by term product)
-// A is MxK, B is KxN, S and P are MxN sparse
+// perform SDDMM, compute P = (A*B^T) dot S (where dot is the term by term product)
+// A is MxK, B is NxK, S and P are MxN sparse
 __global__ void gpu_basic_coo_kernel(double* A, double* B, double* S, double* P, int* cols, int* rows, int M, int K, int N, int sparse_size) {
 	int nb_running = gridDim.x * blockDim.x;
 	int min_per_instance = sparse_size / nb_running;
@@ -28,7 +28,8 @@ __global__ void gpu_basic_coo_kernel(double* A, double* B, double* S, double* P,
 		double result = 0.0;
 		// matrix multiplication
 		for (int i = 0; i < K; i++) {
-			result += A[i * M + row] * B[col * K + i];
+			// B is transposed
+			result += A[row * K + i] * B[col * K + i];
 		}
 		result *= S[entry];
 		P[entry] = result;
@@ -42,10 +43,12 @@ void gpu_basic_csr_wrapper(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) {
 
 template <typename T>
 void gpu_basic_coo_wrapper(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) {
-	// A is MxK, B is KxN, S and P are MxN sparse
+	// A is MxK, B is NxK, S and P are MxN sparse
 	int M = A.getRows();
 	int K = A.getCols();
-	int N = B.getCols();
+	int N = B.getRows();
+
+	assert(K == B.getCols());
 
 	// get the size needed for each matrix
 	size_t A_size = M * K * sizeof(T);

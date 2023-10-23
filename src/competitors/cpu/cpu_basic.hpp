@@ -21,8 +21,9 @@ namespace Competitors {
 
                 for (int i = 0; i < M; i++) {
                     for (int j = S.getRowPositions()[i]; j < S.getRowPositions()[i+1]; j++) {
+                        *P.getValue(j) = static_cast<T>(0);
                         for (int k = 0; k < K; k++) {
-                            (*P.getValue(j)) += A.getValue(i,k) * B.getValue(S.getColPositions()[j],k);
+                            (*P.getValue(j)) += A.getValue(i, k) * B.getValue(S.getColPositions()[j], k);
                         }
                     }
                 }
@@ -40,6 +41,7 @@ namespace Competitors {
                 const unsigned int M = S.getRows();
 
                 for (int i = 0; i < S.getValues().size(); i++) {
+                    *P.getValue(i) = static_cast<T>(0);
                     for (int k = 0; k < K; k++) {
                         (*P.getValue(i)) += A.getValue(S.getRowPositions()[i], k) * B.getValue(S.getColPositions()[i], k);
                     }

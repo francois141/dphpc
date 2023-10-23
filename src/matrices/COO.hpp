@@ -44,8 +44,8 @@ public:
         this->values.reserve(values.size());
 
         for (const Triplet<T> &triplet: values) {
-            this->colPositions.push_back(triplet.x);
-            this->rowPositions.push_back(triplet.y);
+            this->rowPositions.push_back(triplet.row);
+            this->colPositions.push_back(triplet.col);
             this->values.push_back(triplet.value);
         }
     }

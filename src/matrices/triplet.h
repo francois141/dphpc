@@ -3,15 +3,15 @@
 
 template <typename T>
 struct Triplet {
-    int x;
-    int y;
+    int row;
+    int col;
     T value;
 };
 
 
 template <typename S>
 std::ostream& operator<<(std::ostream& os, const Triplet<S>& triplet) {
-    os << triplet.x << " " << triplet.y << " " << triplet.value;
+    os << triplet.row << " " << triplet.col << " " << triplet.value;
     return os;
 }
  

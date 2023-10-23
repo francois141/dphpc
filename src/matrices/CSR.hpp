@@ -45,8 +45,8 @@ public:
         std::vector<Triplet<T>> triplets(coo.getValues().size());
         
         for (int i = 0; i < coo.getValues().size(); i++) {
-            triplets[i].x = coo.getColPositions()[i];
-            triplets[i].y = coo.getRowPositions()[i];
+            triplets[i].row = coo.getRowPositions()[i];
+            triplets[i].col = coo.getColPositions()[i];
             triplets[i].value = coo.getValues()[i];
         }
         init_csr(triplets);
@@ -145,7 +145,7 @@ private:
         assert(triplets.size() > 0);
 
         auto comp = [](const Triplet<T> t1, const Triplet<T> t2) -> bool {
-            return t1.y < t2.y || (t1.y == t2.y && t1.x < t2.x);
+            return t1.row < t2.row || (t1.row == t2.row && t1.col < t2.col);
         };
 
         std::sort(triplets.begin(), triplets.end(), comp);
@@ -158,12 +158,12 @@ private:
         this->values.reserve(triplets.size());
 
         this->rowPositions.emplace_back(0);
-        this->colPositions.push_back(triplets[0].x);
+        this->colPositions.push_back(triplets[0].col);
         this->values.push_back(triplets[0].value);
 
-        for (int i = 1; i < triplets.size(); i++) {
-            this->colPositions.emplace_back(triplets[i].x);
-            if (triplets[i].y != triplets[i-1].y) {
+        for (size_t i = 1; i < triplets.size(); i++) {
+            this->colPositions.emplace_back(triplets[i].col);
+            if (triplets[i].row != triplets[i-1].row) {
                 this->rowPositions.emplace_back(static_cast<int>(i));
             }
 
