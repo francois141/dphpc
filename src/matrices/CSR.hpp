@@ -72,11 +72,26 @@ public:
     }
 
     friend bool operator==(const CSR &lhs, const CSR &rhs) {
-        return lhs.colPositions == rhs.colPositions &&
+        bool posMatch = lhs.colPositions == rhs.colPositions &&
                lhs.rowPositions == rhs.rowPositions &&
-               lhs.values == rhs.values &&
                lhs.rows == rhs.rows &&
                lhs.cols == rhs.cols;
+    
+        bool valMatch = true;
+
+        if(std::is_integral<T>::value) {
+            valMatch = (lhs.values == rhs.values);
+        } else {
+            if(lhs.values.size() != rhs.values.size()) {
+                return false;
+            }
+
+            for(int i = 0; i < lhs.values.size();i++) {
+                valMatch &= abs(rhs.values[i] - lhs.values[i]) <= 1e-6;
+            }
+        }
+
+        return posMatch && valMatch;
     }
 
     int getRows() const {
