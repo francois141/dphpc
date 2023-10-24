@@ -7,3 +7,4 @@
 
 /* GPU competitors */
 #include "competitors/gpu/gpu_basic.hpp"
+#include "competitors/gpu/gpu_pytorch.hpp"
