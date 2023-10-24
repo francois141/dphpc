@@ -173,12 +173,12 @@ namespace SDDMM {
                     std::stringstream lineStream(line);
                     std::string cell;
 
-                    lineStream.ignore(32, ','); // skip the first column (word name)
+                    lineStream.ignore(64, ','); // skip the first column (word name)
 
                     while (std::getline(lineStream, cell, ',')) {
                         if (cell == "0") { col++; continue; }
 
-                        triplets.push_back({ col, row, (T) std::stod(cell) });
+                        triplets.push_back({ row, col, (T) std::stod(cell) });
                         i++;
 
                         col++;

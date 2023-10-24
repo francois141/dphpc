@@ -52,50 +52,60 @@ namespace SDDMM {
                 /* Run the benchmark with all competitors */
                 std::for_each(competitors.begin(), competitors.end(), [this](std::shared_ptr<Competitor<T>> competitor_ptr) {
                     auto competitor = competitor_ptr.get();
-                    uint64_t ns;
+                    uint64_t ns = 0;
                     bool csr_correctness = false, coo_correcntess = false;
 
                     /* ============================= */
                     /* Sparse matrices in CSR format */
                     /* ============================= */
-                    DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as CSR)" << std::endl);
+                    if (competitor->csr_supported()) {
+                        DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as CSR)" << std::endl);
 
-                    CSR<T> P_csr(this->getDataset().getS_CSR());
-                    P_csr.clearValues();
+                        CSR<T> P_csr(this->getDataset().getS_CSR());
+                        P_csr.clearValues();
 
-                    // Running competitor
-                    ns = timing([&] { // TODO: Cold/Warm Cache? CPU Calibration?
-                        competitor->run_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr);
-                    });
+                        // Running competitor
+                        ns = timing([&] { // TODO: Cold/Warm Cache? CPU Calibration?
+                            competitor->run_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr);
+                        });
 
-                    // Checking correctness if available
-                    if (competitor->csr_supported() && this->getDataset().hasExpected()) {
-                        csr_correctness = (P_csr == this->getDataset().getExpected_CSR());
-                        if (csr_correctness) { DEBUG_OUT(" - Calculated correct results." << std::endl); }
-                        else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
+                        // Checking correctness if available
+                        if (this->getDataset().hasExpected()) {
+                            csr_correctness = (P_csr == this->getDataset().getExpected_CSR());
+                            if (csr_correctness) { DEBUG_OUT(" - Calculated correct results." << std::endl); }
+                            else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
+                        }
+                        DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                    } else {
+                        DEBUG_OUT("Skipping competitor " << competitor->name << " (does not support CSR)" << std::endl << std::endl);
                     }
-                    DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                    
                     FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR," << competitor->csr_supported() << "," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << csr_correctness << std::endl);
 
                     /* ============================= */
                     /* Sparse matrices in COO format */
                     /* ============================= */
-                    DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as COO)" << std::endl);
-                    
-                    COO<T> P_coo(this->getDataset().getS_COO());
-                    P_coo.clearValues();
+                    if (competitor->coo_supported()) {
+                        DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as COO)" << std::endl);
+                        
+                        COO<T> P_coo(this->getDataset().getS_COO());
+                        P_coo.clearValues();
 
-                    ns = timing([&] { // TODO: Cold/Warm Cache? CPU Calibration?
-                        competitor->run_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo);
-                    });
+                        ns = timing([&] { // TODO: Cold/Warm Cache? CPU Calibration?
+                            competitor->run_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo);
+                        });
 
-                    // Checking correctness if available
-                     if (competitor->coo_supported() && this->getDataset().hasExpected()) {
-                        coo_correcntess = (P_coo == this->getDataset().getExpected_COO());
-                        if (coo_correcntess) { DEBUG_OUT(" - Calculated correct results." << std::endl); }
-                        else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
+                        // Checking correctness if available
+                        if (competitor->coo_supported() && this->getDataset().hasExpected()) {
+                            coo_correcntess = (P_coo == this->getDataset().getExpected_COO());
+                            if (coo_correcntess) { DEBUG_OUT(" - Calculated correct results." << std::endl); }
+                            else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
+                        }
+                        DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                    } else {
+                        DEBUG_OUT("Skipping competitor " << competitor->name << " (does not support COO)" << std::endl << std::endl);
                     }
-                    DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                    
                     FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO," << competitor->coo_supported() << "," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << coo_correcntess << std::endl);
 
                     // TODO: Make size dynamic

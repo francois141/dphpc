@@ -1,7 +1,8 @@
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(CMAKE_BUILD_TYPE Debug) # Remove for measurements
+
 set(SRC_FILES
         # Matrix representations 
         matrices/Dense.hpp

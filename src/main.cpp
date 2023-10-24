@@ -66,8 +66,7 @@ void benchmark_email_enron(const std::string& data_folder, const int K) {
 
 struct Config {
     std::string data_folder;
-    // 32 // 128 // 512
-	int K;
+	int K; // 32 // 128 // 512
 };
 
 static void print_config(Config config) {
