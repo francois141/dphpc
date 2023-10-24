@@ -77,7 +77,7 @@ static void print_config(Config config) {
     DEBUG_OUT("----------------------------------------" << std::endl);
 }
 
-static void usage(const char *argv0) {
+static void usage() {
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << "  -d, --data_folder <folder> (folder to read datasets from)" << std::endl;
@@ -97,7 +97,6 @@ int main(int argc, char* argv[]) {
     };
 
     #ifndef _WIN32
-    int K = 32;
     static struct option long_options[] = {
         { .name = "data_folder", .has_arg = 1, .val = 'd' },
 		{ .name = "K", .has_arg = 1, .val = 'k' },
@@ -111,7 +110,7 @@ int main(int argc, char* argv[]) {
         } else if (c == 'k') {
             config.K = std::stoi(optarg);
         } else {
-            usage(argv[0]);
+            usage();
             return 1;
         }
 	}

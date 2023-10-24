@@ -20,23 +20,18 @@ template<class T>
 class CSR {
 public:
     
-    CSR() {
-        this->rows = 0;
-        this->cols = 0;
+    CSR()
+    : rows(0), cols(0), rowPositions(std::vector<int>(0)), colPositions(std::vector<int>(0)), values(std::vector<T>(0))
+    {}
 
-        this->rowPositions = std::vector<int>(0);
-        this->colPositions = std::vector<int>(0);
-        this->values       = std::vector<T>(0);
-    }
-
-    CSR(int rows, int cols, std::vector<Triplet<T>> triplets) {
-        this->rows = rows;
-        this->cols = cols;
-
+    CSR(int rows, int cols, std::vector<Triplet<T>> triplets)
+    : rows(rows), cols(cols) {
         init_csr(triplets);
     }
 
-    CSR(const CSR &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
+    CSR(const CSR &other)
+    : rows(other.rows), cols(other.cols), rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values)
+    {}
 
     CSR(COO<T> &coo) {
         this->rows = coo.getRows();
@@ -44,7 +39,7 @@ public:
 
         std::vector<Triplet<T>> triplets(coo.getValues().size());
         
-        for (int i = 0; i < coo.getValues().size(); i++) {
+        for (uint32_t i = 0; i < coo.getValues().size(); i++) {
             triplets[i].row = coo.getRowPositions()[i];
             triplets[i].col = coo.getColPositions()[i];
             triplets[i].value = coo.getValues()[i];
@@ -86,7 +81,7 @@ public:
                 return false;
             }
 
-            for(int i = 0; i < lhs.values.size();i++) {
+            for(uint32_t i = 0; i < lhs.values.size();i++) {
                 valMatch &= abs(rhs.values[i] - lhs.values[i]) <= 1e-6;
             }
         }
@@ -135,11 +130,11 @@ public:
     }
 
 private:
-    std::vector<int> colPositions;
-    std::vector<int> rowPositions;
-    std::vector<T> values;
     int rows;
     int cols;
+    std::vector<int> rowPositions;
+    std::vector<int> colPositions;
+    std::vector<T> values;
 
     void init_csr(std::vector<Triplet<T>> triplets) {
         assert(triplets.size() > 0);

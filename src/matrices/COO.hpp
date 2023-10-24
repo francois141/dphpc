@@ -20,20 +20,13 @@ template<class T>
 class COO {
 public:
 
-    COO() {
-        this->rows = 0;
-        this->cols = 0;
-
-        this->rowPositions = std::vector<int>(0);
-        this->colPositions = std::vector<int>(0);
-        this->values       = std::vector<T>(0);
-    }
+    COO()
+    : rows(0), cols(0), rowPositions(std::vector<int>(0)), colPositions(std::vector<int>(0)), values(std::vector<T>(0))
+    { }
     
-    COO(int rows, int cols, std::vector<Triplet<T>> values) {
+    COO(int rows, int cols, std::vector<Triplet<T>> values)
+    : rows(rows), cols(cols) {
         assert(values.size() > 0);
-
-        this->rows = rows;
-        this->cols = cols;
 
         this->rowPositions = std::vector<int>(0);
         this->colPositions = std::vector<int>(0);
@@ -50,7 +43,9 @@ public:
         }
     }
 
-    COO(const COO &other) : rows(other.rows), cols(other.cols), values(other.values), colPositions(other.colPositions), rowPositions(other.rowPositions) {}
+    COO(const COO &other)
+    : rows(other.rows), cols(other.cols),  rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values)
+    {}
 
     COO(CSR<T> &csr) {
         this->rows = csr.getRows();
@@ -107,7 +102,7 @@ public:
                 return false;
             }
 
-            for(int i = 0; i < lhs.values.size();i++) {
+            for(uint32_t i = 0; i < lhs.values.size();i++) {
                 valMatch &= abs(rhs.values[i] - lhs.values[i]) <= 1e-6;
             }
         }
@@ -156,11 +151,11 @@ public:
     }
 
 private:
-    std::vector<int> colPositions;
-    std::vector<int> rowPositions;
-    std::vector<T> values;
     int rows;
     int cols;
+    std::vector<int> rowPositions;
+    std::vector<int> colPositions;
+    std::vector<T> values;
 };
 
 

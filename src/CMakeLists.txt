@@ -39,6 +39,12 @@ set(SRC_FILES
 add_executable(dphpc ${SRC_FILES})
 
 if(MSVC)
+  target_compile_options(dphpc PRIVATE /W4)
+else()
+  target_compile_options(dphpc PRIVATE -Wall)
+endif()
+
+if(MSVC)
     source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SRC_FILES})
 endif()
 
