@@ -1,5 +1,0 @@
-algorithm, size, time
-CPU-Basic,10,1
-CPU-Basic,15,2
-CPU-PyTorch,10,3
-CPU-PyTorch,15,4

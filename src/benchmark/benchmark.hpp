@@ -76,11 +76,10 @@ namespace SDDMM {
                             else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
                         }
                         DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                        FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << csr_correctness << std::endl);
                     } else {
                         DEBUG_OUT("Skipping competitor " << competitor->name << " (does not support CSR)" << std::endl << std::endl);
                     }
-                    
-                    FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR," << competitor->csr_supported() << "," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << csr_correctness << std::endl);
 
                     /* ============================= */
                     /* Sparse matrices in COO format */
@@ -102,14 +101,10 @@ namespace SDDMM {
                             else { DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); }
                         }
                         DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                        FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << coo_correcntess << std::endl);
                     } else {
                         DEBUG_OUT("Skipping competitor " << competitor->name << " (does not support COO)" << std::endl << std::endl);
                     }
-                    
-                    FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO," << competitor->coo_supported() << "," << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << ns << "," << coo_correcntess << std::endl);
-
-                    // TODO: Make size dynamic
-                    this->output->writeLine(competitor->name, "10", std::to_string(MICROSECOND(ns)));
                 });
             }
             
