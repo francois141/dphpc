@@ -26,6 +26,7 @@ set(SRC_FILES
         # GPU Competitors
         competitors/gpu/gpu_basic.cu
         competitors/gpu/gpu_basic.hpp
+        competitors/gpu/gpu_pytorch.hpp
 
         #Helpers
         utils/util.hpp
@@ -38,9 +39,7 @@ set(SRC_FILES
 
 add_executable(dphpc ${SRC_FILES})
 
-if(MSVC)
-  target_compile_options(dphpc PRIVATE /W4)
-else()
+if(NOT MSVC)
   target_compile_options(dphpc PRIVATE -Wall)
 endif()
 
@@ -51,12 +50,3 @@ endif()
 find_package(Torch REQUIRED)
 target_link_libraries(dphpc "${TORCH_LIBRARIES}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
-
-if (MSVC)
-  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-  add_custom_command(TARGET dphpc
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                     ${TORCH_DLLS}
-                     $<TARGET_FILE_DIR:dphpc>)
-endif (MSVC)
