@@ -28,7 +28,6 @@ void init_double_competitors() {
     auto gpu_basic = std::make_shared<Competitors::GPUBasic<double>>();
     double_competitors.push_back(gpu_basic);
 
-    /* TODO not tested yet*/
     auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<double>>();
     double_competitors.push_back(gpu_pytorch);
 }

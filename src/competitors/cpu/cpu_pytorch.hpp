@@ -30,6 +30,8 @@ namespace Competitors {
                 const unsigned int A_row = A.getRows();
                 const unsigned int B_col = B.getCols();
                 const unsigned int B_row = B.getRows();
+
+                // torch::set_num_threads(X);
                 
                 // create tensors out of flat vector, by setting (row_stride, col_stride) to (num_cols, 1)
                 torch::Tensor A_tensor = torch::from_blob(A.get_pointer(), {A_row, A_col}, {A_col, 1}, scalar_type);

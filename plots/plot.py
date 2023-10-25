@@ -18,25 +18,39 @@ def read_df(path):
     return df
 
 def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
-    
+    fig, ax = plt.subplots()
+
     # Change figure size before plotting
-    plt.figure(figsize=(12, 10))
+    fig.set_size_inches((12, 10))
 
     ### Titles ###
     plt.xlabel("K", loc="center", fontdict={ "size": "medium" })
     plt.ylabel("Runtime [ms]")
     plt.title(f"SDDMM runtime on the {dataset_name} dataset\nRunning on {CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
 
-    ### Scale ###
-    plt.xscale("log", base=2)
-    plt.yscale("log", base=2)
-    
+    ### Scale & Ticks ###
+    ax.set_xscale("log") # log, linear
+    ax.get_xaxis().set_major_locator(plticker.LogLocator(base=2)) # LogLocator, LinearLocator, AutoLocator
+    ax.get_xaxis().set_major_formatter(plticker.LogFormatter(base=2)) # LogFormatter, LinearFormatter, NullFormatter
+    ax.get_xaxis().set_minor_locator(plticker.NullLocator()) # AutoMinorLocator, NullLocator
+    ax.get_xaxis().set_minor_formatter(plticker.NullFormatter())
+
+    ax.set_yscale("log") # linear
+    ax.get_yaxis().set_major_locator(plticker.LogLocator(base=10)) # ax.get_yaxis().set_major_locator(plticker.AutoLocator()) 
+    ax.get_yaxis().set_major_formatter(plticker.ScalarFormatter())
+
+    ax.get_yaxis().set_minor_locator(plticker.LogLocator(base=10, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9))) # ax.get_yaxis().set_minor_locator(plticker.AutoMinorLocator())
+    ax.get_yaxis().set_minor_formatter(plticker.NullFormatter())
+
+    ax.tick_params(which='major', axis='both', width=1, length=7)
+    ax.tick_params(which='minor', axis='both', width=0.5, length=4, color='black')
+
     ### Plot Computations ###
     df['exec_time_ms'] = df['exec_time'] / 1_000_000
     df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
 
-    sns.lineplot(df, x="K", y="exec_time_ms", hue="comp_repr", legend=True, zorder=1)
-    sns.scatterplot(df, x="K", y="exec_time_ms", hue="comp_repr", style="mat_repr", s=100, legend=False, zorder=5)
+    sns.lineplot(df, x="K", y="exec_time_ms", hue="comp_repr", legend=True, zorder=1, ax=ax)
+    sns.scatterplot(df, x="K", y="exec_time_ms", hue="comp_repr", style="mat_repr", s=100, legend=False, zorder=5, ax=ax)
 
     sns.despine(left=True, bottom=False) # do not show axis line on the left but show it on the bottom (needs axes.linewidth & axes.edgecolor set)
 
@@ -49,7 +63,7 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     plt.close()
 
 def main(args: argparse.Namespace):
-    sns.set_theme(context="notebook", font_scale=1, style="darkgrid", rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black" })
+    sns.set_theme(context="notebook", font_scale=1, style="darkgrid", rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
 
     df = read_df(args.input)
 

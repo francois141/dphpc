@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### Make when running this script that the DUMP macro is defined in util.hpp ###
+### When running this script, make sure that the DUMP macro is defined in util.hpp ###
 
 mkdir -p ./plots/results/
 
@@ -12,4 +12,3 @@ true > ./plots/results/results.csv
 ./build/src/dphpc --K 128 --data_folder data/ >> ./plots/results/results.csv --no_csv_header
 ./build/src/dphpc --K 512 --data_folder data/ >> ./plots/results/results.csv --no_csv_header
 ./build/src/dphpc --K 1024 --data_folder data/ >> ./plots/results/results.csv --no_csv_header
-./build/src/dphpc --K 2048 --data_folder data/ >> ./plots/results/results.csv --no_csv_header
