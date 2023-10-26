@@ -135,8 +135,9 @@ int main(int argc, char* argv[]) {
         FILE_DUMP("competitor,dataset,mat_repr,M,N,K,exec_time,correctness" << std::endl);
     }
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_dummy();
+
+     DEBUG_OUT("\n=====================================================\n" << std::endl);
+     benchmark_dummy();
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
 

@@ -141,6 +141,56 @@ namespace SDDMM {
             }
 
     };
+
+    template<typename T>
+    class MatrixMarketDataset : public Dataset<T> {
+    private:
+        const std::string file_name = "1138_bus.tar";
+
+    public:
+
+        MatrixMarketDataset(const std::string& data_folder, const int K)
+                : Dataset<T>("MatrixMarket"), K(K)
+        {
+            this->generateDense(M, N, K);
+
+            std::vector<Triplet<T>> triplets;
+
+            std::string dataset_path(data_folder);
+            dataset_path.append(file_name);
+
+            std::fstream data_file;
+            data_file.open(dataset_path, std::ios::in);
+
+            assert(data_file.is_open()); // failed to open file
+
+            std::string line;
+            while (std::getline(data_file, line)) {
+                if(line[0] == '%') {
+                    continue;
+                }
+
+                std::stringstream lineStream(line);
+
+                int x,y;
+                float value;
+
+                lineStream >> x >> y >> value;
+                triplets.push_back({x,y, value});
+            }
+            data_file.close();
+
+            this->S_csr = CSR<T>(M, N, triplets);
+            this->S_coo = COO<T>(M, N, triplets);
+
+            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from file ===\n" << std::endl);
+        }
+
+    private:
+        const int M = 11463;
+        const int N = 5811;
+        const int K;
+    };
     
     template<typename T>
     class NIPSDataset : public Dataset<T> {
