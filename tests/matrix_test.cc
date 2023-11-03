@@ -39,10 +39,6 @@ TEST(BasicTest, RepresentationConversion) {
 
     CSR<double> csr_converted(coo_mat);
     COO<double> coo_converted(csr_mat);
-    
-    // std::cout << csr_mat << std::endl;
-    // std::cout << coo_mat << std::endl;
-    // std::cout << csr_converted << std::endl;
 
     EXPECT_EQ(csr_mat, csr_converted);
     EXPECT_EQ(coo_mat, coo_converted);

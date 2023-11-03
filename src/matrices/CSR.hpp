@@ -48,7 +48,7 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const CSR &csr) {
-        for(const T& value: csr.rowPositions) {
+        for(const T& value: csr.values) {
             std::cout << value << " ";
         }
         std::cout << std::endl;
@@ -58,11 +58,11 @@ public:
         }
         std::cout << std::endl;
 
-        for(const T& value: csr.values) {
+        for(const T& value: csr.rowPositions) {
             std::cout << value << " ";
         }
         std::cout << std::endl;
-        
+
         return os;
     }
 
@@ -152,20 +152,18 @@ private:
         this->colPositions.reserve(triplets.size());
         this->values.reserve(triplets.size());
 
-        this->rowPositions.emplace_back(0);
-        this->colPositions.push_back(triplets[0].col);
-        this->values.push_back(triplets[0].value);
+        unsigned int idx = 0;
+        for (size_t i = 0; i < this->rows; i++) {
+            this->rowPositions.emplace_back(idx);
 
-        for (size_t i = 1; i < triplets.size(); i++) {
-            this->colPositions.emplace_back(triplets[i].col);
-            if (triplets[i].row != triplets[i-1].row) {
-                this->rowPositions.emplace_back(static_cast<int>(i));
+            while(idx < triplets.size() && triplets[idx].row == i) {
+                this->values.push_back(triplets[idx].value);
+                this->colPositions.push_back(triplets[idx].col);
+                idx++;
             }
-
-            this->values.push_back(triplets[i].value);
         }
 
-        this->rowPositions.emplace_back(static_cast<int>(this->values.size()));
+        this->rowPositions.emplace_back(idx);
     }
 };
 
