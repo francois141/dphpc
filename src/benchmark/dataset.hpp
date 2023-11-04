@@ -148,12 +148,9 @@ namespace SDDMM {
         const std::string file_name = "1138_bus.tar";
 
     public:
-
         MatrixMarketDataset(const std::string& data_folder, const int K)
                 : Dataset<T>("MatrixMarket"), K(K)
         {
-            this->generateDense(M, N, K);
-
             std::vector<Triplet<T>> triplets;
 
             std::string dataset_path(data_folder);
@@ -165,6 +162,7 @@ namespace SDDMM {
             assert(data_file.is_open()); // failed to open file
 
             std::string line;
+            bool parseFirstLine = true;
             while (std::getline(data_file, line)) {
                 if(line[0] == '%') {
                     continue;
@@ -172,13 +170,20 @@ namespace SDDMM {
 
                 std::stringstream lineStream(line);
 
-                int x,y;
-                float value;
+                if(parseFirstLine){
+                    int tmp;
+                    lineStream >> M >> N >> tmp; // TODO: Is ordering M and N correct?
+                    this->generateDense(M, N, K);
+                    parseFirstLine = false;
+                } else {
+                    int x,y;
+                    float value;
 
-                lineStream >> x >> y >> value;
-                triplets.push_back({x,y, value});
+                    lineStream >> x >> y >> value;
+                    x--; y--;
+                    triplets.push_back({x,y, value});
+                }
             }
-            data_file.close();
 
             this->S_csr = CSR<T>(M, N, triplets);
             this->S_coo = COO<T>(M, N, triplets);
@@ -187,8 +192,8 @@ namespace SDDMM {
         }
 
     private:
-        const int M = 11463;
-        const int N = 5811;
+        int M;
+        int N;
         const int K;
     };
     

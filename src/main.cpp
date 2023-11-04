@@ -65,6 +65,17 @@ void benchmark_email_enron(const std::string& data_folder, const int K) {
     benchmark.benchmark();
 }
 
+/* ================================= */
+/* Benchmark the MatrixMarket dataset */
+/* ==================================*/
+void benchmark_market(const std::string& data_folder, const int K) {
+    SDDMM::MatrixMarketDataset<double> matrix_market_dataset(data_folder, K);
+    SDDMM::Benchmark<double> benchmark(matrix_market_dataset, double_competitors, "market-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
 /* ====================================================================================================================== */
 
 struct Config {
@@ -144,8 +155,10 @@ int main(int argc, char* argv[]) {
     benchmark_NIPS(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-
     benchmark_email_enron(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_market(config.data_folder, config.K);
 
     return 0;
 }
