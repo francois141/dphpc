@@ -76,6 +76,19 @@ void benchmark_market(const std::string& data_folder, const int K) {
     benchmark.benchmark();
 }
 
+/* ================================= */
+/* Benchmark the Random dataset */
+/* ==================================*/
+void benchmark_random(const int K) {
+    SDDMM::RandomWithDensityDataset<double> random_matrix_dataset(100, 100, K, 0.2);
+    SDDMM::Benchmark<double> benchmark(random_matrix_dataset, double_competitors, "random-matrix-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+
+
 /* ====================================================================================================================== */
 
 struct Config {
@@ -146,9 +159,8 @@ int main(int argc, char* argv[]) {
         FILE_DUMP("competitor,dataset,mat_repr,M,N,K,exec_time,correctness" << std::endl);
     }
 
-
-     DEBUG_OUT("\n=====================================================\n" << std::endl);
-     benchmark_dummy();
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_dummy();
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
 
@@ -159,6 +171,10 @@ int main(int argc, char* argv[]) {
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_market(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K);
+
 
     return 0;
 }

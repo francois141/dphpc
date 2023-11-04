@@ -143,6 +143,33 @@ namespace SDDMM {
     };
 
     template<typename T>
+    class RandomWithDensityDataset : public Dataset<double> {
+    public:
+
+        RandomWithDensityDataset(const int M, const int N, const int K, const double density) : Dataset("RandomWithDensity"), M(M), N(N), K(K), density(density)
+        {
+            std::clamp(density, 0.0, 1.0);
+            assert(0 <= density && density <= 1.0);
+
+            this->generateDense(M, N, K);
+
+            const int nbSamples = density * (M * N);
+            std::vector<Triplet<T>> triplets = sampleTriplets<T>(M, N, nbSamples);
+
+            this->S_csr = CSR<T>(M, N, triplets);
+            this->S_coo = COO<T>(M, N, triplets);
+
+            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from random generator ===\n" << std::endl);
+        }
+
+    private:
+        const int M;
+        const int N;
+        const int K;
+        const double density;
+    };
+
+    template<typename T>
     class MatrixMarketDataset : public Dataset<T> {
     private:
         const std::string file_name = "1138_bus.tar";
