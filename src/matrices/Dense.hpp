@@ -41,6 +41,7 @@ public:
     }
 
     T& getValue(int row, int col) {
+        assert(row*cols + col < this->matrix.size());
         return this->matrix[row * cols + col];
     }
 

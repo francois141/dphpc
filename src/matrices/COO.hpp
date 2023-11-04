@@ -37,6 +37,8 @@ public:
         this->values.reserve(values.size());
 
         for (const Triplet<T> &triplet: values) {
+            assert(triplet.row >= 0 && triplet.row < this->rows);
+            assert(triplet.col >= 0 && triplet.col < this->cols);
             this->rowPositions.push_back(triplet.row);
             this->colPositions.push_back(triplet.col);
             this->values.push_back(triplet.value);
@@ -147,6 +149,7 @@ public:
     }
 
     T *getValue(int j) {
+        assert(j < this->values.size());
         return &values[j];
     }
 

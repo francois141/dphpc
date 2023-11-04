@@ -139,6 +139,11 @@ private:
     void init_csr(std::vector<Triplet<T>> triplets) {
         assert(triplets.size() > 0);
 
+        for(auto e: triplets) {
+            assert(e.row >= 0 && e.row < this->rows);
+            assert(e.col >= 0 && e.col < this->cols);
+        }
+
         auto comp = [](const Triplet<T> t1, const Triplet<T> t2) -> bool {
             return t1.row < t2.row || (t1.row == t2.row && t1.col < t2.col);
         };
