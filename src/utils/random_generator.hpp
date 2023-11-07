@@ -47,14 +47,14 @@ template<typename T>
 std::vector<Triplet<T>> sampleTriplets(const int M, const int N, const int nbSamples) {
     assert(M > 0 && N > 0);
 
-    std::map<std::pair<int,int>, double> mp;
+    std::map<std::pair<int,int>, T> mp;
     while(mp.size() < nbSamples) {
         const int coordM = randomValue<int>(0, M-1);
         const int coordN = randomValue<int>(0, N-1);
-        mp[ std::make_pair(coordM, coordN)]= randomValue<double>(-1000, 1000);
+        mp[ std::make_pair(coordM, coordN)]= randomValue<T>(-1000, 1000);
     }
 
-    std::vector<Triplet<double>> triplets;
+    std::vector<Triplet<T>> triplets;
     triplets.reserve(nbSamples);
 
     for(auto &entry: mp) {

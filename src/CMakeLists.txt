@@ -27,6 +27,8 @@ set(SRC_FILES
         competitors/gpu/gpu_basic.cu
         competitors/gpu/gpu_basic.hpp
         competitors/gpu/gpu_pytorch.hpp
+        competitors/gpu/gpu_tiled.cu
+        competitors/gpu/gpu_tiled.hpp
 
         #Helpers
         utils/util.hpp
@@ -38,6 +40,8 @@ set(SRC_FILES
         main.cpp)
 
 add_executable(dphpc ${SRC_FILES})
+
+target_compile_options(dphpc PRIVATE "$<$<AND:$<CONFIG:Debug,RelWithDebInfo>,$<COMPILE_LANGUAGE:CUDA>>:-G>")
 
 if(NOT MSVC)
   target_compile_options(dphpc PRIVATE -Wall)

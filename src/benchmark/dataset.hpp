@@ -119,31 +119,31 @@ namespace SDDMM {
             }
     };
 
-    class DummyDataset : public Dataset<double> {
+    class DummyDataset : public Dataset<float> {
         public:
 
             DummyDataset()
             : Dataset("Dummy")
             {
-                std::vector<std::vector<double>> matrixA(2, std::vector<double>(2,1));
-                this->A = Dense<double>(matrixA);
+                std::vector<std::vector<float>> matrixA(2, std::vector<float>(2,1));
+                this->A = Dense<float>(matrixA);
 
-                std::vector<std::vector<double>> matrixB(2, std::vector<double>(2,1));
-                this->B = Dense<double>(matrixB);
+                std::vector<std::vector<float>> matrixB(2, std::vector<float>(2,1));
+                this->B = Dense<float>(matrixB);
 
-                std::vector<Triplet<double>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
-                this->S_coo = COO<double>(2, 2, S_triplets);
-                this->S_csr = CSR<double>(this->S_coo);
+                std::vector<Triplet<float>> S_triplets{{0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}};
+                this->S_coo = COO<float>(2, 2, S_triplets);
+                this->S_csr = CSR<float>(this->S_coo);
 
-                std::vector<Triplet<double>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
-                this->P_coo = COO<double>(2, 2, P_triplets);
-                this->P_csr = CSR<double>(this->P_coo);
+                std::vector<Triplet<float>> P_triplets{{0,0,2}, {0,1,2}, {1,0,2}, {1,1,2}};
+                this->P_coo = COO<float>(2, 2, P_triplets);
+                this->P_csr = CSR<float>(this->P_coo);
             }
 
     };
 
     template<typename T>
-    class RandomWithDensityDataset : public Dataset<double> {
+    class RandomWithDensityDataset : public Dataset<T> {
     public:
 
         RandomWithDensityDataset(const int M, const int N, const int K, const double density) : Dataset("RandomWithDensity"), M(M), N(N), K(K), density(density)
