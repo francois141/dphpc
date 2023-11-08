@@ -2,6 +2,7 @@
 #include "matrices/matrices.h"
 #include "competitors/cpu/cpu_basic.hpp"
 #include "competitors/gpu/gpu_basic.hpp"
+#include "benchmark/dataset.hpp"
 #include "utils/random_generator.hpp"
 #include "utils/util.hpp"
 
@@ -90,10 +91,10 @@ TEST(BasicTest, GPU_basic)
 TEST(BasicTest, GPU_basic2)
 {
     auto gpu_basic =
-        std::shared_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
+        std::unique_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
 
     auto cpu_basic =
-        std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
+        std::unique_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
 
     std::vector<std::vector<double>> A_vals { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 } };
     Dense<double> A(A_vals);
@@ -114,10 +115,10 @@ TEST(BasicTest, GPU_basic2)
 TEST(BasicTest, GPU_basic3)
 {
     auto gpu_basic =
-        std::shared_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
+        std::unique_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
 
     auto cpu_basic =
-        std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
+        std::unique_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
 
     std::vector<std::vector<double>> A_vals { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 } };
     Dense<double> A(A_vals);
@@ -138,10 +139,10 @@ TEST(BasicTest, GPU_basic3)
 TEST(BasicTest, GPU_basic4)
 {
     auto gpu_basic =
-        std::shared_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
+        std::unique_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
 
     auto cpu_basic =
-        std::shared_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
+        std::unique_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
 
     std::vector<std::vector<double>> A_vals { { 1.0, 2.0 }, { 3.0, 4.0 }, { 5.0, 6.0 } };
     Dense<double> A(A_vals);
@@ -160,3 +161,85 @@ TEST(BasicTest, GPU_basic4)
 
     EXPECT_EQ(P1, P2);
 }
+
+TEST(BasicTest, GPU_advanced)
+{
+    const int rows = 500;
+    const int cols = 500;
+
+    auto gpu_basic =
+            std::unique_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
+
+    auto cpu_basic =
+            std::unique_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<double>>(new SDDMM::RandomWithDensityDataset<double>(rows, cols, 32, 0.3));
+
+    auto S = dataset->getS_COO();
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    COO<double> P1(S);
+    COO<double> P2(S);
+
+    gpu_basic->run_coo(A, B, S, P1);
+    cpu_basic->run_coo(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
+}
+
+TEST(BasicTest, GPU_advanced_dense)
+{
+    const int rows = 250;
+    const int cols = 250;
+
+    auto gpu_basic =
+            std::unique_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
+
+    auto cpu_basic =
+            std::unique_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<double>>(new SDDMM::RandomWithDensityDataset<double>(rows, cols, 32, 0.7));
+
+    auto S = dataset->getS_COO();
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    COO<double> P1(S);
+    COO<double> P2(S);
+
+    gpu_basic->run_coo(A, B, S, P1);
+    cpu_basic->run_coo(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
+}
+
+TEST(BasicTest, GPU_advanced_sparse)
+{
+    const int rows = 10000;
+    const int cols = 10000;
+
+    auto gpu_basic =
+            std::unique_ptr<Competitors::GPUBasic<double>>(new Competitors::GPUBasic<double>);
+
+    auto cpu_basic =
+            std::unique_ptr<Competitors::CPUBasic<double>>(new Competitors::CPUBasic<double>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<double>>(new SDDMM::RandomWithDensityDataset<double>(rows, cols, 32, 0.001));
+
+    auto S = dataset->getS_COO();
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    COO<double> P1(S);
+    COO<double> P2(S);
+
+    gpu_basic->run_coo(A, B, S, P1);
+    cpu_basic->run_coo(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
+}
+
