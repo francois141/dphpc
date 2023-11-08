@@ -2,6 +2,7 @@
 #include "matrices/matrices.h"
 #include "competitors/cpu/cpu_basic.hpp"
 #include "competitors/gpu/gpu_basic.hpp"
+#include "utils/random_generator.hpp"
 #include "utils/util.hpp"
 
 // Smoke test
@@ -42,6 +43,22 @@ TEST(BasicTest, RepresentationConversion) {
 
     EXPECT_EQ(csr_mat, csr_converted);
     EXPECT_EQ(coo_mat, coo_converted);
+}
+
+TEST(BasicTest, BiggerConversion) {
+    for(int i = 100; i <= 1000; i += 25) {
+        int cols = i;
+        int rows = 2*i;
+        int nbSamples = i;
+
+        std::vector<Triplet<double>> triplets = sampleTriplets<double>(rows, cols, nbSamples);
+
+        auto S_csr = CSR<double>(rows, cols, triplets);
+        auto S_coo = COO<double>(rows, cols, triplets);
+
+        EXPECT_EQ(S_csr,CSR<double>(S_coo));
+        EXPECT_EQ(S_coo,COO<double>(S_csr));
+    }
 }
 
 TEST(BasicTest, GPU_basic)

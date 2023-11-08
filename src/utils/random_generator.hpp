@@ -37,7 +37,7 @@ T randomValue(T range_from, T range_to) {
     std::mt19937                        generator(rand_dev());
 
     using dist_t = std::conditional_t<std::is_integral<T>::value, std::uniform_int_distribution<T>, std::uniform_real_distribution<T>>;
-    static dist_t distr(range_from, range_to);
+    dist_t distr(range_from, range_to);
 
     return distr(generator);
 }
@@ -49,9 +49,12 @@ std::vector<Triplet<T>> sampleTriplets(const int M, const int N, const int nbSam
 
     std::map<std::pair<int,int>, double> mp;
     while(mp.size() < nbSamples) {
-        const int coordM = randomValue<int>(0, M-1);
-        const int coordN = randomValue<int>(0, N-1);
-        mp[ std::make_pair(coordM, coordN)]= randomValue<double>(-1000, 1000);
+        const int row = randomValue<int>(0, M-1);
+        const int col = randomValue<int>(0, N-1);
+
+        assert(row <= M-1 && col <= N-1);
+
+        mp[ std::make_pair(row, col)]= randomValue<double>(-1000, 1000);
     }
 
     std::vector<Triplet<double>> triplets;
