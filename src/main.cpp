@@ -12,7 +12,6 @@
 #include "competitors/competitors.h"
 
 #include "matrices/matrices.h"
-#include "utils/file_writer.hpp"
 
 static std::vector<std::shared_ptr<SDDMM::Competitor<double>>> double_competitors;
 

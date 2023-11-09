@@ -41,7 +41,6 @@ add_executable(matrix_test
         ../src/utils/util.hpp
         ../src/utils/random_generator.hpp
         ../src/utils/helpers.hpp
-        ../src/utils/file_writer.hpp
 
         matrix_test.cc)
 

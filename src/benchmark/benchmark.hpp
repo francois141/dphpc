@@ -13,7 +13,6 @@
 #include "competitor.hpp"
 #include "dataset.hpp"
 #include "utils/util.hpp"
-#include "utils/file_writer.hpp"
 #include "utils/helpers.hpp"
 
 #define header "algorithm; size; time"
@@ -25,10 +24,7 @@ namespace SDDMM {
         public:
                                 
             Benchmark(Dataset<T> &dataset, std::vector<std::shared_ptr<Competitor<T>>> &competitors, std::string path)
-            : dataset(dataset), competitors(competitors), path(path)
-            {
-                output = std::make_unique<SDDMM::CSVWriter>(path, header);
-            }
+            : dataset(dataset), competitors(competitors), path(path) {}
 
             ~Benchmark() = default;
 
@@ -113,7 +109,6 @@ namespace SDDMM {
             std::vector<std::shared_ptr<Competitor<T>>> competitors;
 
             std::string path;
-            std::unique_ptr<SDDMM::Output> output;
 
             uint64_t timing(std::function<void()> fn) {
                 const auto start = std::chrono::high_resolution_clock::now();

@@ -32,7 +32,6 @@ set(SRC_FILES
         utils/util.hpp
         utils/random_generator.hpp
         utils/helpers.hpp
-        utils/file_writer.hpp
 
         # Main
         main.cpp)
