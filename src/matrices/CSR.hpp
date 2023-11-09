@@ -158,7 +158,7 @@ private:
         this->values.reserve(triplets.size());
 
         unsigned int idx = 0;
-        for (size_t i = 0; i < this->rows; i++) {
+        for (int i = 0; i < this->rows; i++) {
             this->rowPositions.emplace_back(idx);
 
             while(idx < triplets.size() && triplets[idx].row == i) {

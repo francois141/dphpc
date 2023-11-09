@@ -48,7 +48,7 @@ std::vector<Triplet<T>> sampleTriplets(const int M, const int N, const int nbSam
     assert(M > 0 && N > 0);
 
     std::map<std::pair<int,int>, double> mp;
-    while(mp.size() < nbSamples) {
+    while(mp.size() < (size_t)nbSamples) {
         const int row = randomValue<int>(0, M-1);
         const int col = randomValue<int>(0, N-1);
 

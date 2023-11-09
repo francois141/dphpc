@@ -149,7 +149,7 @@ public:
     }
 
     T *getValue(int j) {
-        assert(j < this->values.size());
+        assert((size_t)j < this->values.size());
         return &values[j];
     }
 
