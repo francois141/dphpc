@@ -172,7 +172,7 @@ namespace SDDMM {
     template<typename T>
     class MatrixMarketDataset : public Dataset<T> {
     private:
-        const std::string file_name = "1138_bus.tar";
+        const std::string file_name = "cage14.tar";
 
     public:
         MatrixMarketDataset(const std::string& data_folder, const int K)
@@ -188,10 +188,17 @@ namespace SDDMM {
 
             assert(data_file.is_open()); // failed to open file
 
+            std::string garbage;
+            std::getline(data_file, garbage);
+
             std::string line;
             bool parseFirstLine = true;
             while (std::getline(data_file, line)) {
-                if(line[0] == '%') {
+                if(line[0] == '%' || line[0] == 0) {
+                    continue;
+                }
+
+                if(std::count(line.begin(), line.end(), ' ') != 2) {
                     continue;
                 }
 
