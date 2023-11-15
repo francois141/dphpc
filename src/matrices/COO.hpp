@@ -97,6 +97,7 @@ public:
 
         bool valMatch = true;
 
+
         if(std::is_integral<T>::value) {
             valMatch = (lhs.values == rhs.values);
         } else {
@@ -105,7 +106,7 @@ public:
             }
 
             for(uint32_t i = 0; i < lhs.values.size();i++) {
-                valMatch &= abs(rhs.values[i] - lhs.values[i]) <= 1e-6;
+                valMatch &= (abs(rhs.values[i] - lhs.values[i]) / rhs.values[i]) <= 1e-6;
             }
         }
 
