@@ -9,7 +9,7 @@ __global__ void gpu_basic_csr_kernel(void) {
 
 // perform SDDMM, compute P = (A*B^T) dot S (where dot is the term by term product)
 // A is MxK, B is NxK, S and P are MxN sparse
-__global__ void gpu_basic_coo_kernel(double* A, double* B, double* S, double* P, int* cols, int* rows, int M, int K, int N, int sparse_size) {
+__global__ void gpu_basic_coo_kernel(float* A, float* B, float* S, float* P, int* cols, int* rows, int M, int K, int N, int sparse_size) {
 	int nb_running = gridDim.x * blockDim.x;
 	int min_per_instance = sparse_size / nb_running;
 	int leftovers = sparse_size % nb_running;
@@ -25,7 +25,7 @@ __global__ void gpu_basic_coo_kernel(double* A, double* B, double* S, double* P,
 		int row = rows[entry];
 		int col = cols[entry];
 
-		double result = 0.0;
+		float result = 0.f;
 		// matrix multiplication
 		for (int i = 0; i < K; i++) {
 			// B is transposed
@@ -56,10 +56,10 @@ void gpu_basic_coo_wrapper(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) {
 	size_t SP_size = S.getValues().size() * sizeof(T);
 	size_t sparse_dim_size = S.getValues().size() * sizeof(int);
 
-    static_assert(sizeof(T) == sizeof(double), "the kernel is specialized for double precision floating points");
+    static_assert(sizeof(T) == sizeof(float), "the kernel is specialized for double precision floating points");
 
 	// allocate the matrices on the GPU
-	double* A_gpu, * B_gpu, * S_gpu, * P_gpu;
+	float* A_gpu, * B_gpu, * S_gpu, * P_gpu;
 	int* cols_gpu, * rows_gpu;
 	cudaMalloc(&A_gpu, A_size);
 	cudaMalloc(&B_gpu, B_size);
@@ -80,6 +80,8 @@ void gpu_basic_coo_wrapper(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) {
 
 	// copy result back to RAM
 	cudaMemcpy(P.getValues().data(), P_gpu, SP_size, cudaMemcpyDeviceToHost);
+	P.setColPositions(S.getColPositions());
+	P.setRowPositions(S.getRowPositions());
 
 	// free all the GPU allocated memory
 	cudaFree(A_gpu);
@@ -92,7 +94,7 @@ void gpu_basic_coo_wrapper(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) {
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */
 
-template void gpu_basic_csr_wrapper<double>(Dense<double>& A, Dense<double>& B, CSR<double>& S, CSR<double>& P);
-template void gpu_basic_coo_wrapper<double>(Dense<double>& A, Dense<double>& B, COO<double>& S, COO<double>& P);
+template void gpu_basic_csr_wrapper<float>(Dense<float>& A, Dense<float>& B, CSR<float>& S, CSR<float>& P);
+template void gpu_basic_coo_wrapper<float>(Dense<float>& A, Dense<float>& B, COO<float>& S, COO<float>& P);
 
 

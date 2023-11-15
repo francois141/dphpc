@@ -44,7 +44,7 @@ namespace Competitors {
                 torch::Tensor crow_indices = torch::tensor(S.getRowPositions(), int_type);
                 torch::Tensor col_indices = torch::tensor(S.getColPositions(), int_type);
                 torch::Tensor values = torch::tensor(S.getValues(), scalar_type);
-                torch::IntArrayRef size = {S.getRows(), S.getCols()};
+                std::vector<int64_t> size = {S.getRows(), S.getCols()};
                 torch::Tensor sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, scalar_type).to(gpu);
 
                 torch::Tensor result = at::native::sparse_sampled_addmm_sparse_csr_cuda(sparse_tensor, A_tensor, B_tensor, 0, 1).to(cpu);

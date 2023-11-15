@@ -42,7 +42,7 @@ namespace Competitors {
                 torch::Tensor crow_indices = torch::tensor(S.getRowPositions(), torch::kInt);
                 torch::Tensor col_indices = torch::tensor(S.getColPositions(), torch::kInt);
                 torch::Tensor values = torch::tensor(S.getValues(), scalar_type);
-                torch::IntArrayRef size = {S.getRows(), S.getCols()};
+                std::vector<int64_t> size = {S.getRows(), S.getCols()};
                 at::TensorOptions options = torch::device(torch::kCPU).dtype(scalar_type);
                 torch::Tensor sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, options);
 

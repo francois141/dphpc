@@ -13,22 +13,25 @@
 
 #include "matrices/matrices.h"
 
-static std::vector<std::shared_ptr<SDDMM::Competitor<double>>> double_competitors;
+static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
 
-void init_double_competitors() {
+void init_float_competitors() {
     /* CPU Competitors */
-    auto cpu_basic = std::make_shared<Competitors::CPUBasic<double>>();
-    double_competitors.push_back(cpu_basic);
+    auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
+    float_competitors.push_back(cpu_basic);
 
-    auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<double>>();
-    double_competitors.push_back(cpu_pytorch);
+    auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
+    float_competitors.push_back(cpu_pytorch);
 
     /* GPU Competitors */
-    auto gpu_basic = std::make_shared<Competitors::GPUBasic<double>>();
-    double_competitors.push_back(gpu_basic);
+    auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
+    float_competitors.push_back(gpu_basic);
 
-    auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<double>>();
-    double_competitors.push_back(gpu_pytorch);
+    auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
+    float_competitors.push_back(gpu_pytorch);
+
+    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
+    float_competitors.push_back(gpu_tiled);
 }
 
 /* =========================== */
@@ -36,7 +39,7 @@ void init_double_competitors() {
 /* =========================== */
 void benchmark_dummy() {
     SDDMM::DummyDataset dataset;
-    SDDMM::Benchmark<double> benchmark(dataset, double_competitors, "dummy_measures.csv");
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "dummy_measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -46,8 +49,8 @@ void benchmark_dummy() {
 /* Benchmark the NIPS dataset */
 /* ========================== */
 void benchmark_NIPS(const std::string& data_folder, const int K) {
-    SDDMM::NIPSDataset<double> nips_dataset(data_folder, K);
-    SDDMM::Benchmark<double> benchmark(nips_dataset, double_competitors, "nips_measures.csv");
+    SDDMM::NIPSDataset<float> nips_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(nips_dataset, float_competitors, "nips_measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -57,8 +60,8 @@ void benchmark_NIPS(const std::string& data_folder, const int K) {
 /* Benchmark the EMail-Enron dataset */
 /* ==================================*/
 void benchmark_email_enron(const std::string& data_folder, const int K) {
-    SDDMM::EMailEnronDataset<double> email_enron_dataset(data_folder, K);
-    SDDMM::Benchmark<double> benchmark(email_enron_dataset, double_competitors, "enron-measures.csv");
+    SDDMM::EMailEnronDataset<float> email_enron_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(email_enron_dataset, float_competitors, "enron-measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -68,8 +71,8 @@ void benchmark_email_enron(const std::string& data_folder, const int K) {
 /* Benchmark the MatrixMarket dataset */
 /* ==================================*/
 void benchmark_market(const std::string& data_folder, const int K) {
-    SDDMM::MatrixMarketDataset<double> matrix_market_dataset(data_folder, K);
-    SDDMM::Benchmark<double> benchmark(matrix_market_dataset, double_competitors, "market-measures.csv");
+    SDDMM::MatrixMarketDataset<float> matrix_market_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(matrix_market_dataset, float_competitors, "market-measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -79,8 +82,8 @@ void benchmark_market(const std::string& data_folder, const int K) {
 /* Benchmark the Random dataset */
 /* ==================================*/
 void benchmark_random(const int K) {
-    SDDMM::RandomWithDensityDataset<double> random_matrix_dataset(100, 100, K, 0.2);
-    SDDMM::Benchmark<double> benchmark(random_matrix_dataset, double_competitors, "random-matrix-measures.csv");
+    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(100, 100, K, 0.2);
+    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -151,7 +154,7 @@ int main(int argc, char* argv[]) {
 
     print_config(config);
 
-    init_double_competitors();
+    init_float_competitors();
 
     // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Execution_Time,Correctness
     if (!config.no_csv_header) {
