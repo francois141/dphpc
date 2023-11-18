@@ -95,8 +95,12 @@ public:
                lhs.rows == rhs.rows &&
                lhs.cols == rhs.cols;
 
-        bool valMatch = true;
+        if(!posMatch) {
+            std::cout << "Cols and Rows doesn't match in CSR comparaison" << std::endl;
+        }
 
+        bool valMatch = true;
+        T largestDiff = 0;
 
         if(std::is_integral<T>::value) {
             valMatch = (lhs.values == rhs.values);
@@ -106,8 +110,14 @@ public:
             }
 
             for(uint32_t i = 0; i < lhs.values.size();i++) {
-                valMatch &= (abs(rhs.values[i] - lhs.values[i]) / rhs.values[i]) <= 1e-6;
+                T diff = (std::abs(rhs.values[i] - lhs.values[i]) / rhs.values[i]);
+                largestDiff = std::max(largestDiff, diff);
+                valMatch &= diff <= 1e-6;
             }
+        }
+
+        if(!valMatch) {
+            std::cout << "Largest relative difference is : " << largestDiff << std::endl;
         }
 
         return posMatch && valMatch;
