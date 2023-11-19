@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
 #include "matrices/matrices.h"
 #include "competitors/cpu/cpu_basic.hpp"
+#include "competitors/cpu/cpu_pytorch.hpp"
 #include "competitors/gpu/gpu_basic.hpp"
 #include "competitors/gpu/gpu_tiled.hpp"
+#include "competitors/gpu/gpu_pytorch.hpp"
 #include "benchmark/dataset.hpp"
 #include "utils/random_generator.hpp"
 #include "utils/util.hpp"
-
 
 TEST(BasicTest, COO) {
     std::vector<Triplet<float>> triplets {{0,0,1.0},{0,1,1.0},{1,0,1.0},{1,1,1.0}};
@@ -255,5 +256,111 @@ TEST(BasicTest, GPU_test_tiled)
     gpu_tiled->run_csr(A, B, S_csr, P2);
 
     EXPECT_EQ(P1, COO<float>(P2));
+}
+
+TEST(BasicTest, CPU_PyTorch)
+{
+    auto cpu_basic =
+        std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
+
+    auto cpu_pytorch =
+        std::unique_ptr<Competitors::CPUPyTorch<float>>(new Competitors::CPUPyTorch<float>);
+
+    std::vector<std::vector<float>> A_vals { { 1.0, 2.0 }, { 3.0, 4.0 }, { 5.0, 6.0 } };
+    Dense<float> A(A_vals);
+
+    std::vector<std::vector<float>> B_vals { { -1.0, -3.0 }, { 2.0, 2.0 }, { 3.0, 1.0 } };
+    Dense<float> B(B_vals);
+
+    std::vector<Triplet<float>> triplets {
+        { 0, 0, 1.0 }, { 1, 0, -1.0 }, { 2, 0, 2.0 }, { 2, 2, 1.0 }
+    };
+    CSR<float> S(3, 3, triplets);
+    CSR<float> P1(S);
+    CSR<float> P2(S);
+    cpu_basic->run_csr(A, B, S, P1);
+    cpu_pytorch->run_csr(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
+}
+
+TEST(BasicTest, CPU_PyTorch_advanced)
+{
+    const int rows = 10000;
+    const int cols = 10000;
+
+    auto cpu_pytorch =
+            std::unique_ptr<Competitors::CPUPyTorch<float>>(new Competitors::CPUPyTorch<float>);
+
+    auto cpu_basic =
+            std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.001));
+
+    auto S = dataset->getS_CSR();
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    CSR<float> P1(S);
+    CSR<float> P2(S);
+
+    cpu_pytorch->run_csr(A, B, S, P1);
+    cpu_basic->run_csr(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
+}
+
+TEST(BasicTest, GPU_PyTorch)
+{
+    auto cpu_basic =
+        std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
+
+    auto gpu_pytorch =
+        std::unique_ptr<Competitors::GPUPyTorch<float>>(new Competitors::GPUPyTorch<float>);
+
+    std::vector<std::vector<float>> A_vals { { 1.0, 2.0 }, { 3.0, 4.0 }, { 5.0, 6.0 } };
+    Dense<float> A(A_vals);
+
+    std::vector<std::vector<float>> B_vals { { -1.0, -3.0 }, { 2.0, 2.0 }, { 3.0, 1.0 } };
+    Dense<float> B(B_vals);
+
+    std::vector<Triplet<float>> triplets {
+        { 0, 0, 1.0 }, { 1, 0, -1.0 }, { 2, 0, 2.0 }, { 2, 2, 1.0 }
+    };
+    CSR<float> S(3, 3, triplets);
+    CSR<float> P1(S);
+    CSR<float> P2(S);
+    cpu_basic->run_csr(A, B, S, P1);
+    gpu_pytorch->run_csr(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
+}
+
+TEST(BasicTest, GPU_PyTorch_advanced)
+{
+    const int rows = 10000;
+    const int cols = 10000;
+
+    auto gpu_pytorch =
+            std::unique_ptr<Competitors::GPUPyTorch<float>>(new Competitors::GPUPyTorch<float>);
+
+    auto cpu_basic =
+            std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.001));
+
+    auto S = dataset->getS_CSR();
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    CSR<float> P1(S);
+    CSR<float> P2(S);
+
+    gpu_pytorch->run_csr(A, B, S, P1);
+    cpu_basic->run_csr(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
 }
 
