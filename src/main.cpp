@@ -170,8 +170,8 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_email_enron(config.data_folder, config.K);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_cage14(config.data_folder, config.K);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_cage14(config.data_folder, config.K);
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
     // benchmark_random(config.K);

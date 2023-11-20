@@ -257,40 +257,33 @@ namespace SDDMM {
 
             std::string dataset_path(data_folder);
             dataset_path.append(file_name);
+            
+            FILE* c_file = fopen(dataset_path.c_str(), "r");
+            assert(c_file != NULL); // failed to open file
 
-            std::fstream data_file;
-            data_file.open(dataset_path, std::ios::in);
-
-            assert(data_file.is_open()); // failed to open file
-
-            std::string line;
-            bool parseFirstLine = true;
-            int x, y, triplets_to_load;
+            char buf[256];
+            int row, col, triplets_to_load;
             float value;
-
-            while (std::getline(data_file, line)) {
-                if (line[0] == '%' || line[0] == 0) {
-                    continue;
-                }
-
-                std::stringstream lineStream(line);
-
-                if (parseFirstLine) {
-                    lineStream >> M >> N >> triplets_to_load; 
-                    this->generateDense(M, N, K);
-                    parseFirstLine = false;
-                } else {
-
-                    lineStream >> x >> y >> value;
-                    x--; y--;
-                    triplets.push_back({x,y, value});
-                }
+            
+            while (fgets(buf, 256, c_file) != NULL) {
+                if (buf[0] == '%') { continue; }
+                break; // reached non-comment line
             }
+
+            sscanf(buf, "%u %d %d", &M, &N, &triplets_to_load);
+            this->generateDense(M, N, K);
+
+            while (fscanf(c_file, "%u %u %f\n", &row, &col, &value) == 3) {
+                row--; col--;
+                triplets.push_back({row, col, value});
+            }
+
+            fclose(c_file);
 
             this->S_csr = CSR<T>(M, N, triplets);
             this->S_coo = COO<T>(M, N, triplets);
 
-            assert(triplets.size() == (size_t) triplets_to_load)
+            assert(triplets.size() == (size_t) triplets_to_load);
 
             DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from file ===\n" << std::endl);
         }

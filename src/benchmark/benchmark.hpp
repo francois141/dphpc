@@ -76,9 +76,6 @@ namespace SDDMM {
                             [&] { competitor->run_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); },
                             [&] { competitor->cleanup_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); }
                         );
-
-                        // std::cout << "Res: " << res.init_ns << " " << res.comp_ns << " " << res.cleanup_ns << " " << res.total_ns << std::endl;
-                        // std::cout << res.total_ns - res.init_ns - res.comp_ns - res.cleanup_ns << std::endl;
                         
                         // Checking correctness if available
                         if (this->getDataset().hasExpected()) {
@@ -126,7 +123,7 @@ namespace SDDMM {
                                 FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
                             }
                         }
-                        DEBUG_OUT(" - Execution took " << SECOND(ns) << " seconds (" << ns << "ns)" << std::endl << std::endl);
+                        DEBUG_OUT(" - Execution took " << SECOND(res.total_ns) << " seconds (" << res.total_ns << "ns)" << std::endl << std::endl);
                         FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO," 
                             << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << ","
                             << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << std::endl
