@@ -3,10 +3,6 @@
 #include <cuda_runtime.h>
 #include <algorithm>
 
-__global__ void gpu_basic_csr_kernel(void) {
-
-}
-
 // perform SDDMM, compute P = (A*B^T) dot S (where dot is the term by term product)
 // A is MxK, B is NxK, S and P are MxN sparse
 __global__ void gpu_basic_coo_kernel(float* A, float* B, float* S, float* P, int* cols, int* rows, int M, int K, int N, int sparse_size) {
@@ -37,64 +33,13 @@ __global__ void gpu_basic_coo_kernel(float* A, float* B, float* S, float* P, int
 }
 
 template <typename T>
-void gpu_basic_csr_wrapper(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) {
-	gpu_basic_csr_kernel << <1, 1 >> > ();
-}
-
-template <typename T>
-void gpu_basic_coo_wrapper(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) {
-	// A is MxK, B is NxK, S and P are MxN sparse
-	int M = A.getRows();
-	int K = A.getCols();
-	int N = B.getRows();
-
-	assert(K == B.getCols());
-
-	// get the size needed for each matrix
-	size_t A_size = M * K * sizeof(T);
-	size_t B_size = K * N * sizeof(T);
-	size_t SP_size = S.getValues().size() * sizeof(T);
-	size_t sparse_dim_size = S.getValues().size() * sizeof(int);
-
-    static_assert(sizeof(T) == sizeof(float), "the kernel is specialized for double precision floating points");
-
-	// allocate the matrices on the GPU
-	float* A_gpu, * B_gpu, * S_gpu, * P_gpu;
-	int* cols_gpu, * rows_gpu;
-	cudaMalloc(&A_gpu, A_size);
-	cudaMalloc(&B_gpu, B_size);
-	cudaMalloc(&S_gpu, SP_size);
-	cudaMalloc(&P_gpu, SP_size);
-	cudaMalloc(&cols_gpu, sparse_dim_size);
-	cudaMalloc(&rows_gpu, sparse_dim_size);
-
-	// copy from RAM to GPU
-	cudaMemcpy(A_gpu, &A.getValue(0, 0), A_size, cudaMemcpyHostToDevice);
-	cudaMemcpy(B_gpu, &B.getValue(0, 0), B_size, cudaMemcpyHostToDevice);
-	cudaMemcpy(S_gpu, S.getValues().data(), SP_size, cudaMemcpyHostToDevice);
-	cudaMemcpy(cols_gpu, S.getColPositions().data(), sparse_dim_size, cudaMemcpyHostToDevice);
-	cudaMemcpy(rows_gpu, S.getRowPositions().data(), sparse_dim_size, cudaMemcpyHostToDevice);
-
+void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size) {
+	
 	// Perform SDDMM on the GPU
-	gpu_basic_coo_kernel << <32, 32 >> > (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, S.getValues().size());
-
-	// copy result back to RAM
-	cudaMemcpy(P.getValues().data(), P_gpu, SP_size, cudaMemcpyDeviceToHost);
-	P.setColPositions(S.getColPositions());
-	P.setRowPositions(S.getRowPositions());
-
-	// free all the GPU allocated memory
-	cudaFree(A_gpu);
-	cudaFree(B_gpu);
-	cudaFree(S_gpu);
-	cudaFree(P_gpu);
-	cudaFree(cols_gpu);
-	cudaFree(rows_gpu);
+	gpu_basic_coo_kernel<<<32, 32>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */
-
-template void gpu_basic_csr_wrapper<float>(Dense<float>& A, Dense<float>& B, CSR<float>& S, CSR<float>& P);
-template void gpu_basic_coo_wrapper<float>(Dense<float>& A, Dense<float>& B, COO<float>& S, COO<float>& P);
+template void gpu_basic_coo_wrapper<float>(float* A_gpu, float* B_gpu, float* S_gpu, float* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size);
 
 

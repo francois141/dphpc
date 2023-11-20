@@ -15,8 +15,7 @@ namespace Competitors {
             : SDDMM::Competitor<T>("CPU-PyTorch")
             {}
 
-            virtual inline void run_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) {
-                torch::ScalarType scalar_type;
+            virtual inline void init_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
                 if (std::is_same<T, double>::value) {
                     scalar_type = torch::kDouble;
                 } else if (std::is_same<T, float>::value) {
@@ -34,8 +33,8 @@ namespace Competitors {
                 // torch::set_num_threads(X);
                 
                 // create tensors out of flat vector, by setting (row_stride, col_stride) to (num_cols, 1)
-                torch::Tensor A_tensor = torch::from_blob(A.get_pointer(), {A_row, A_col}, {A_col, 1}, scalar_type);
-                torch::Tensor B_tensor = at::transpose(torch::from_blob(B.get_pointer(), {B_row, B_col}, {B_col, 1}, scalar_type), 0, 1);
+                A_tensor = torch::from_blob(A.get_pointer(), {A_row, A_col}, {A_col, 1}, scalar_type);
+                B_tensor = at::transpose(torch::from_blob(B.get_pointer(), {B_row, B_col}, {B_col, 1}, scalar_type), 0, 1);
 
                 
                 // create sparse CSR tensor for CPU
@@ -44,24 +43,35 @@ namespace Competitors {
                 torch::Tensor values = torch::tensor(S.getValues(), scalar_type);
                 std::vector<int64_t> size = {S.getRows(), S.getCols()};
                 at::TensorOptions options = torch::device(torch::kCPU).dtype(scalar_type);
-                torch::Tensor sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, options);
+                sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, options);
+            }
 
+            virtual inline void run_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
                 torch::Tensor non_scaled_result = at::native::sparse_sampled_addmm_sparse_csr_cpu(sparse_tensor, A_tensor, B_tensor, 0, 1);
                 torch::Tensor r = non_scaled_result.clone();
-                torch::Tensor result = at::native::mul_out_sparse_csr(non_scaled_result, sparse_tensor, r);
+                result = at::native::mul_out_sparse_csr(non_scaled_result, sparse_tensor, r);
+            }
 
+            virtual inline void cleanup_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
                 P.setRowPositions(std::vector<int>(result.crow_indices().data_ptr<int64_t>(), result.crow_indices().data_ptr<int64_t>() + result.crow_indices().numel()));
                 P.setColPositions(std::vector<int>(result.col_indices().data_ptr<int64_t>(), result.col_indices().data_ptr<int64_t>() + result.col_indices().numel()));
                 P.setValues(std::vector<T>(result.values().data_ptr<T>(), result.values().data_ptr<T>() + result.values().numel()));
             }
 
-            virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {
-                // https://pytorch.org/docs/stable/generated/torch.sparse.sampled_addmm.html
-                DEBUG_OUT(" - PyTorch SDDMM kernel only supports CSR format." << std::endl);
-            }
+            // https://pytorch.org/docs/stable/generated/torch.sparse.sampled_addmm.html
+            virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) override {}
 
             virtual bool csr_supported() { return true; };
             virtual bool coo_supported() { return false; };
+        
+        private:
+            torch::ScalarType scalar_type;
+
+            torch::Tensor A_tensor;
+            torch::Tensor B_tensor;
+            torch::Tensor sparse_tensor;
+
+            torch::Tensor result;
     };
 
 }

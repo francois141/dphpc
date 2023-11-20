@@ -15,7 +15,7 @@ namespace Competitors {
             : SDDMM::Competitor<T>("CPU-Basic")
             {}
 
-            virtual inline void run_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) {
+            virtual inline void run_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
                 const int K = B.getCols();
                 const int M = S.getRows();
 
@@ -33,10 +33,9 @@ namespace Competitors {
                         (*P.getValue(j)) *= S.getValues()[j];
                     }
                 }
-
             }
 
-            virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {
+            virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) override {
                 const int K = B.getCols();
 
                 for (uint32_t i = 0; i < S.getValues().size(); i++) {

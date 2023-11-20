@@ -247,7 +247,7 @@ namespace SDDMM {
     template<typename T>
     class Cage14Dataset : public Dataset<T> {
     private:
-        const std::string file_name = "cage14/cage14.mtx";
+        const std::string file_name = "cage14/cage14.mtx"; // https://math.nist.gov/MatrixMarket/formats.html
 
     public:
         Cage14Dataset(const std::string& data_folder, const int K)
@@ -264,9 +264,8 @@ namespace SDDMM {
             assert(data_file.is_open()); // failed to open file
 
             std::string line;
-            int triplets_to_load;
             bool parseFirstLine = true;
-            int x,y;
+            int x, y, triplets_to_load;
             float value;
 
             while (std::getline(data_file, line)) {

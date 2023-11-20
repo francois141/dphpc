@@ -156,9 +156,9 @@ int main(int argc, char* argv[]) {
 
     init_float_competitors();
 
-    // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Execution_Time,Correctness
+    // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Total_Execution_Time,Initialization_Time,Computation_Time,Cleanup_Time,Correctness
     if (!config.no_csv_header) {
-        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,exec_time,correctness" << std::endl);
+        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
     }
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
@@ -170,8 +170,8 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_email_enron(config.data_folder, config.K);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_cage14(config.data_folder, config.K);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_cage14(config.data_folder, config.K);
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
     // benchmark_random(config.K);
