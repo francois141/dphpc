@@ -96,7 +96,7 @@ public:
                lhs.cols == rhs.cols;
 
         if(!posMatch) {
-            std::cout << "Cols and Rows doesn't match in CSR comparaison" << std::endl;
+            std::cout << "Cols and Rows don't match" << std::endl;
         }
 
         bool valMatch = true;

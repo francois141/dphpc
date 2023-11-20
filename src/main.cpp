@@ -70,9 +70,9 @@ void benchmark_email_enron(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the MatrixMarket dataset */
 /* ==================================*/
-void benchmark_market(const std::string& data_folder, const int K) {
-    SDDMM::MatrixMarketDataset<float> matrix_market_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(matrix_market_dataset, float_competitors, "market-measures.csv");
+void benchmark_cage14(const std::string& data_folder, const int K) {
+    SDDMM::Cage14Dataset<float> cage14_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(cage14_dataset, float_competitors, "cage14-measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -82,7 +82,7 @@ void benchmark_market(const std::string& data_folder, const int K) {
 /* Benchmark the Random dataset */
 /* ==================================*/
 void benchmark_random(const int K) {
-    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(100, 100, K, 0.2);
+    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(10000, 10000, K, 0.05);
     SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
 
     /* Run the benchmark */
@@ -161,21 +161,20 @@ int main(int argc, char* argv[]) {
         FILE_DUMP("competitor,dataset,mat_repr,M,N,K,exec_time,correctness" << std::endl);
     }
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_dummy();
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_dummy();
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-
     benchmark_NIPS(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_email_enron(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_market(config.data_folder, config.K);
+    benchmark_cage14(config.data_folder, config.K);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_random(config.K);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_random(config.K);
 
 
     return 0;

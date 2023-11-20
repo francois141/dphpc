@@ -141,95 +141,6 @@ namespace SDDMM {
             }
 
     };
-
-    template<typename T>
-    class RandomWithDensityDataset : public Dataset<T> {
-    public:
-
-        RandomWithDensityDataset(const int M, const int N, const int K, const double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
-        {
-            std::clamp(density, 0.0, 1.0);
-            assert(0 <= density && density <= 1.0);
-
-            this->generateDense(M, N, K);
-
-            const int nbSamples = density * (M * N);
-            std::vector<Triplet<T>> triplets = sampleTriplets<T>(M, N, nbSamples);
-
-            this->S_csr = CSR<T>(M, N, triplets);
-            this->S_coo = COO<T>(M, N, triplets);
-
-            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from random generator ===\n" << std::endl);
-        }
-
-    private:
-        const int M;
-        const int N;
-        const int K;
-        const double density;
-    };
-
-    template<typename T>
-    class MatrixMarketDataset : public Dataset<T> {
-    private:
-        const std::string file_name = "cage14.tar";
-
-    public:
-        MatrixMarketDataset(const std::string& data_folder, const int K)
-                : Dataset<T>("MatrixMarket"), K(K)
-        {
-            std::vector<Triplet<T>> triplets;
-
-            std::string dataset_path(data_folder);
-            dataset_path.append(file_name);
-
-            std::fstream data_file;
-            data_file.open(dataset_path, std::ios::in);
-
-            assert(data_file.is_open()); // failed to open file
-
-            std::string garbage;
-            std::getline(data_file, garbage);
-
-            std::string line;
-            bool parseFirstLine = true;
-            while (std::getline(data_file, line)) {
-                if(line[0] == '%' || line[0] == 0) {
-                    continue;
-                }
-
-                if(std::count(line.begin(), line.end(), ' ') != 2) {
-                    continue;
-                }
-
-                std::stringstream lineStream(line);
-
-                if(parseFirstLine){
-                    int tmp;
-                    lineStream >> M >> N >> tmp; // TODO: Is ordering M and N correct?
-                    this->generateDense(M, N, K);
-                    parseFirstLine = false;
-                } else {
-                    int x,y;
-                    float value;
-
-                    lineStream >> x >> y >> value;
-                    x--; y--;
-                    triplets.push_back({x,y, value});
-                }
-            }
-
-            this->S_csr = CSR<T>(M, N, triplets);
-            this->S_coo = COO<T>(M, N, triplets);
-
-            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from file ===\n" << std::endl);
-        }
-
-    private:
-        int M;
-        int N;
-        const int K;
-    };
     
     template<typename T>
     class NIPSDataset : public Dataset<T> {
@@ -332,4 +243,90 @@ namespace SDDMM {
             const int N = 36692;
             const int K;          
     };
+
+    template<typename T>
+    class Cage14Dataset : public Dataset<T> {
+    private:
+        const std::string file_name = "cage14/cage14.mtx";
+
+    public:
+        Cage14Dataset(const std::string& data_folder, const int K)
+                : Dataset<T>("Cage14"), K(K)
+        {
+            std::vector<Triplet<T>> triplets;
+
+            std::string dataset_path(data_folder);
+            dataset_path.append(file_name);
+
+            std::fstream data_file;
+            data_file.open(dataset_path, std::ios::in);
+
+            assert(data_file.is_open()); // failed to open file
+
+            std::string line;
+            int triplets_to_load;
+            bool parseFirstLine = true;
+            int x,y;
+            float value;
+
+            while (std::getline(data_file, line)) {
+                if (line[0] == '%' || line[0] == 0) {
+                    continue;
+                }
+
+                std::stringstream lineStream(line);
+
+                if (parseFirstLine) {
+                    lineStream >> M >> N >> triplets_to_load; 
+                    this->generateDense(M, N, K);
+                    parseFirstLine = false;
+                } else {
+
+                    lineStream >> x >> y >> value;
+                    x--; y--;
+                    triplets.push_back({x,y, value});
+                }
+            }
+
+            this->S_csr = CSR<T>(M, N, triplets);
+            this->S_coo = COO<T>(M, N, triplets);
+
+            assert(triplets.size() == (size_t) triplets_to_load)
+
+            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from file ===\n" << std::endl);
+        }
+
+    private:
+        int M;
+        int N;
+        const int K;
+    };
+
+    template<typename T>
+    class RandomWithDensityDataset : public Dataset<T> {
+    public:
+
+        RandomWithDensityDataset(const int M, const int N, const int K, const double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
+        {
+            std::clamp(density, 0.0, 1.0);
+            assert(0 <= density && density <= 1.0);
+
+            this->generateDense(M, N, K);
+
+            const int nbSamples = density * (M * N);
+            std::vector<Triplet<T>> triplets = sampleTriplets<T>(M, N, nbSamples);
+
+            this->S_csr = CSR<T>(M, N, triplets);
+            this->S_coo = COO<T>(M, N, triplets);
+
+            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from random generator ===\n" << std::endl);
+        }
+
+    private:
+        const int M;
+        const int N;
+        const int K;
+        const double density;
+    };
+
 }

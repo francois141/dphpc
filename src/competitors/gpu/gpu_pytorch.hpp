@@ -47,9 +47,9 @@ namespace Competitors {
                 std::vector<int64_t> size = {S.getRows(), S.getCols()};
                 torch::Tensor sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, scalar_type).to(gpu);
 
-		torch::Tensor non_scaled_result = at::native::sparse_sampled_addmm_sparse_csr_cuda(sparse_tensor, A_tensor, B_tensor, 0, 1);
-		torch::Tensor r = non_scaled_result.clone();
-		torch::Tensor result = at::native::mul_out_sparse_csr(non_scaled_result, sparse_tensor, r).to(cpu);
+                torch::Tensor non_scaled_result = at::native::sparse_sampled_addmm_sparse_csr_cuda(sparse_tensor, A_tensor, B_tensor, 0, 1);
+                torch::Tensor r = non_scaled_result.clone();
+                torch::Tensor result = at::native::mul_out_sparse_csr(non_scaled_result, sparse_tensor, r).to(cpu);
 
                 P.setRowPositions(std::vector<int>(result.crow_indices().const_data_ptr<int64_t>(), result.crow_indices().const_data_ptr<int64_t>() + result.crow_indices().numel()));
                 P.setColPositions(std::vector<int>(result.col_indices().const_data_ptr<int64_t>(), result.col_indices().const_data_ptr<int64_t>() + result.col_indices().numel()));

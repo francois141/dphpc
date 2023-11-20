@@ -49,8 +49,8 @@ template<typename T>
 std::vector<Triplet<T>> sampleTriplets(const int M, const int N, const int nbSamples) {
     assert(M > 0 && N > 0);
 
-    std::random_device                  rand_dev;
-    std::mt19937                        generator(rand_dev());
+    static std::random_device                  rand_dev;
+    static std::mt19937                        generator(rand_dev());
 
     distributor<T> distributorValues = getDistributor<T>(-1000, 1000);
     distributor<int> distributorRow = getDistributor<int>(0, M-1);
