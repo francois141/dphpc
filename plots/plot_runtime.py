@@ -13,6 +13,8 @@ pd.set_option('mode.chained_assignment', None) # should remove and fix the warni
 CPU_SPEC = "Intel(R) Core(TM) iX-XXXXXX CPU @ X.00GHz"
 GPU_SPEC = "NVIDIA XXX"
 
+RUNTIME_FIELD = "comp_ns" # total_ns, init_ns, comp_ns, cleanup_ns
+
 def read_df(path):
     df = pd.read_csv(path)
     return df
@@ -26,7 +28,7 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     ### Titles ###
     plt.xlabel("K", loc="center", fontdict={ "size": "medium" })
     plt.ylabel("Runtime [ms]")
-    plt.title(f"SDDMM runtime on the {dataset_name} dataset\nRunning on {CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
+    plt.title(f"SDDMM runtime on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\nRunning on {CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
 
     ### Scale & Ticks ###
     ax.set_xscale("log") # log, linear
@@ -37,7 +39,7 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
 
     ax.set_yscale("log") # linear
     ax.get_yaxis().set_major_locator(plticker.LogLocator(base=10)) # ax.get_yaxis().set_major_locator(plticker.AutoLocator()) 
-    ax.get_yaxis().set_major_formatter(plticker.ScalarFormatter())
+    ax.get_yaxis().set_major_formatter(plticker.LogFormatterMathtext())
 
     ax.get_yaxis().set_minor_locator(plticker.LogLocator(base=10, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9))) # ax.get_yaxis().set_minor_locator(plticker.AutoMinorLocator())
     ax.get_yaxis().set_minor_formatter(plticker.NullFormatter())
@@ -46,7 +48,7 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     ax.tick_params(which='minor', axis='both', width=0.5, length=4, color='black')
 
     ### Plot Computations ###
-    df['exec_time_ms'] = df['exec_time'] / 1_000_000
+    df['exec_time_ms'] = df[args.runtime_field] / 1_000_000
     df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
 
     sns.lineplot(df, x="K", y="exec_time_ms", hue="comp_repr", legend=True, zorder=1, ax=ax)
@@ -59,7 +61,9 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
-    plt.savefig(args.output_folder + dataset_name + ".png", format="png") # plt.show()
+    runtime_str = "runtime_" + args.runtime_field.split("_")[0]
+    os.makedirs(args.output_folder + runtime_str + "/", exist_ok=True)
+    plt.savefig(args.output_folder + runtime_str + "/" + dataset_name + ".png", format="png") # plt.show()
     plt.close()
 
 def main(args: argparse.Namespace):
@@ -75,6 +79,7 @@ if __name__ == "__main__":
     argParser = argparse.ArgumentParser()
     argParser.add_argument("--input", default="results/results.csv", type=str, help="CSV input path")
     argParser.add_argument("--output_folder", default="results/", type=str, help="Output folder")
+    argParser.add_argument("--runtime_field", default=RUNTIME_FIELD, type=str, help="Runtime field")
     args = argParser.parse_args()
     main(args)
     
