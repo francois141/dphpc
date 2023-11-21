@@ -24,21 +24,20 @@ def plot_bars(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     fig.set_size_inches((12, 10))
 
     ### Scale & Ticks ###
-    ax.set_yscale("log") # linear
-    ax.get_yaxis().set_major_locator(plticker.LogLocator(base=10)) # ax.get_yaxis().set_major_locator(plticker.AutoLocator()) 
-    ax.get_yaxis().set_major_formatter(plticker.LogFormatterMathtext())
+    ax.set_yscale("linear")
+    # ax.get_yaxis().set_major_locator(plticker.LogLocator(base=10)) # ax.get_yaxis().set_major_locator(plticker.AutoLocator()) 
+    # ax.get_yaxis().set_major_formatter(plticker.LogFormatterMathtext())
 
-    ax.get_yaxis().set_minor_locator(plticker.LogLocator(base=10, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9))) # ax.get_yaxis().set_minor_locator(plticker.AutoMinorLocator())
-    ax.get_yaxis().set_minor_formatter(plticker.NullFormatter())
+    # ax.get_yaxis().set_minor_locator(plticker.LogLocator(base=10, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9))) # ax.get_yaxis().set_minor_locator(plticker.AutoMinorLocator())
+    # ax.get_yaxis().set_minor_formatter(plticker.NullFormatter())
 
-    ax.tick_params(which='major', axis='both', width=1, length=7)
-    ax.tick_params(which='minor', axis='both', width=0.5, length=4, color='black')
+    # ax.tick_params(which='major', axis='both', width=1, length=7)
+    # ax.tick_params(which='minor', axis='both', width=0.5, length=4, color='black')
 
     ### Plot Computations ###
     runtime_cols_ns = [ 'total_ns', 'init_ns', 'comp_ns', 'cleanup_ns' ]
     runtime_cols_ms = [ 'total_ms', 'Initialization', 'Computation', 'Cleanup' ]
     df[runtime_cols_ms] = df[runtime_cols_ns] / 1_000_000
-    # df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
 
     plot_df = df[ [ 'competitor', 'Initialization', 'Computation', 'Cleanup' ] ]
     plot_df = plot_df.set_index("competitor")

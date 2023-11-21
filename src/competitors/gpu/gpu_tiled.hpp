@@ -56,6 +56,7 @@ namespace Competitors {
             int N = B.getRows();
 
             gpu_tiled_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N);            
+            cudaDeviceSynchronize();
         }
 
         virtual inline void cleanup_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {           

@@ -61,6 +61,7 @@ namespace Competitors {
             size_t sparse_size = S.getValues().size();
 
             gpu_basic_coo_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);            
+            cudaDeviceSynchronize();
         }
 
         virtual inline void cleanup_coo(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) override {           

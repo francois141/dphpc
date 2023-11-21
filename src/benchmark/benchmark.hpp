@@ -10,6 +10,8 @@
 #include <chrono>
 #include <cmath>
 
+#include <cuda_runtime.h>
+
 #include "competitor.hpp"
 #include "dataset.hpp"
 #include "utils/util.hpp"
@@ -41,6 +43,8 @@ namespace SDDMM {
             }           
 
             void benchmark() {
+
+                cudaFree(0); // lazy context establishment to prevent first call to cudaMalloc to perform device initialization (and take substantially longer than other cudaMalloc calls)
 
                 /* Select and run correctness baseline */
                 if (!dataset.hasExpected()) { // if the dataset has no inherent correct result, take the first competitor as baseline

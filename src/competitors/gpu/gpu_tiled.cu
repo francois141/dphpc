@@ -1,4 +1,4 @@
-#include "gpu_basic.hpp"
+#include "gpu_tiled.hpp"
 
 #include <cuda_runtime.h>
 #include <algorithm>
