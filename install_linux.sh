@@ -9,9 +9,11 @@ unzip -n nips+conference+papers+1987+2015.zip -d ./
 wget -N http://snap.stanford.edu/data/email-Enron.txt.gz
 gzip -d email-Enron.txt.gz
 
-# Download test matrix market format
-# wget https://suitesparse-collection-website.herokuapp.com/MM/HB/1138_bus.tar.gz
-# tar -xf 1138_bus.tar.gz
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/ND/nd12k.tar.gz
+tar -xf nd12k.tar.gz
+
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/Belcastro/human_gene2.tar.gz
+tar -xf human_gene2.tar.gz
 
 # Download big matrix market format from: https://sparse.tamu.edu/vanHeukelum
 wget -N https://suitesparse-collection-website.herokuapp.com/MM/vanHeukelum/cage14.tar.gz

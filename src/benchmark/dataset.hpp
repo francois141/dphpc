@@ -119,6 +119,62 @@ namespace SDDMM {
             }
     };
 
+    template<typename T>
+    class MatrixMarketDataset : public Dataset<T> {
+        private:
+            const std::string data_folder;
+            const int K;
+            const std::string file_name;
+            int M;
+            int N;
+
+        public:
+            MatrixMarketDataset(const std::string &name, const std::string &data_folder, const int K, const std::string &file_name)
+            : Dataset<T>(name), data_folder(data_folder), K(K), file_name(file_name)
+            {    
+                std::vector<Triplet<T>> triplets;
+
+                std::string dataset_path(data_folder);
+                dataset_path.append(file_name);
+
+                read_matrix_market(dataset_path, triplets);            
+
+                this->S_csr = CSR<T>(M, N, triplets);
+                this->S_coo = COO<T>(M, N, triplets);
+
+                DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from file ===\n" << std::endl);
+            }
+
+        private:
+            
+            // https://math.nist.gov/MatrixMarket/formats.html
+            void read_matrix_market(const std::string &dataset_path, std::vector<Triplet<T>> &triplets) {
+                FILE* c_file = fopen(dataset_path.c_str(), "r");
+                assert(c_file != NULL); // failed to open file
+
+                char buf[256];
+                int row, col, triplets_to_load;
+                float value;
+                
+                while (fgets(buf, 256, c_file) != NULL) {
+                    if (buf[0] == '%') { continue; }
+                    break; // reached non-comment line
+                }
+
+                sscanf(buf, "%u %d %d", &M, &N, &triplets_to_load);
+                this->generateDense(M, N, K);
+
+                while (fscanf(c_file, "%u %u %f\n", &row, &col, &value) == 3) {
+                    row--; col--;
+                    triplets.push_back({row, col, value});
+                }
+
+                fclose(c_file);
+                
+                assert(triplets.size() == ((size_t) triplets_to_load));
+            }
+    };
+
     class DummyDataset : public Dataset<float> {
         public:
 
@@ -243,82 +299,56 @@ namespace SDDMM {
             const int N = 36692;
             const int K;          
     };
+    
+    template<typename T>
+    class ND12KDataset : public MatrixMarketDataset<T> {
+        public:
+            ND12KDataset(const std::string& data_folder, const int K)
+            : MatrixMarketDataset<T>("ND12K", data_folder, K, "nd12k/nd12k.mtx")
+            {}
+    };
+
 
     template<typename T>
-    class Cage14Dataset : public Dataset<T> {
-    private:
-        const std::string file_name = "cage14/cage14.mtx"; // https://math.nist.gov/MatrixMarket/formats.html
-
-    public:
-        Cage14Dataset(const std::string& data_folder, const int K)
-                : Dataset<T>("Cage14"), K(K)
-        {
-            std::vector<Triplet<T>> triplets;
-
-            std::string dataset_path(data_folder);
-            dataset_path.append(file_name);
-            
-            FILE* c_file = fopen(dataset_path.c_str(), "r");
-            assert(c_file != NULL); // failed to open file
-
-            char buf[256];
-            int row, col, triplets_to_load;
-            float value;
-            
-            while (fgets(buf, 256, c_file) != NULL) {
-                if (buf[0] == '%') { continue; }
-                break; // reached non-comment line
-            }
-
-            sscanf(buf, "%u %d %d", &M, &N, &triplets_to_load);
-            this->generateDense(M, N, K);
-
-            while (fscanf(c_file, "%u %u %f\n", &row, &col, &value) == 3) {
-                row--; col--;
-                triplets.push_back({row, col, value});
-            }
-
-            fclose(c_file);
-
-            this->S_csr = CSR<T>(M, N, triplets);
-            this->S_coo = COO<T>(M, N, triplets);
-
-            assert(triplets.size() == (size_t) triplets_to_load);
-
-            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from file ===\n" << std::endl);
-        }
-
-    private:
-        int M;
-        int N;
-        const int K;
+    class HumanGene2Dataset : public MatrixMarketDataset<T> {
+        public:
+            HumanGene2Dataset(const std::string& data_folder, const int K)
+            : MatrixMarketDataset<T>("HumanGene2", data_folder, K, "human_gene2/human_gene2.mtx")
+            {}
     };
 
     template<typename T>
     class RandomWithDensityDataset : public Dataset<T> {
-    public:
+        public:
 
-        RandomWithDensityDataset(const int M, const int N, const int K, const double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
-        {
-            std::clamp(density, 0.0, 1.0);
-            assert(0 <= density && density <= 1.0);
+            RandomWithDensityDataset(const int M, const int N, const int K, const double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
+            {
+                std::clamp(density, 0.0, 1.0);
+                assert(0 <= density && density <= 1.0);
 
-            this->generateDense(M, N, K);
+                this->generateDense(M, N, K);
 
-            const int nbSamples = density * (M * N);
-            std::vector<Triplet<T>> triplets = sampleTriplets<T>(M, N, nbSamples);
+                const int nbSamples = density * (M * N);
+                std::vector<Triplet<T>> triplets = sampleTriplets<T>(M, N, nbSamples);
 
-            this->S_csr = CSR<T>(M, N, triplets);
-            this->S_coo = COO<T>(M, N, triplets);
+                this->S_csr = CSR<T>(M, N, triplets);
+                this->S_coo = COO<T>(M, N, triplets);
 
-            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from random generator ===\n" << std::endl);
-        }
+                DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from random generator ===\n" << std::endl);
+            }
 
-    private:
-        const int M;
-        const int N;
-        const int K;
-        const double density;
+        private:
+            const int M;
+            const int N;
+            const int K;
+            const double density;
     };
 
+    template<typename T>
+    class Cage14Dataset : public MatrixMarketDataset<T> {
+        public:
+            Cage14Dataset(const std::string &data_folder, const int K)
+            : MatrixMarketDataset<T>("Cage14", data_folder, K, "cage14/cage14.mtx")
+            {}
+    };
 }

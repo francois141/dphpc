@@ -52,7 +52,7 @@ std::vector<Triplet<T>> sampleTriplets(const int M, const int N, const int nbSam
     static std::random_device                  rand_dev;
     static std::mt19937                        generator(rand_dev());
 
-    distributor<T> distributorValues = getDistributor<T>(-1000, 1000);
+    distributor<T> distributorValues = getDistributor<T>(0, 1);
     distributor<int> distributorRow = getDistributor<int>(0, M-1);
     distributor<int> distributorCol = getDistributor<int>(0, N-1);
 

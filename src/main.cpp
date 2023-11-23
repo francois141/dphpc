@@ -68,11 +68,22 @@ void benchmark_email_enron(const std::string& data_folder, const int K) {
 }
 
 /* ================================= */
-/* Benchmark the MatrixMarket dataset */
+/* Benchmark the ND12K dataset */
 /* ==================================*/
-void benchmark_cage14(const std::string& data_folder, const int K) {
-    SDDMM::Cage14Dataset<float> cage14_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(cage14_dataset, float_competitors, "cage14-measures.csv");
+void benchmark_ND12K(const std::string& data_folder, const int K) {
+    SDDMM::ND12KDataset<float> nd12k_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(nd12k_dataset, float_competitors, "nd12k-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+/* ================================= */
+/* Benchmark the Human Gene 2 dataset */
+/* ==================================*/
+void benchmark_human_gene2(const std::string& data_folder, const int K) {
+    SDDMM::HumanGene2Dataset<float> human_gene2(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(human_gene2, float_competitors, "human_gene2-measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -82,14 +93,23 @@ void benchmark_cage14(const std::string& data_folder, const int K) {
 /* Benchmark the Random dataset */
 /* ==================================*/
 void benchmark_random(const int K) {
-    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(10000, 10000, K, 0.05);
+    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(25000, 25000, K, 0.05); // 40k x 40k with 0.01/0.05
     SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
 }
 
+/* ================================= */
+/* Benchmark the Cage14 dataset */
+/* ==================================*/
+void benchmark_cage14(const std::string& data_folder, const int K) {
+    SDDMM::Cage14Dataset<float> cage14_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(cage14_dataset, float_competitors, "cage14-measures.csv");
 
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
 
 /* ====================================================================================================================== */
 
@@ -161,9 +181,6 @@ int main(int argc, char* argv[]) {
         FILE_DUMP("competitor,dataset,mat_repr,M,N,K,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
     }
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_dummy();
-
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_NIPS(config.data_folder, config.K);
 
@@ -171,11 +188,16 @@ int main(int argc, char* argv[]) {
     benchmark_email_enron(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_cage14(config.data_folder, config.K);
+    benchmark_ND12K(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_human_gene2(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K);
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_random(config.K);
-
+    // benchmark_cage14(config.data_folder, config.K);
 
     return 0;
 }

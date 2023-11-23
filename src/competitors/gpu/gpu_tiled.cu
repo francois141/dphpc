@@ -3,7 +3,7 @@
 #include <cuda_runtime.h>
 #include <algorithm>
 
-const int TILE_SIZE = 16;
+const int TILE_SIZE = 32;
 
 // perform SDDMM, compute P = (A*B^T) dot S (where dot is the term by term product)
 // A is MxK, B is NxK, S and P are MxN sparse
