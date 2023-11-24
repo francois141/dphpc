@@ -45,3 +45,7 @@ Is it possible to improve locality while accessing cols?
 ```c
 int curr_col = cols[sparse_index];
 ```
+
+Replace some parts with shared memory
+
+Use tensor

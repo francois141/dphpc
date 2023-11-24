@@ -3,7 +3,7 @@
 #include <cuda_runtime.h>
 #include <algorithm>
 
-const int TILE_SIZE = 32;
+const int TILE_SIZE = 8;
 
 // perform SDDMM, compute P = (A*B^T) dot S (where dot is the term by term product)
 // A is MxK, B is NxK, S and P are MxN sparse
@@ -66,7 +66,7 @@ template <typename T>
 void gpu_tiled_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N) {
 	
 	// Perform SDDMM on the GPU
-	gpu_tiled_csr_kernel<<<32, 32>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N);
+	gpu_tiled_csr_kernel<<<32, 512>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N);
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */

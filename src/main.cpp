@@ -93,7 +93,7 @@ void benchmark_human_gene2(const std::string& data_folder, const int K) {
 /* Benchmark the Random dataset */
 /* ==================================*/
 void benchmark_random(const int K) {
-    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(25000, 25000, K, 0.05); // 40k x 40k with 0.01/0.05
+    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(40000, 40000, K, 0.01); // 40k x 40k with 0.01/0.05
     SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
 
     /* Run the benchmark */
@@ -181,14 +181,14 @@ int main(int argc, char* argv[]) {
         FILE_DUMP("competitor,dataset,mat_repr,M,N,K,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
     }
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    /*DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_NIPS(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_email_enron(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_ND12K(config.data_folder, config.K);
+    benchmark_ND12K(config.data_folder, config.K);*/
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_human_gene2(config.data_folder, config.K);
