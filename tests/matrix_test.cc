@@ -283,7 +283,7 @@ TEST(BasicTest, GPU_test_blocked)
     CSR<float> P2(S_csr);
 
     gpu_basic->run_coo(A, B, S_coo, P1);
-    gpu_tiled->run_csr(A, B, S_csr, P2);
+    gpu_blocked->run_csr(A, B, S_csr, P2);
 
     EXPECT_EQ(P1, COO<float>(P2));
 }
