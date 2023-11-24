@@ -4,6 +4,7 @@
 #include "competitors/cpu/cpu_pytorch.hpp"
 #include "competitors/gpu/gpu_basic.hpp"
 #include "competitors/gpu/gpu_tiled.hpp"
+#include "competitors/gpu/gpu_blocked.hpp"
 #include "competitors/gpu/gpu_pytorch.hpp"
 #include "benchmark/dataset.hpp"
 #include "utils/random_generator.hpp"
@@ -257,6 +258,36 @@ TEST(BasicTest, GPU_test_tiled)
 
     EXPECT_EQ(P1, COO<float>(P2));
 }
+
+
+TEST(BasicTest, GPU_test_blocked)
+{
+    const int rows = 500;
+    const int cols = 500;
+
+    auto gpu_basic =
+            std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
+
+    auto gpu_blocked =
+            std::unique_ptr<Competitors::GPUBlocked<float>>(new Competitors::GPUBlocked<float>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.3));
+
+    auto S_coo = dataset->getS_COO();
+    auto S_csr = dataset->getS_CSR();
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    COO<float> P1(S_coo);
+    CSR<float> P2(S_csr);
+
+    gpu_basic->run_coo(A, B, S_coo, P1);
+    gpu_tiled->run_csr(A, B, S_csr, P2);
+
+    EXPECT_EQ(P1, COO<float>(P2));
+}
+
 
 TEST(BasicTest, CPU_PyTorch)
 {

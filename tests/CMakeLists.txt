@@ -41,6 +41,8 @@ add_executable(matrix_test
         ../src/competitors/gpu/gpu_basic.hpp
         ../src/competitors/gpu/gpu_tiled.cu
         ../src/competitors/gpu/gpu_tiled.hpp
+        ../src/competitors/gpu/gpu_blocked.cu
+        ../src/competitors/gpu/gpu_blocked.hpp
         #Helpers
         ../src/utils/util.hpp
         ../src/utils/random_generator.hpp

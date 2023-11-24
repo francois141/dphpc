@@ -29,6 +29,8 @@ set(SRC_FILES
         competitors/gpu/gpu_pytorch.hpp
         competitors/gpu/gpu_tiled.cu
         competitors/gpu/gpu_tiled.hpp
+        competitors/gpu/gpu_blocked.cu
+        competitors/gpu/gpu_blocked.hpp
 
         #Helpers
         utils/util.hpp

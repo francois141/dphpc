@@ -32,6 +32,9 @@ void init_float_competitors() {
 
     auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
     float_competitors.push_back(gpu_tiled);
+
+    auto gpu_blocked = std::make_shared<Competitors::GPUBlocked<float>>();
+    float_competitors.push_back(gpu_blocked);
 }
 
 /* =========================== */
