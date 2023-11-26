@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <numeric>
 
 #include "triplet.h"
 #include "COO.hpp"
@@ -160,6 +161,7 @@ private:
     std::vector<int> rowPositions;
     std::vector<int> colPositions;
     std::vector<T> values;
+    std::vector<int> startIdx;
 
     void init_csr(std::vector<Triplet<T>> triplets) {
         
@@ -195,6 +197,78 @@ private:
         }
 
         this->rowPositions.emplace_back(idx);
+
+        const int nbThreads = 32*32;
+        this->computeDispatcher(nbThreads);
+    }
+
+    bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
+        if(*std::max_element(sizes.begin(), sizes.end()) > val) {
+            return false;
+        }
+
+        int cnt = 1;
+        int sum = 0;
+        for(const int e: sizes) {
+            sum += e;
+            if(sum > val) {
+                cnt++;
+                sum = e;
+            }
+        }
+
+        return cnt <= nbThreads;
+    }
+
+    void computeDispatcher(int nbThreads) {
+        // Prepare the sizes
+        std::vector<int> sizes;
+        for(int i = 0; i < this->rows-1;i++) {
+            sizes.push_back(this->rowPositions[i+1] - this->rowPositions[i]);
+        }
+
+        // Step 1)
+        // Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum
+        // https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/
+        int start = 1;
+        int end = std::accumulate(sizes.begin(), sizes.end(), 0);
+
+        while(start != end) {
+            int middle = (start + end + 1) / 2;
+            if(testValue(sizes, middle, nbThreads)) {
+                end = middle;
+            } else {
+                start = middle+1;
+            }
+        }
+
+        // Step 2)
+        // Compute value of the segment
+        int segSize = start;
+        int currThread = 0;
+        int currSizeThread = 0;
+
+        this->startIdx.reserve(this->rowPositions.size());
+
+        // First thread starts at 0
+        this->startIdx.push_back(currThread);
+        currThread++;
+
+        // While currSizeThread <= segSize ==> give it to the same thread
+        for(size_t i = 0; i < this->values.size();i++) {
+            currSizeThread += this->values[i];
+            if(currSizeThread > segSize) {
+                // Give it to the new thread;
+                this->values.push_back((int)i);
+                currSizeThread = this->values[i];
+            }
+        }
+
+        // We need to make sure the size is similar
+        while(this->startIdx.size() < this->rowPositions.size()) {
+            // The threads here don't do anything
+            this->startIdx.push_back(this->values.size());
+        }
     }
 };
 
