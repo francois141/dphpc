@@ -9,6 +9,7 @@
 #include <ostream>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 #include "triplet.h"
 #include "COO.hpp"
@@ -67,29 +68,42 @@ public:
     }
 
     friend bool operator==(const CSR &lhs, const CSR &rhs) {
-        bool posMatch = lhs.colPositions == rhs.colPositions &&
-               lhs.rowPositions == rhs.rowPositions &&
-               lhs.rows == rhs.rows &&
-               lhs.cols == rhs.cols;
+        bool posMatch = lhs.colPositions.size() == rhs.colPositions.size() &&
+                        lhs.rowPositions.size() == rhs.rowPositions.size() &&
+                        lhs.rows == rhs.rows &&
+                        lhs.cols == rhs.cols;
 
         if(!posMatch) {
             std::cout << "Cols and Rows don't match" << std::endl;
+            return false;
+        }
+
+        std::map<std::pair<int,int>,T> mp;
+
+        for(int row_idx = 0; row_idx < lhs.rows - 1;row_idx++) {
+            int col_idx = lhs.rowPositions[row_idx];
+            while(col_idx < lhs.rowPositions[row_idx+1]) {
+                mp.insert(std::make_pair(std::make_pair(lhs.colPositions[col_idx], row_idx), lhs.values[col_idx]));
+                col_idx++;
+            }
         }
 
         bool valMatch = true;
         T largestDiff = 0;
 
-        if(std::is_integral<T>::value) {
-            valMatch = (lhs.values == rhs.values);
-        } else {
-            if(lhs.values.size() != rhs.values.size()) {
-                return false;
-            }
+        for(int row_idx = 0; row_idx < lhs.rows - 1;row_idx++) {
+            int col_idx = rhs.rowPositions[row_idx];
+            while(col_idx < rhs.rowPositions[row_idx+1]) {
+                std::pair<int,int> coord = std::make_pair(lhs.colPositions[col_idx], row_idx);
 
-            for(uint32_t i = 0; i < lhs.values.size();i++) {
-                T diff = (std::abs(rhs.values[i] - lhs.values[i]) / rhs.values[i]);
+                if(mp.find(coord) == mp.end()) {
+                    return false;
+                }
+
+                T diff = (std::abs(rhs.values[col_idx] - mp[coord]) / rhs.values[col_idx]);
                 largestDiff = std::max(largestDiff, diff);
                 valMatch &= diff <= 1e-6;
+                col_idx++;
             }
         }
 
@@ -97,7 +111,7 @@ public:
             std::cout << "Largest relative difference is : " << largestDiff << std::endl;
         }
 
-        return posMatch && valMatch;
+        return valMatch;
     }
 
     int getRows() const {
