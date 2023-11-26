@@ -181,14 +181,14 @@ int main(int argc, char* argv[]) {
         FILE_DUMP("competitor,dataset,mat_repr,M,N,K,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
     }
 
-    /*DEBUG_OUT("\n=====================================================\n" << std::endl);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_NIPS(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_email_enron(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_ND12K(config.data_folder, config.K);*/
+    benchmark_ND12K(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_human_gene2(config.data_folder, config.K);
