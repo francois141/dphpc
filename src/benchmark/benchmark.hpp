@@ -84,21 +84,17 @@ namespace SDDMM {
                         // Checking correctness if available
                         if (this->getDataset().hasExpected()) {
                             csr_correctness = (P_csr == this->getDataset().getExpected_CSR());
-                            if (csr_correctness) { 
-                                DEBUG_OUT(" - Calculated correct results." << std::endl); 
-                            } else {
+                            if (!csr_correctness) {
                                 DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
                                 FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
                             }
                         }
-                        DEBUG_OUT(" - Execution took " << SECOND(res.total_ns) << " seconds (" << res.total_ns << "ns)" << std::endl << std::endl);
+                        DEBUG_OUT(" - Execution took " << MILLISECOND(res.total_ns) << " milliseconds (" << res.total_ns << "ns)" << std::endl << std::endl);
                         FILE_DUMP(competitor->name << "," << this->getDataset().getName() + "-csr" << ",CSR,"
                             << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << ","
                             << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << csr_correctness << std::endl
                         );
 
-                    } else {
-                        DEBUG_OUT("Skipping competitor " << competitor->name << " (does not support CSR)" << std::endl << std::endl);
                     }
 
                     /* ============================= */
@@ -120,21 +116,17 @@ namespace SDDMM {
                         // Checking correctness if available
                         if (competitor->coo_supported() && this->getDataset().hasExpected()) {
                             coo_correcntess = (P_coo == this->getDataset().getExpected_COO());
-                            if (coo_correcntess) { 
-                                DEBUG_OUT(" - Calculated correct results." << std::endl); 
-                            } else {
+                            if (!coo_correcntess) {
                                 DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
                                 FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
                             }
                         }
-                        DEBUG_OUT(" - Execution took " << SECOND(res.total_ns) << " seconds (" << res.total_ns << "ns)" << std::endl << std::endl);
+                        DEBUG_OUT(" - Execution took " << MILLISECOND(res.total_ns) << " milliseconds (" << res.total_ns << "ns)" << std::endl << std::endl);
                         FILE_DUMP(competitor->name + "-coo" << "," << this->getDataset().getName() << ",COO,"
                             << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << ","
                             << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << std::endl
                         );
 
-                    } else {
-                        DEBUG_OUT("Skipping competitor " << competitor->name << " (does not support COO)" << std::endl << std::endl);
                     }
                 });
             }
