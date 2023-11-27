@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #https://stackoverflow.com/questions/62693218/how-to-solve-gtest-and-libtorch-linkage-conflict
-add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
+#add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -52,7 +52,7 @@ find_package(Torch REQUIRED)
 target_link_libraries(
         matrix_test
         GTest::gtest_main
-	"${TORCH_LIBRARIES}")
+	    "${TORCH_LIBRARIES}")
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
