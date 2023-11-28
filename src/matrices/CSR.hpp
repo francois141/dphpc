@@ -198,8 +198,8 @@ private:
 
         this->rowPositions.emplace_back(idx);
 
-        const int nbThreads = 32*32;
-        this->computeDispatcher(nbThreads);
+        // const int nbThreads = 32*32;
+        // this->computeDispatcher(nbThreads);
     }
 
     bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
