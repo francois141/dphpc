@@ -232,10 +232,12 @@ private:
         // https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/
         int start = 1;
         int end = this->values.size();
+        int segSize = 0;
 
         while(start <= end) {
             int middle = (start + end) / 2;
             if(testValue(sizes, middle, nbThreads)) {
+                segSize = middle;
                 end = middle-1;
             } else {
                 start = middle+1;
@@ -243,19 +245,16 @@ private:
         }
 
         // Step 2)
-        // Compute value of the segment
-        int segSize = start;
-        int currThread = 0;
+        // Compute each thread's range of responsibility
         int currSizeThread = 0;
 
         this->startIdx.reserve(this->rowPositions.size());
 
         // First thread starts at 0
-        this->startIdx.push_back(currThread);
-        currThread++;
+        this->startIdx.push_back(0);
 
         // While currSizeThread <= segSize ==> give it to the same thread
-        for(size_t i = 0; i < sizes.size();i++) {
+        for(size_t i = 0; i < sizes.size(); i++) {
             currSizeThread += sizes[i];
             if(currSizeThread > segSize) {
                 // Give it to the new thread;
@@ -265,9 +264,9 @@ private:
         }
 
         // We need to make sure the size is similar
-        while(this->startIdx.size() < this->rowPositions.size()) {
+        while(this->startIdx.size() < nbThreads) {
             // The threads here don't do anything
-            this->startIdx.push_back(this->values.size());
+            this->startIdx.push_back(this->rows);
         }
     }
 };
