@@ -9,7 +9,6 @@
 #include <ostream>
 #include <vector>
 #include <algorithm>
-#include <map>
 
 #include "triplet.h"
 #include "CSR.hpp"
@@ -93,44 +92,37 @@ public:
     }
 
     friend bool operator==(const COO &lhs, const COO &rhs) {
-        bool posMatch = lhs.colPositions.size() == rhs.colPositions.size() &&
-               lhs.rowPositions.size() == rhs.rowPositions.size() &&
+        bool posMatch = lhs.colPositions == rhs.colPositions &&
+               lhs.rowPositions == rhs.rowPositions &&
                lhs.rows == rhs.rows &&
                lhs.cols == rhs.cols;
 
         if(!posMatch) {
             std::cout << "Cols and Rows don't match" << std::endl;
-            return false;
-        }
-
-        std::map<std::pair<int,int>,T> mp;
-
-        const int n = lhs.values.size();
-
-        for(int i = 0; i < n;i++) {
-            mp.insert(std::make_pair(std::make_pair(lhs.colPositions[i], lhs.rowPositions[i]), lhs.values[i]));
         }
 
         bool valMatch = true;
         T largestDiff = 0;
 
-        for(int i = 0; i < n;i++) {
-            std::pair<int,int> coord = std::make_pair(rhs.colPositions[i], rhs.rowPositions[i]);
-
-            if(mp.find(coord) == mp.end()) {
+        if(std::is_integral<T>::value) {
+            valMatch = (lhs.values == rhs.values);
+        } else {
+            if(lhs.values.size() != rhs.values.size()) {
                 return false;
             }
 
-            T diff = (std::abs(rhs.values[i] - mp[coord]) / rhs.values[i]);
-            largestDiff = std::max(largestDiff, diff);
-            valMatch &= diff <= 1e-6;
+            for(uint32_t i = 0; i < lhs.values.size();i++) {
+                T diff = (std::abs(rhs.values[i] - lhs.values[i]) / rhs.values[i]);
+                largestDiff = std::max(largestDiff, diff);
+                valMatch &= diff <= 1e-6;
+            }
         }
 
         if(!valMatch) {
             std::cout << "Largest relative difference is : " << largestDiff << std::endl;
         }
 
-        return valMatch;
+        return posMatch && valMatch;
     }
 
     int getRows() const {
