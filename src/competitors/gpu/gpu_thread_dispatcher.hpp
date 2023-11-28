@@ -84,12 +84,14 @@ namespace Competitors {
             cudaFree(start_idx_gpu);
         }
 
+        virtual inline void run_coo(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) override {}
+
         bool csr_supported() override { return true; };
         bool coo_supported() override { return false; };
 
     private:
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu;
-        int* cols_gpu, * rows_gpu;
+        int* cols_gpu, * rows_gpu, * start_idx_gpu;
     };
 
 }

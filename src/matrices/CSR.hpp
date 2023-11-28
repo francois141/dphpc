@@ -156,7 +156,7 @@ public:
     }
 
     const std::vector<int> &getStartIdx() {
-        return this-startIdx;
+        return this->startIdx;
     }
 
 private:
