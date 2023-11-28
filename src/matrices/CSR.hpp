@@ -31,11 +31,6 @@ public:
         init_csr(triplets);
     }
 
-    CSR(int rows, int cols, int nbThreads, std::vector<Triplet<T>> triplets)
-    : rows(rows), cols(cols) {
-        init_csr(triplets);
-    }
-
     CSR(const CSR &other)
     : rows(other.rows), cols(other.cols), rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values)
     {}
