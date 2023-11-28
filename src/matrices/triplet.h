@@ -8,6 +8,10 @@ struct Triplet {
     T value;
 };
 
+template<typename T>
+bool operator<(const Triplet<T> &triplet1, const Triplet<T> triplet2) {
+    return triplet1.row < triplet2.row || (triplet1.row == triplet2.row && triplet1.col < triplet2.col);
+}
 
 template <typename S>
 std::ostream& operator<<(std::ostream& os, const Triplet<S>& triplet) {
