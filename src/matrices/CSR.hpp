@@ -141,6 +141,14 @@ public:
         return &values[j];
     }
 
+    void calculateStartIdx(int nbThreads){
+        this->computeDispatcher(nbThreads);
+    }
+
+    const std::vector<int> &getStartIdx(){
+        return this->startIdx;
+    }
+
 private:
     int rows;
     int cols;
@@ -184,9 +192,6 @@ private:
         }
 
         this->rowPositions.emplace_back(idx);
-
-        // const int nbThreads = 32*32;
-        // this->computeDispatcher(nbThreads);
     }
 
     bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
@@ -210,7 +215,7 @@ private:
     void computeDispatcher(int nbThreads) {
         // Prepare the sizes
         std::vector<int> sizes;
-        for(int i = 0; i < this->rows-1;i++) {
+        for(int i = 0; i < this->rows; i++) {
             sizes.push_back(this->rowPositions[i+1] - this->rowPositions[i]);
         }
 
@@ -218,43 +223,42 @@ private:
         // Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum
         // https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/
         int start = 1;
-        int end = std::accumulate(sizes.begin(), sizes.end(), 0);
+        int end = this->values.size();
+        int segSize = 0;
 
-        while(start != end) {
-            int middle = (start + end + 1) / 2;
+        while(start <= end) {
+            int middle = (start + end) / 2;
             if(testValue(sizes, middle, nbThreads)) {
-                end = middle;
+                segSize = middle;
+                end = middle-1;
             } else {
                 start = middle+1;
             }
         }
 
         // Step 2)
-        // Compute value of the segment
-        int segSize = start;
-        int currThread = 0;
+        // Compute each thread's range of responsibility
         int currSizeThread = 0;
 
         this->startIdx.reserve(this->rowPositions.size());
 
         // First thread starts at 0
-        this->startIdx.push_back(currThread);
-        currThread++;
+        this->startIdx.push_back(0);
 
         // While currSizeThread <= segSize ==> give it to the same thread
-        for(size_t i = 0; i < this->values.size();i++) {
-            currSizeThread += this->values[i];
+        for(size_t i = 0; i < sizes.size(); i++) {
+            currSizeThread += sizes[i];
             if(currSizeThread > segSize) {
                 // Give it to the new thread;
-                this->values.push_back((int)i);
-                currSizeThread = this->values[i];
+                this->startIdx.push_back((int)i);
+                currSizeThread = sizes[i];
             }
         }
 
         // We need to make sure the size is similar
-        while(this->startIdx.size() < this->rowPositions.size()) {
+        while(this->startIdx.size() <= nbThreads) {
             // The threads here don't do anything
-            this->startIdx.push_back(this->values.size());
+            this->startIdx.push_back(this->rows);
         }
     }
 };
