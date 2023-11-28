@@ -9,3 +9,4 @@
 #include "competitors/gpu/gpu_basic.hpp"
 #include "competitors/gpu/gpu_pytorch.hpp"
 #include "competitors/gpu/gpu_tiled.hpp"
+#include "competitors/gpu/gpu_thread_dispatcher.hpp"
