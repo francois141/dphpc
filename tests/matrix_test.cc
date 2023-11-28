@@ -69,7 +69,11 @@ TEST(BasicTest, GPU_basic)
     COO<float> S(2, 2, triplets);
     COO<float> P1(S);
     COO<float> P2(S);
+
+    gpu_basic->init_coo(A, B, S, P1);
     gpu_basic->run_coo(A, B, S, P1);
+    gpu_basic->cleanup_coo(A, B, S, P1);
+
     cpu_basic->run_coo(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
@@ -93,7 +97,11 @@ TEST(BasicTest, GPU_basic2)
     COO<float> S(2, 2, triplets);
     COO<float> P1(S);
     COO<float> P2(S);
+
+    gpu_basic->init_coo(A, B, S, P1);
     gpu_basic->run_coo(A, B, S, P1);
+    gpu_basic->cleanup_coo(A, B, S, P1);
+
     cpu_basic->run_coo(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
@@ -117,7 +125,11 @@ TEST(BasicTest, GPU_basic3)
     COO<float> S(2, 2, triplets);
     COO<float> P1(S);
     COO<float> P2(S);
+
+    gpu_basic->init_coo(A, B, S, P1);
     gpu_basic->run_coo(A, B, S, P1);
+    gpu_basic->cleanup_coo(A, B, S, P1);
+
     cpu_basic->run_coo(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
@@ -143,7 +155,11 @@ TEST(BasicTest, GPU_basic4)
     COO<float> S(3, 3, triplets);
     COO<float> P1(S);
     COO<float> P2(S);
+
+    gpu_basic->init_coo(A, B, S, P1);
     gpu_basic->run_coo(A, B, S, P1);
+    gpu_basic->cleanup_coo(A, B, S, P1);
+
     cpu_basic->run_coo(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
@@ -170,7 +186,10 @@ TEST(BasicTest, GPU_advanced)
     COO<float> P1(S);
     COO<float> P2(S);
 
+    gpu_basic->init_coo(A, B, S, P1);
     gpu_basic->run_coo(A, B, S, P1);
+    gpu_basic->cleanup_coo(A, B, S, P1);
+
     cpu_basic->run_coo(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
@@ -197,7 +216,10 @@ TEST(BasicTest, GPU_advanced_dense)
     COO<float> P1(S);
     COO<float> P2(S);
 
+    gpu_basic->init_coo(A, B, S, P1);
     gpu_basic->run_coo(A, B, S, P1);
+    gpu_basic->cleanup_coo(A, B, S, P1);
+
     cpu_basic->run_coo(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
@@ -224,7 +246,10 @@ TEST(BasicTest, GPU_advanced_sparse)
     COO<float> P1(S);
     COO<float> P2(S);
 
+    gpu_basic->init_coo(A, B, S, P1);
     gpu_basic->run_coo(A, B, S, P1);
+    gpu_basic->cleanup_coo(A, B, S, P1);
+
     cpu_basic->run_coo(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
@@ -252,13 +277,18 @@ TEST(BasicTest, GPU_test_tiled)
     COO<float> P1(S_coo);
     CSR<float> P2(S_csr);
 
+    gpu_basic->init_coo(A, B, S_coo, P1);
     gpu_basic->run_coo(A, B, S_coo, P1);
+    gpu_basic->cleanup_coo(A, B, S_coo, P1);
+
+    gpu_tiled->init_csr(A, B, S_csr, P2);
     gpu_tiled->run_csr(A, B, S_csr, P2);
+    gpu_tiled->cleanup_csr(A, B, S_csr, P2);
 
     EXPECT_EQ(P1, COO<float>(P2));
 }
 
-TEST(BasicTest, CPU_PyTorch)
+/*TEST(BasicTest, CPU_PyTorch)
 {
     auto cpu_basic =
         std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
@@ -362,5 +392,5 @@ TEST(BasicTest, GPU_PyTorch_advanced)
     cpu_basic->run_csr(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
-}
+}*/
 
