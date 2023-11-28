@@ -31,6 +31,11 @@ public:
         init_csr(triplets);
     }
 
+    CSR(int rows, int cols, int nbThreads, std::vector<Triplet<T>> triplets)
+    : rows(rows), cols(cols) {
+        init_csr(triplets);
+    }
+
     CSR(const CSR &other)
     : rows(other.rows), cols(other.cols), rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values)
     {}
@@ -155,6 +160,14 @@ public:
         return &values[j];
     }
 
+    void calculate_start_idx(int nbThreads){
+        this->computeDispatcher(nbThreads);
+    }
+
+    const std::vector<int> &getStartIdx(){
+        return this->startIdx;
+    }
+
 private:
     int rows;
     int cols;
@@ -197,9 +210,6 @@ private:
         }
 
         this->rowPositions.emplace_back(idx);
-
-        const int nbThreads = 32*32;
-        this->computeDispatcher(nbThreads);
     }
 
     bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
@@ -264,7 +274,7 @@ private:
         }
 
         // We need to make sure the size is similar
-        while(this->startIdx.size() < nbThreads) {
+        while(this->startIdx.size() <= nbThreads) {
             // The threads here don't do anything
             this->startIdx.push_back(this->rows);
         }

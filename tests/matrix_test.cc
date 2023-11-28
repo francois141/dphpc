@@ -364,3 +364,38 @@ TEST(BasicTest, GPU_PyTorch_advanced)
     EXPECT_EQ(P1, P2);
 }
 
+TEST(BasicTest, dispatcher_more_threads_than_rows){
+    std::vector<Triplet<float>> triplets_csr{{0,0,1.0},{1,0,1.0},{0,1,1.0},{1,1,1.0}};
+    CSR<float> csr_mat(2,2,triplets_csr);
+
+    int num_threads = 4;
+    csr_mat->compute_start_idx(num_threads);
+    std::vector<int> start_idx = csr_mat->getStartIdx();
+    std::vector<int> expected{0,1,2,2,2};
+
+    EXPECT_EQ(start_idx, expected); 
+}
+
+TEST(BasicTest, dispatcher_equal_num_threads_than_rows){
+    std::vector<Triplet<float>> triplets_csr{{0,0,1.0},{1,0,1.0},{0,1,1.0},{1,1,1.0}};
+    CSR<float> csr_mat(2,2,triplets_csr);
+
+    int num_threads = 2;
+    csr_mat->compute_start_idx(num_threads);
+    std::vector<int> start_idx = csr_mat->getStartIdx();
+    std::vector<int> expected{0,1,2};
+
+    EXPECT_EQ(start_idx, expected); 
+}
+
+TEST(BasicTest, dispatcher_less_threads_than_rows){
+    std::vector<Triplet<float>> triplets_csr{{0,0,1.0},{1,0,1.0},{2,1,1.0},{3,1,1.0}};
+    CSR<float> csr_mat(4,2,triplets_csr);
+
+    int num_threads = 2;
+    csr_mat->compute_start_idx(num_threads);
+    std::vector<int> start_idx = csr_mat->getStartIdx();
+    std::vector<int> expected{0,2,4};
+
+    EXPECT_EQ(start_idx, expected); 
+}
