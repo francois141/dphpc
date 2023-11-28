@@ -223,7 +223,7 @@ private:
     void computeDispatcher(int nbThreads) {
         // Prepare the sizes
         std::vector<int> sizes;
-        for(int i = 0; i < this->rows-1;i++) {
+        for(int i = 0; i < this->rows; i++) {
             sizes.push_back(this->rowPositions[i+1] - this->rowPositions[i]);
         }
 
@@ -231,12 +231,12 @@ private:
         // Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum
         // https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/
         int start = 1;
-        int end = std::accumulate(sizes.begin(), sizes.end(), 0);
+        int end = this->values.size();
 
-        while(start != end) {
-            int middle = (start + end + 1) / 2;
+        while(start <= end) {
+            int middle = (start + end) / 2;
             if(testValue(sizes, middle, nbThreads)) {
-                end = middle;
+                end = middle-1;
             } else {
                 start = middle+1;
             }
