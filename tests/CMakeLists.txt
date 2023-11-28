@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #https://stackoverflow.com/questions/62693218/how-to-solve-gtest-and-libtorch-linkage-conflict
-add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
+#add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
 include(FetchContent)
 FetchContent_Declare(

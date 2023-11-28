@@ -160,7 +160,7 @@ public:
         return &values[j];
     }
 
-    void calculate_start_idx(int nbThreads){
+    void calculateStartIdx(int nbThreads){
         this->computeDispatcher(nbThreads);
     }
 
