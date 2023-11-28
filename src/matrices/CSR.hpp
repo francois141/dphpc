@@ -164,8 +164,9 @@ private:
     std::vector<int> startIdx;
 
     void init_csr(std::vector<Triplet<T>> triplets) {
-        
         assert(triplets.size() > 0);
+
+        sort(triplets.begin(), triplets.end());
 
         for (auto e: triplets) {
             assert(e.row >= 0 && e.row < this->rows);
