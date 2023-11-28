@@ -198,8 +198,8 @@ private:
 
         this->rowPositions.emplace_back(idx);
 
-        // const int nbThreads = 32*32;
-        // this->computeDispatcher(nbThreads);
+        const int nbThreads = 32*32;
+        this->computeDispatcher(nbThreads);
     }
 
     bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
@@ -255,12 +255,12 @@ private:
         currThread++;
 
         // While currSizeThread <= segSize ==> give it to the same thread
-        for(size_t i = 0; i < this->values.size();i++) {
-            currSizeThread += this->values[i];
+        for(size_t i = 0; i < sizes.size();i++) {
+            currSizeThread += sizes[i];
             if(currSizeThread > segSize) {
                 // Give it to the new thread;
-                this->values.push_back((int)i);
-                currSizeThread = this->values[i];
+                this->startIdx.push_back((int)i);
+                currSizeThread = sizes[i];
             }
         }
 
