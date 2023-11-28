@@ -31,7 +31,7 @@ public:
     }
 
     CSR(const CSR &other)
-    : rows(other.rows), cols(other.cols), rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values)
+    : rows(other.rows), cols(other.cols), rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values), startIdx(other.startIdx)
     {}
 
     CSR(COO<T> &coo) {
@@ -141,12 +141,12 @@ public:
         return &values[j];
     }
 
-    void calculateStartIdx(int nbThreads){
-        this->computeDispatcher(nbThreads);
-    }
-
     const std::vector<int> &getStartIdx(){
         return this->startIdx;
+    }
+
+    void recomputeDispatcher(int numThreads) {
+        this->computeDispatcher(numThreads);
     }
 
 private:
@@ -192,6 +192,8 @@ private:
         }
 
         this->rowPositions.emplace_back(idx);
+
+        this->computeDispatcher(32*32);
     }
 
     bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
@@ -243,6 +245,7 @@ private:
         this->startIdx.reserve(this->rowPositions.size());
 
         // First thread starts at 0
+        this->startIdx.clear();
         this->startIdx.push_back(0);
 
         // While currSizeThread <= segSize ==> give it to the same thread
@@ -256,7 +259,7 @@ private:
         }
 
         // We need to make sure the size is similar
-        while(this->startIdx.size() <= nbThreads) {
+        while((int)this->startIdx.size() <= nbThreads) {
             // The threads here don't do anything
             this->startIdx.push_back(this->rows);
         }
