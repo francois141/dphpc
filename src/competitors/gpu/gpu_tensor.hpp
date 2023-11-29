@@ -26,6 +26,15 @@ namespace Competitors {
 
             assert(K == B.getCols());
 
+            // Make sure stride is good
+            if(M% 16 != 0 || N % 16 != 0 || K % 16 != 0)  {
+                std::cout << "This matrix doesn't work for tensor cores" << std::endl;
+                exit(0);
+            }
+
+            // Prepare dispatcher for the tensor cores
+            S.computeDispatcherTensorCores(32*32);
+
             // get the size needed for each matrix
             size_t A_size = M * K * sizeof(T);
             size_t B_size = K * N * sizeof(T);

@@ -36,7 +36,7 @@ public:
         this->rowPositions.reserve(values.size());
         this->values.reserve(values.size());
 
-        sort(values.begin(), values.end());
+        std::sort(values.begin(), values.end());
 
         for (const Triplet<T> &triplet: values) {
             assert(triplet.row >= 0 && triplet.row < this->rows);

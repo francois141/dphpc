@@ -145,8 +145,12 @@ public:
         return this->startIdx;
     }
 
-    void recomputeDispatcher(int numThreads) {
-        this->computeDispatcher(numThreads);
+    void computeDispatcher(int numThreads) {
+        this->_dispatch(numThreads,1);
+    }
+
+    void computeDispatcherTensorCores(int nbThreads) {
+        this->_dispatch(nbThreads, 16);
     }
 
 private:
@@ -160,18 +164,12 @@ private:
     void init_csr(std::vector<Triplet<T>> triplets) {
         assert(triplets.size() > 0);
 
-        sort(triplets.begin(), triplets.end());
+        std::sort(triplets.begin(), triplets.end());
 
         for (auto e: triplets) {
             assert(e.row >= 0 && e.row < this->rows);
             assert(e.col >= 0 && e.col < this->cols);
         }
-
-        auto comp = [](const Triplet<T> t1, const Triplet<T> t2) -> bool {
-            return t1.row < t2.row || (t1.row == t2.row && t1.col < t2.col);
-        };
-
-        std::sort(triplets.begin(), triplets.end(), comp);
 
         this->rowPositions = std::vector<int>(0);
         this->colPositions = std::vector<int>(0);
@@ -193,7 +191,7 @@ private:
 
         this->rowPositions.emplace_back(idx);
 
-        this->computeDispatcher(32*32);
+        this->_dispatch(32*32,1);
     }
 
     bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
@@ -214,31 +212,14 @@ private:
         return cnt <= nbThreads;
     }
 
-    void computeDispatcher(int nbThreads) {
-        // Prepare the sizes
-        std::vector<int> sizes;
-        for(int i = 0; i < this->rows; i++) {
-            sizes.push_back(this->rowPositions[i+1] - this->rowPositions[i]);
-        }
-
-        this->_dispatch(nbThreads, sizes);
-    }
-
-    void computeDispatcherTensorCores(int nbThreads) {
-        if(this->rows % 16 != 0 || this->cols % 16 != 1)  {
-            std::cout << "This matrix doesn't work for tensor cores" << std::endl;
-        }
+    void _dispatch(int nbThreads, int stride) {
 
         // Prepare the sizes
         std::vector<int> sizes;
-        for(int i = 0; i < this->rows; i+=16) {
-            sizes.push_back(this->rowPositions[i+16] - this->rowPositions[i]);
+        for(int i = 0; i < this->rows; i+=stride) {
+            sizes.push_back(this->rowPositions[i+stride] - this->rowPositions[i]);
         }
 
-        this->_dispatch(nbThreads, sizes);
-    }
-
-    void _dispatch(int nbThreads, std::vector<int> &sizes) {
         // Step 1)
         // Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum
         // https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/
@@ -269,9 +250,10 @@ private:
         // While currSizeThread <= segSize ==> give it to the same thread
         for(size_t i = 0; i < sizes.size(); i++) {
             currSizeThread += sizes[i];
+
             if(currSizeThread > segSize) {
                 // Give it to the new thread;
-                this->startIdx.push_back((int)i);
+                this->startIdx.push_back((int)i*stride);
                 currSizeThread = sizes[i];
             }
         }
