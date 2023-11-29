@@ -5,6 +5,7 @@
 #include "competitors/gpu/gpu_basic.hpp"
 #include "competitors/gpu/gpu_tiled.hpp"
 #include "competitors/gpu/gpu_thread_dispatcher.hpp"
+#include "competitors/gpu/gpu_tensor.hpp"
 #include "competitors/gpu/gpu_pytorch.hpp"
 #include "benchmark/dataset.hpp"
 #include "utils/random_generator.hpp"
@@ -400,7 +401,7 @@ TEST(BasicTest, dispatcher_more_threads_than_rows){
     CSR<float> csr_mat(2,2,triplets_csr);
 
     int num_threads = 4;
-    csr_mat.recomputeDispatcher(num_threads);
+    csr_mat.computeDispatcher(num_threads);
 
     std::vector<int> start_idx = csr_mat.getStartIdx();
     std::vector<int> expected{0,1,2,2,2};
@@ -413,7 +414,7 @@ TEST(BasicTest, dispatcher_equal_num_threads_than_rows){
     CSR<float> csr_mat(2,2,triplets_csr);
 
     int num_threads = 2;
-    csr_mat.recomputeDispatcher(num_threads);
+    csr_mat.computeDispatcher(num_threads);
 
     std::vector<int> start_idx = csr_mat.getStartIdx();
     std::vector<int> expected{0,1,2};
@@ -426,7 +427,7 @@ TEST(BasicTest, dispatcher_less_threads_than_rows){
     CSR<float> csr_mat(4,2,triplets_csr);
 
     int num_threads = 2;
-    csr_mat.recomputeDispatcher(num_threads);
+    csr_mat.computeDispatcher(num_threads);
 
     std::vector<int> start_idx = csr_mat.getStartIdx();
     std::vector<int> expected{0,2,4};
@@ -439,7 +440,7 @@ TEST(BasicTest, dispatcher_empty_rows){
     CSR<float> csr_mat(4,2,triplets_csr);
 
     int num_threads = 2;
-    csr_mat.recomputeDispatcher(num_threads);
+    csr_mat.computeDispatcher(num_threads);
 
     std::vector<int> start_idx = csr_mat.getStartIdx();
     std::vector<int> expected{0,4,4};
@@ -457,7 +458,7 @@ TEST(BasicTest, dispatcher_large_regular_input){
     CSR<float> csr_mat(n,n,triplets_csr);
 
     int num_threads = n/2;
-    csr_mat.recomputeDispatcher(num_threads);
+    csr_mat.computeDispatcher(num_threads);
 
     std::vector<int> start_idx = csr_mat.getStartIdx();
     std::vector<int> expected;
@@ -480,6 +481,58 @@ TEST(BasicTest, GPU_test_dispatcher){
 
     auto dataset =
             std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.3));
+
+    auto S_coo = dataset->getS_COO();
+    auto S_csr = dataset->getS_CSR();
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    COO<float> P1(S_coo);
+    CSR<float> P2(S_csr);
+
+    gpu_basic->init_coo(A, B, S_coo, P1);
+    gpu_basic->run_coo(A, B, S_coo, P1);
+    gpu_basic->cleanup_coo(A, B, S_coo, P1);
+
+    gpu_dispatcher->init_csr(A, B, S_csr, P2);
+    gpu_dispatcher->run_csr(A, B, S_csr, P2);
+    gpu_dispatcher->cleanup_csr(A, B, S_csr, P2);
+
+    EXPECT_EQ(P1, COO<float>(P2));
+}
+
+
+TEST(BasicTest, test_dispatch_tensor){
+    std::vector<Triplet<float>> triplets_csr;
+
+    int n = 64;
+    for(int i = 0; i < n;i++) {
+        triplets_csr.push_back({i,i,1});
+    }
+
+    CSR<float> csr_mat(n,n,triplets_csr);
+
+    int num_threads = n/2;
+    csr_mat.computeDispatcherTensorCores(4);
+
+    std::vector<int> start_idx = csr_mat.getStartIdx();
+    std::vector<int> expected = {0,16,32,48,64};
+
+    EXPECT_EQ(start_idx, expected);
+}
+
+TEST(BasicTest, GPU_test_tensor){
+    const int rows = 512;
+    const int cols = 512;
+
+    auto gpu_basic =
+            std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
+
+    auto gpu_dispatcher =
+            std::unique_ptr<Competitors::GPUTensor<float>>(new Competitors::GPUTensor<float>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(512, 512, 32, 0.4));
 
     auto S_coo = dataset->getS_COO();
     auto S_csr = dataset->getS_CSR();
