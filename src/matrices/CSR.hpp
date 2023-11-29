@@ -221,6 +221,24 @@ private:
             sizes.push_back(this->rowPositions[i+1] - this->rowPositions[i]);
         }
 
+        this->_dispatch(nbThreads, sizes);
+    }
+
+    void computeDispatcherTensorCores(int nbThreads) {
+        if(this->rows % 16 != 0 || this->cols % 16 != 1)  {
+            std::cout << "This matrix doesn't work for tensor cores" << std::endl;
+        }
+
+        // Prepare the sizes
+        std::vector<int> sizes;
+        for(int i = 0; i < this->rows; i+=16) {
+            sizes.push_back(this->rowPositions[i+16] - this->rowPositions[i]);
+        }
+
+        this->_dispatch(nbThreads, sizes);
+    }
+
+    void _dispatch(int nbThreads, std::vector<int> &sizes) {
         // Step 1)
         // Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum
         // https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/
