@@ -313,8 +313,13 @@ TEST(BasicTest, GPU_test_blocked)
     COO<float> P1(S_coo);
     CSR<float> P2(S_csr);
 
+    gpu_basic->init_coo(A, B, S_coo, P1);
     gpu_basic->run_coo(A, B, S_coo, P1);
+    gpu_basic->cleanup_coo(A, B, S_coo, P1);
+
+    gpu_blocked->init_csr(A, B, S_csr, P2);
     gpu_blocked->run_csr(A, B, S_csr, P2);
+    gpu_blocked->cleanup_csr(A, B, S_csr, P2);
 
     EXPECT_EQ(P1, COO<float>(P2));
 }
@@ -394,7 +399,10 @@ TEST(BasicTest, GPU_PyTorch)
     CSR<float> P1(S);
     CSR<float> P2(S);
     cpu_basic->run_csr(A, B, S, P1);
+
+    gpu_pytorch->init_csr(A, B, S, P2);
     gpu_pytorch->run_csr(A, B, S, P2);
+    gpu_pytorch->cleanup_csr(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
 }
@@ -420,7 +428,10 @@ TEST(BasicTest, GPU_PyTorch_advanced)
     CSR<float> P1(S);
     CSR<float> P2(S);
 
+    gpu_pytorch->init_csr(A, B, S, P1);
     gpu_pytorch->run_csr(A, B, S, P1);
+    gpu_pytorch->cleanup_csr(A, B, S, P1);
+
     cpu_basic->run_csr(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
