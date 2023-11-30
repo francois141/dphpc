@@ -68,7 +68,7 @@ void gpu_blocked_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_g
 	
 	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
 	// dim3 dimGrid(N / dimBlock.x, M / dimBlock.y);
-	dim3 dimGrid(BLOCK_SIZE, BLOCK_SIZE);
+	dim3 dimGrid(2, 2);
 
 	// Perform SDDMM on the GPU
 	gpu_blocked_csr_kernel<<<dimGrid, dimBlock>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N);
