@@ -346,7 +346,10 @@ TEST(BasicTest, CPU_PyTorch)
     CSR<float> P1(S);
     CSR<float> P2(S);
     cpu_basic->run_csr(A, B, S, P1);
+
+    cpu_pytorch->init_csr(A, B, S, P2);
     cpu_pytorch->run_csr(A, B, S, P2);
+    cpu_pytorch->cleanup_csr(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
 }
@@ -372,7 +375,10 @@ TEST(BasicTest, CPU_PyTorch_advanced)
     CSR<float> P1(S);
     CSR<float> P2(S);
 
+    cpu_pytorch->init_csr(A, B, S, P1);
     cpu_pytorch->run_csr(A, B, S, P1);
+    cpu_pytorch->cleanup_csr(A, B, S, P1);
+
     cpu_basic->run_csr(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
