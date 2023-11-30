@@ -144,8 +144,10 @@ namespace Competitors {
             cudaFree(rows_gpu);
         }
 
-        bool csr_supported() override { return true; };
-        bool coo_supported() override { return true; };
+        virtual bool csr_supported() override { return true; };
+        virtual bool coo_supported() override { return true; };
+
+        virtual bool is_gpu() override { return true; };
 
     private:
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu;

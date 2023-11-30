@@ -76,6 +76,7 @@ namespace SDDMM {
 
                         // Running competitor
                         SDDMM::timing_result res = timing(
+                            competitor->is_gpu(),
                             [&] { competitor->init_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); },
                             [&] { competitor->run_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); },
                             [&] { competitor->cleanup_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); }
@@ -90,7 +91,7 @@ namespace SDDMM {
                             }
                         }
                         DEBUG_OUT(" - Execution took " << MILLISECOND(res.total_ns) << " milliseconds (" << res.total_ns << "ns)" << std::endl << std::endl);
-                        FILE_DUMP(competitor->name << "," << this->getDataset().getName() + "-csr" << ",CSR,"
+                        FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR,"
                             << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << ","
                             << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << csr_correctness << std::endl
                         );
@@ -108,6 +109,7 @@ namespace SDDMM {
 
                         // Running competitor
                         SDDMM::timing_result res = timing(
+                            competitor->is_gpu(),
                             [&] { competitor->init_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); },
                             [&] { competitor->run_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); },
                             [&] { competitor->cleanup_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); }
@@ -122,7 +124,7 @@ namespace SDDMM {
                             }
                         }
                         DEBUG_OUT(" - Execution took " << MILLISECOND(res.total_ns) << " milliseconds (" << res.total_ns << "ns)" << std::endl << std::endl);
-                        FILE_DUMP(competitor->name + "-coo" << "," << this->getDataset().getName() << ",COO,"
+                        FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO,"
                             << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << ","
                             << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << std::endl
                         );
@@ -137,20 +139,46 @@ namespace SDDMM {
 
             std::string path;
 
-            SDDMM::timing_result timing(std::function<void()> init_fnc, std::function<void()> comp_fnc, std::function<void()> cleanup_fnc) {
-                const auto start = std::chrono::high_resolution_clock::now();
+            SDDMM::timing_result timing(bool is_gpu, std::function<void()> init_fnc, std::function<void()> comp_fnc, std::function<void()> cleanup_fnc) {
+                std::chrono::time_point<std::chrono::high_resolution_clock> start, init_checkpoint, comp_checkpoint, end;
+                cudaEvent_t gpu_start, gpu_end;
+                float gpu_ms = 0;
+
+                cudaEventCreate(&gpu_start);
+                cudaEventCreate(&gpu_end);
+
+                start = std::chrono::high_resolution_clock::now();
                 init_fnc();
-                const auto init_checkpoint = std::chrono::high_resolution_clock::now();
-                comp_fnc();
-                const auto comp_checkpoint = std::chrono::high_resolution_clock::now();
+
+                if (is_gpu) {
+                    init_checkpoint = std::chrono::high_resolution_clock::now();
+                    cudaEventRecord(gpu_start);
+                    comp_fnc();
+                    cudaEventRecord(gpu_end);
+                    comp_checkpoint = std::chrono::high_resolution_clock::now();
+                } else {
+                    init_checkpoint = std::chrono::high_resolution_clock::now();
+                    comp_fnc();
+                    comp_checkpoint = std::chrono::high_resolution_clock::now();
+                }
+                
                 cleanup_fnc();
-                const auto end = std::chrono::high_resolution_clock::now();
+                end = std::chrono::high_resolution_clock::now();
                 
                 SDDMM::timing_result result;
                 result.init_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(init_checkpoint - start).count();
-                result.comp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(comp_checkpoint - init_checkpoint).count();
                 result.cleanup_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - comp_checkpoint).count();
                 result.total_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+
+                if (is_gpu) {
+                    cudaEventElapsedTime(&gpu_ms, gpu_start, gpu_end);
+                    result.comp_ns = gpu_ms * 1000000;
+                } else {
+                    result.comp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(comp_checkpoint - init_checkpoint).count();
+                }
+
+                cudaEventDestroy(gpu_start);
+                cudaEventDestroy(gpu_end);
 
                 return result;
             }

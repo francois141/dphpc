@@ -78,8 +78,10 @@ namespace Competitors {
 
         virtual inline void run_coo(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) override {}
 
-        bool csr_supported() override { return true; };
-        bool coo_supported() override { return false; };
+        virtual bool csr_supported() override { return true; };
+        virtual bool coo_supported() override { return false; };
+
+        virtual bool is_gpu() override { return true; }
 
     private:
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu;

@@ -31,5 +31,7 @@ namespace SDDMM {
 
             virtual bool csr_supported() = 0;
             virtual bool coo_supported() = 0;
+
+            virtual bool is_gpu() { return false; }
     };
 }

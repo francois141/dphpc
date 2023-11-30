@@ -63,8 +63,10 @@ namespace Competitors {
             // https://pytorch.org/docs/stable/generated/torch.sparse.sampled_addmm.html
             virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {}
 
-            virtual bool csr_supported() { return true; }; 
-            virtual bool coo_supported() { return false; };
+            virtual bool csr_supported() override { return true; }; 
+            virtual bool coo_supported() override { return false; };
+
+            virtual bool is_gpu() override { return true; };
         
         private:
             torch::ScalarType scalar_type;

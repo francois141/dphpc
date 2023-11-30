@@ -196,8 +196,8 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_human_gene2(config.data_folder, config.K);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_random(config.K);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_random(config.K);
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
     // benchmark_cage14(config.data_folder, config.K);

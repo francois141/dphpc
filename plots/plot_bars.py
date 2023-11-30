@@ -39,15 +39,17 @@ def plot_bars(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     runtime_cols_ms = [ 'total_ms', 'Initialization', 'Computation', 'Cleanup' ]
     df[runtime_cols_ms] = df[runtime_cols_ns] / 1_000_000
 
-    plot_df = df[ [ 'competitor', 'Initialization', 'Computation', 'Cleanup' ] ]
-    plot_df = plot_df.set_index("competitor")
-    plot_df = plot_df.groupby("competitor").mean()
+    plot_df = df[ [ 'competitor', 'mat_repr', 'K', 'Initialization', 'Computation', 'Cleanup' ] ]
+    plot_df = plot_df.groupby([ 'competitor', 'mat_repr', 'K' ]).mean()
+    plot_df = plot_df.sort_values(by=[ "K", "competitor", "mat_repr" ])
+    plot_df.index = plot_df.index.map(lambda x: f"{x[0]} - {x[1]} ({x[2]})")
+
     plot_df.plot(stacked=True, kind='bar', ax=ax)
 
     sns.despine(left=True, bottom=False) # do not show axis line on the left but show it on the bottom (needs axes.linewidth & axes.edgecolor set)
 
     ### Titles ###
-    plt.xlabel("Competitor", loc="center", fontdict={ "size": "medium" })
+    plt.xlabel("Competitor - Matrix representation (K)", loc="center", fontdict={ "size": "medium" })
     plt.ylabel("Runtime [ms]")
     plt.title(f"SDDMM runtime on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\nRunning on {CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
 
