@@ -9,6 +9,7 @@
 #include <ostream>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 
 #include "triplet.h"
 #include "COO.hpp"
@@ -30,7 +31,7 @@ public:
     }
 
     CSR(const CSR &other)
-    : rows(other.rows), cols(other.cols), rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values)
+    : rows(other.rows), cols(other.cols), rowPositions(other.rowPositions), colPositions(other.colPositions), values(other.values), startIdx(other.startIdx)
     {}
 
     CSR(COO<T> &coo) {
@@ -140,16 +141,26 @@ public:
         return &values[j];
     }
 
+    const std::vector<int> &getStartIdx(){
+        return this->startIdx;
+    }
+
+    void recomputeDispatcher(int numThreads) {
+        this->computeDispatcher(numThreads);
+    }
+
 private:
     int rows;
     int cols;
     std::vector<int> rowPositions;
     std::vector<int> colPositions;
     std::vector<T> values;
+    std::vector<int> startIdx;
 
     void init_csr(std::vector<Triplet<T>> triplets) {
-        
         assert(triplets.size() > 0);
+
+        sort(triplets.begin(), triplets.end());
 
         for (auto e: triplets) {
             assert(e.row >= 0 && e.row < this->rows);
@@ -181,6 +192,77 @@ private:
         }
 
         this->rowPositions.emplace_back(idx);
+
+        this->computeDispatcher(32*32);
+    }
+
+    bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
+        if(*std::max_element(sizes.begin(), sizes.end()) > val) {
+            return false;
+        }
+
+        int cnt = 1;
+        int sum = 0;
+        for(const int e: sizes) {
+            sum += e;
+            if(sum > val) {
+                cnt++;
+                sum = e;
+            }
+        }
+
+        return cnt <= nbThreads;
+    }
+
+    void computeDispatcher(int nbThreads) {
+        // Prepare the sizes
+        std::vector<int> sizes;
+        for(int i = 0; i < this->rows; i++) {
+            sizes.push_back(this->rowPositions[i+1] - this->rowPositions[i]);
+        }
+
+        // Step 1)
+        // Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum
+        // https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/
+        int start = 1;
+        int end = this->values.size();
+        int segSize = 0;
+
+        while(start <= end) {
+            int middle = (start + end) / 2;
+            if(testValue(sizes, middle, nbThreads)) {
+                segSize = middle;
+                end = middle-1;
+            } else {
+                start = middle+1;
+            }
+        }
+
+        // Step 2)
+        // Compute each thread's range of responsibility
+        int currSizeThread = 0;
+
+        this->startIdx.reserve(this->rowPositions.size());
+
+        // First thread starts at 0
+        this->startIdx.clear();
+        this->startIdx.push_back(0);
+
+        // While currSizeThread <= segSize ==> give it to the same thread
+        for(size_t i = 0; i < sizes.size(); i++) {
+            currSizeThread += sizes[i];
+            if(currSizeThread > segSize) {
+                // Give it to the new thread;
+                this->startIdx.push_back((int)i);
+                currSizeThread = sizes[i];
+            }
+        }
+
+        // We need to make sure the size is similar
+        while((int)this->startIdx.size() <= nbThreads) {
+            // The threads here don't do anything
+            this->startIdx.push_back(this->rows);
+        }
     }
 };
 

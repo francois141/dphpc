@@ -345,10 +345,44 @@ namespace SDDMM {
     };
 
     template<typename T>
+    class UnbalancedDataset : public Dataset<T> {
+    public:
+
+        UnbalancedDataset(const int M, const int N, const int K, const double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
+        {
+            std::clamp(density, 0.0, 1.0);
+            assert(0 <= density && density <= 1.0);
+
+            this->generateDense(M, N, K);
+
+            const int nbRowsOne = density * M;
+            std::vector<Triplet<T>> triplets;
+            triplets.reserve(nbRowsOne * N);
+
+            for(int row_idx = 0; row_idx < nbRowsOne;row_idx++) {
+                for(int col_idx = 0; col_idx < N;col_idx++) {
+                    triplets.push_back(Triplet<T>(row_idx, col_idx, 1.0));
+                }
+            }
+
+            this->S_csr = CSR<T>(M, N, triplets);
+            this->S_coo = COO<T>(M, N, triplets);
+
+            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from unbalanced generator ===\n" << std::endl);
+        }
+
+    private:
+        const int M;
+        const int N;
+        const int K;
+        const double density;
+    };
+
+    template<typename T>
     class Cage14Dataset : public MatrixMarketDataset<T> {
-        public:
-            Cage14Dataset(const std::string &data_folder, const int K)
-            : MatrixMarketDataset<T>("Cage14", data_folder, K, "cage14/cage14.mtx")
-            {}
+    public:
+        Cage14Dataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("Cage14", data_folder, K, "cage14/cage14.mtx")
+        {}
     };
 }
