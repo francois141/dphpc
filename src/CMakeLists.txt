@@ -27,6 +27,8 @@ set(SRC_FILES
         competitors/gpu/gpu_basic.cu
         competitors/gpu/gpu_basic.hpp
         competitors/gpu/gpu_pytorch.hpp
+        competitors/gpu/gpu_shared.cu
+        competitors/gpu/gpu_shared.hpp
         competitors/gpu/gpu_tiled.cu
         competitors/gpu/gpu_tiled.hpp
         competitors/gpu/gpu_thread_dispatcher.cu

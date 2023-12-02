@@ -35,6 +35,9 @@ void init_float_competitors() {
 
     auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
     float_competitors.push_back(gpu_thread_dispatcher);
+    
+    auto gpu_shared = std::make_shared< Competitors::GPUShared>();
+    float_competitors.push_back(gpu_shared);
 }
 
 /* =========================== */
@@ -96,7 +99,7 @@ void benchmark_human_gene2(const std::string& data_folder, const int K) {
 /* Benchmark the Random dataset */
 /* ==================================*/
 void benchmark_random(const int K) {
-    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(40000, 40000, K, 0.01); // 40k x 40k with 0.01/0.05
+    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(4000, 4000, K, 0.1); // 40k x 40k with 0.01/0.05
     SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
 
     /* Run the benchmark */
