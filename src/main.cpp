@@ -179,9 +179,9 @@ int main(int argc, char* argv[]) {
 
     init_float_competitors();
 
-    // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Total_Execution_Time,Initialization_Time,Computation_Time,Cleanup_Time,Correctness
+    // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Non_Zeros,Total_Execution_Time,Initialization_Time,Computation_Time,Cleanup_Time,Correctness
     if (!config.no_csv_header) {
-        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
+        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
     }
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);

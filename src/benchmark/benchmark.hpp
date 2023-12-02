@@ -92,7 +92,7 @@ namespace SDDMM {
                         }
                         DEBUG_OUT(" - Execution took " << MILLISECOND(res.total_ns) << " milliseconds (" << res.total_ns << "ns)" << std::endl << std::endl);
                         FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR,"
-                            << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << ","
+                            << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
                             << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << csr_correctness << std::endl
                         );
 
@@ -125,7 +125,7 @@ namespace SDDMM {
                         }
                         DEBUG_OUT(" - Execution took " << MILLISECOND(res.total_ns) << " milliseconds (" << res.total_ns << "ns)" << std::endl << std::endl);
                         FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO,"
-                            << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << ","
+                            << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
                             << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << std::endl
                         );
 
