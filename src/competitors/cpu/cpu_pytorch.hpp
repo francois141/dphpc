@@ -2,6 +2,7 @@
 #include <torch/torch.h>
 
 #include "utils/util.hpp"
+#include "utils/helpers.hpp"
 #include "benchmark/competitor.hpp"
 #include "matrices/matrices.h"
 
@@ -53,8 +54,8 @@ namespace Competitors {
             }
 
             virtual inline void cleanup_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
-                P.setRowPositions(std::vector<int>(result.crow_indices().data_ptr<int64_t>(), result.crow_indices().data_ptr<int64_t>() + result.crow_indices().numel()));
-                P.setColPositions(std::vector<int>(result.col_indices().data_ptr<int64_t>(), result.col_indices().data_ptr<int64_t>() + result.col_indices().numel()));
+                P.setRowPositions(copy_pytorch_mat<int>(result.crow_indices().const_data_ptr<int64_t>(), result.crow_indices().numel()));
+                P.setColPositions(copy_pytorch_mat<int>(result.col_indices().data_ptr<int64_t>(), result.col_indices().numel()));
                 P.setValues(std::vector<T>(result.values().data_ptr<T>(), result.values().data_ptr<T>() + result.values().numel()));
             }
 

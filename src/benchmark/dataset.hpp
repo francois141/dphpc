@@ -321,9 +321,9 @@ namespace SDDMM {
     class RandomWithDensityDataset : public Dataset<T> {
         public:
 
-            RandomWithDensityDataset(const int M, const int N, const int K, const double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
+            RandomWithDensityDataset(const int M, const int N, const int K, double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
             {
-                std::clamp(density, 0.0, 1.0);
+                density = std::clamp(density, 0.0, 1.0);
                 assert(0 <= density && density <= 1.0);
 
                 this->generateDense(M, N, K);

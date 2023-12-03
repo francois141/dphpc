@@ -41,7 +41,7 @@ namespace Competitors {
                 torch::Tensor crow_indices = torch::tensor(S.getRowPositions(), int_type);
                 torch::Tensor col_indices = torch::tensor(S.getColPositions(), int_type);
                 torch::Tensor values = torch::tensor(S.getValues(), scalar_type);
-                std::vector<int64_t> size = {S.getRows(), S.getCols()};
+                std::vector<int64_t> size = {static_cast<int64_t>(S.getRows()), static_cast<int64_t>(S.getCols())};
                 sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, scalar_type).to(gpu);
             }
 
@@ -55,8 +55,8 @@ namespace Competitors {
                 const auto cpu = torch::device(torch::kCPU);
                 result = result.to(cpu);
 
-                P.setRowPositions(std::vector<int>(result.crow_indices().const_data_ptr<int64_t>(), result.crow_indices().const_data_ptr<int64_t>() + result.crow_indices().numel()));
-                P.setColPositions(std::vector<int>(result.col_indices().const_data_ptr<int64_t>(), result.col_indices().const_data_ptr<int64_t>() + result.col_indices().numel()));
+                P.setRowPositions(copy_pytorch_mat<int>(result.crow_indices().const_data_ptr<int64_t>(), result.crow_indices().numel()));
+                P.setColPositions(copy_pytorch_mat<int>(result.col_indices().const_data_ptr<int64_t>(), result.col_indices().numel()));
                 P.setValues(std::vector<T>(result.values().const_data_ptr<T>(), result.values().const_data_ptr<T>() + result.values().numel()));
             }
             

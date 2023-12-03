@@ -134,7 +134,7 @@ public:
     }
 
     void clearValues() {
-        std::fill(this->values.begin(), this->values.end(), 0);
+        std::fill(this->values.begin(), this->values.end(), static_cast<T>(0));
     }
 
     std::vector<T> &getValues() {
