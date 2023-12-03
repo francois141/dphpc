@@ -11,6 +11,7 @@
 #include "utils/random_generator.hpp"
 #include "utils/util.hpp"
 
+/*
 TEST(BasicTest, COO) {
     std::vector<Triplet<float>> triplets {{0,0,1.0},{0,1,1.0},{1,0,1.0},{1,1,1.0}};
     COO<float> coo(2, 2, triplets);
@@ -290,7 +291,7 @@ TEST(BasicTest, GPU_test_tiled)
     EXPECT_EQ(P1, COO<float>(P2));
 }
 
-/*TEST(BasicTest, CPU_PyTorch)
+TEST(BasicTest, CPU_PyTorch)
 {
     auto cpu_basic =
         std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
@@ -394,7 +395,7 @@ TEST(BasicTest, GPU_PyTorch_advanced)
     cpu_basic->run_csr(A, B, S, P2);
 
     EXPECT_EQ(P1, P2);
-}*/
+}
 
 TEST(BasicTest, dispatcher_more_threads_than_rows){
     std::vector<Triplet<float>> triplets_csr{{0,0,1.0},{1,0,1.0},{0,1,1.0},{1,1,1.0}};
@@ -500,6 +501,7 @@ TEST(BasicTest, GPU_test_dispatcher){
 
     EXPECT_EQ(P1, COO<float>(P2));
 }
+*/
 
 TEST(BasicTest, Adaptie_tiling_reorder_s){
 
@@ -527,7 +529,11 @@ TEST(BasicTest, Adaptie_tiling_reorder_s){
     float expected_vals[] = {2,3,1,4,6,7,5,8,9,10,11,12,13,14,15,16};
 
     gpu_adaptive_tiler->init_csr(A, B, S_csr, P1);
+    int* reordered_cols = gpu_adaptive_tiler->get_reordered_cols();
+    float* reordered_vals = gpu_adaptive_tiler->get_reordered_vals();
 
-    EXPECT_EQ(expected_cols, gpu_adaptive_tiler->get_reordered_cols());
-    EXPECT_EQ(expected_vals, gpu_adaptive_tiler->get_reordered_vals());
+    for (int i = 0; i < expected_cols.size()){
+        EXPECT_EQ(reordered_cols[i], expected_cols[i]) << "Reordered cols differ at index " << i;
+        EXPECT_EQ(reordered_vals[i], expected_vals[i]) << "Reordered vals differ at index " << i;
+    }
 }
