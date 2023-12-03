@@ -12,8 +12,12 @@ This function reorders the columns of the sparse matrix S (CSR) such that all co
 above threshold are at the beginning and all columns with a low denisty are at the end of the panel
 */
 __global__ void reorder_csr_row_panel(int* rows, int* cols, float* vals, int* reordered_cols, float* reordered_vals, int* panel_ptr, int num_rows, int num_cols){
-	std::vector<int> col_count(num_cols, 0);
-	std::vector<int> col_to_tile_id(num_cols, 0);
+	int* col_count = (int*)malloc(num_cols * sizeof(int));
+	int* col_to_tile_id = (int*)malloc(num_cols * sizeof(int));
+	for (int i = 0; i < num_cols; i++){
+		col_count[i] = 0;
+		col_to_tile_id[i] = 0;
+	}
 
 	int start_row = PANEL_SIZE * threadIdx.x;
 	int end_row = min(start_row + PANEL_SIZE, num_rows);
@@ -84,7 +88,7 @@ void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int
 template <typename T>
 void gpu_reorder_csr_row_panel_wrapper(int* rows, int* cols, T* vals, int* reordered_cols, T* reordered_vals, int* panel_ptr, int num_rows, int num_cols){
 	int num_threads = (num_rows + PANEL_SIZE - 1) / PANEL_SIZE;
-	gpu_reorder_csr_row_panel_wrapper<<<1, num_threads>>>(rows, cols, vals, reordered_cols, reordered_vals, panel_ptr, num_rows, num_cols);
+	reorder_csr_row_panel<<<1, num_threads>>>(rows, cols, vals, reordered_cols, reordered_vals, panel_ptr, num_rows, num_cols);
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */
