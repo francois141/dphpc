@@ -7,7 +7,7 @@ template <typename T>
 void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N);
 
 template <typename T>
-void gpu_reorder_csr_row_panel_wrapper(int* cols, T* vals, int* reordered_cols, T* reordered_vals, int* panel_ptr, int num_rows, int num_cols);
+void gpu_reorder_csr_row_panel_wrapper(int* rows, int* cols, T* vals, int* reordered_cols, T* reordered_vals, int* panel_ptr, int num_rows, int num_cols);
 
 namespace Competitors {
 
@@ -62,7 +62,7 @@ namespace Competitors {
             cudaMemcpy(cols_gpu, S.getColPositions().data(), sparse_col_size, cudaMemcpyHostToDevice);
             cudaMemcpy(rows_gpu, S.getRowPositions().data(), sparse_row_size, cudaMemcpyHostToDevice);
             
-            gpu_reorder_csr_row_panel_wrapper(cols_gpu, S_gpu, reordered_cols_gpu, reordered_vals_gpu, panel_ptr_gpu, M, N);
+            gpu_reorder_csr_row_panel_wrapper(rows_gpu, cols_gpu, S_gpu, reordered_cols_gpu, reordered_vals_gpu, panel_ptr_gpu, M, N);
 
             // copy from GPU to RAM
             cudaMemcpy(reordered_cols_gpu, reordered_cols, sparse_col_size, cudaMemcpyDeviceToHost);
@@ -114,7 +114,7 @@ namespace Competitors {
 
         virtual float* get_reordered_vals() { return reordered_vals; }
         virtual int* get_reordered_cols() { return reordered_cols; }
-        virtual int* get_panel_ptr() { return panel_ptr };
+        virtual int* get_panel_ptr() { return panel_ptr; };
 
     private:
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu, * reordered_vals, * reordered_vals_gpu;
