@@ -4,11 +4,82 @@
 #include "competitors/cpu/cpu_pytorch.hpp"
 #include "competitors/gpu/gpu_basic.hpp"
 #include "competitors/gpu/gpu_tiled.hpp"
+#include "competitors/gpu/gpu_shared.hpp"
 #include "competitors/gpu/gpu_thread_dispatcher.hpp"
 #include "competitors/gpu/gpu_pytorch.hpp"
 #include "benchmark/dataset.hpp"
 #include "utils/random_generator.hpp"
 #include "utils/util.hpp"
+
+
+void init_float_competitors(std::vector<std::shared_ptr<SDDMM::Competitor<float>>>& float_competitors) {
+    /* CPU Competitors */
+    auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
+    float_competitors.push_back(cpu_basic);
+
+    auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
+    float_competitors.push_back(cpu_pytorch);
+
+    /* GPU Competitors */
+    auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
+    float_competitors.push_back(gpu_basic);
+
+    auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
+    float_competitors.push_back(gpu_pytorch);
+
+    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
+    float_competitors.push_back(gpu_tiled);
+
+    auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
+    float_competitors.push_back(gpu_thread_dispatcher);
+
+    auto gpu_shared = std::make_shared<Competitors::GPUShared>();
+    float_competitors.push_back(gpu_shared);
+}
+
+COO<float> test_all_competitors_coo(Dense<float>& A, Dense<float>& B, COO<float>& S) {
+    static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
+    if (float_competitors.size() == 0) init_float_competitors(float_competitors);
+
+    COO<float> P1(S);
+    COO<float> P2(S);
+
+    float_competitors[0]->init_coo(A, B, S, P1);
+    float_competitors[0]->run_coo(A, B, S, P1);
+    float_competitors[0]->cleanup_coo(A, B, S, P1);
+
+    for (const auto& competitor : float_competitors) {
+        if (!competitor->coo_supported()) continue;
+        competitor->init_coo(A, B, S, P2);
+        competitor->run_coo(A, B, S, P2);
+        competitor->cleanup_coo(A, B, S, P2);
+        EXPECT_EQ(P1, P2);
+    }
+
+    return P1;
+}
+
+CSR<float> test_all_competitors_csr(Dense<float>& A, Dense<float>& B, CSR<float>& S) {
+    static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
+    if (float_competitors.size() == 0) init_float_competitors(float_competitors);
+
+    CSR<float> P1(S);
+    CSR<float> P2(S);
+
+    float_competitors[0]->init_csr(A, B, S, P1);
+    float_competitors[0]->run_csr(A, B, S, P1);
+    float_competitors[0]->cleanup_csr(A, B, S, P1);
+
+    for (const auto& competitor : float_competitors) {
+        if (!competitor->csr_supported()) continue;
+        competitor->init_csr(A, B, S, P2);
+        competitor->run_csr(A, B, S, P2);
+        competitor->cleanup_csr(A, B, S, P2);
+        EXPECT_EQ(P1, P2);
+    }
+
+    return P1;
+}
 
 TEST(BasicTest, COO) {
     std::vector<Triplet<float>> triplets {{0,0,1.0},{0,1,1.0},{1,0,1.0},{1,1,1.0}};
@@ -50,14 +121,8 @@ TEST(BasicTest, BiggerConversion) {
     }
 }
 
-TEST(BasicTest, GPU_basic)
+TEST(BasicTest, sddmm_coo1)
 {
-    auto gpu_basic =
-        std::shared_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto cpu_basic =
-        std::shared_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
-
     std::vector<std::vector<float>> A_vals { { 1.0, 2.0 }, { 3.0, 4.0 } };
     Dense<float> A(A_vals);
 
@@ -68,26 +133,12 @@ TEST(BasicTest, GPU_basic)
         { 0, 0, 1.0 }, { 0, 1, 1.0 }, { 1, 0, 1.0 }, { 1, 1, 1.0 }
     };
     COO<float> S(2, 2, triplets);
-    COO<float> P1(S);
-    COO<float> P2(S);
-
-    gpu_basic->init_coo(A, B, S, P1);
-    gpu_basic->run_coo(A, B, S, P1);
-    gpu_basic->cleanup_coo(A, B, S, P1);
-
-    cpu_basic->run_coo(A, B, S, P2);
-
-    EXPECT_EQ(P1, P2);
+    
+    test_all_competitors_coo(A, B, S);
 }
 
-TEST(BasicTest, GPU_basic2)
+TEST(BasicTest, sddmm_coo2)
 {
-    auto gpu_basic =
-        std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto cpu_basic =
-        std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
-
     std::vector<std::vector<float>> A_vals { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 } };
     Dense<float> A(A_vals);
 
@@ -96,26 +147,12 @@ TEST(BasicTest, GPU_basic2)
 
     std::vector<Triplet<float>> triplets { { 0, 0, 1.0 }, { 1, 0, 1.0 }, { 1, 1, 1.0 } };
     COO<float> S(2, 2, triplets);
-    COO<float> P1(S);
-    COO<float> P2(S);
 
-    gpu_basic->init_coo(A, B, S, P1);
-    gpu_basic->run_coo(A, B, S, P1);
-    gpu_basic->cleanup_coo(A, B, S, P1);
-
-    cpu_basic->run_coo(A, B, S, P2);
-
-    EXPECT_EQ(P1, P2);
+    test_all_competitors_coo(A, B, S);
 }
 
-TEST(BasicTest, GPU_basic3)
+TEST(BasicTest, sddmm_coo3)
 {
-    auto gpu_basic =
-        std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto cpu_basic =
-        std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
-
     std::vector<std::vector<float>> A_vals { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 } };
     Dense<float> A(A_vals);
 
@@ -124,26 +161,12 @@ TEST(BasicTest, GPU_basic3)
 
     std::vector<Triplet<float>> triplets { { 0, 0, 1.0 }, { 1, 0, -1.0 } };
     COO<float> S(2, 2, triplets);
-    COO<float> P1(S);
-    COO<float> P2(S);
 
-    gpu_basic->init_coo(A, B, S, P1);
-    gpu_basic->run_coo(A, B, S, P1);
-    gpu_basic->cleanup_coo(A, B, S, P1);
-
-    cpu_basic->run_coo(A, B, S, P2);
-
-    EXPECT_EQ(P1, P2);
+    test_all_competitors_coo(A, B, S);
 }
 
-TEST(BasicTest, GPU_basic4)
+TEST(BasicTest, sddmm_coo4)
 {
-    auto gpu_basic =
-        std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto cpu_basic =
-        std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
-
     std::vector<std::vector<float>> A_vals { { 1.0, 2.0 }, { 3.0, 4.0 }, { 5.0, 6.0 } };
     Dense<float> A(A_vals);
 
@@ -154,139 +177,72 @@ TEST(BasicTest, GPU_basic4)
         { 0, 0, 1.0 }, { 1, 0, -1.0 }, { 2, 0, 1.0 }, { 2, 2, 1.0 }
     };
     COO<float> S(3, 3, triplets);
-    COO<float> P1(S);
-    COO<float> P2(S);
 
-    gpu_basic->init_coo(A, B, S, P1);
-    gpu_basic->run_coo(A, B, S, P1);
-    gpu_basic->cleanup_coo(A, B, S, P1);
-
-    cpu_basic->run_coo(A, B, S, P2);
-
-    EXPECT_EQ(P1, P2);
+    test_all_competitors_coo(A, B, S);
 }
 
-TEST(BasicTest, GPU_advanced)
+TEST(BasicTest, sddmm_random_coo)
 {
     const int rows = 500;
     const int cols = 500;
 
-    auto gpu_basic =
-            std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto cpu_basic =
-            std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
-
     auto dataset =
             std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.3));
 
-    auto S = dataset->getS_COO();
-    auto A = dataset->getA();
-    auto B = dataset->getB();
-
-    COO<float> P1(S);
-    COO<float> P2(S);
-
-    gpu_basic->init_coo(A, B, S, P1);
-    gpu_basic->run_coo(A, B, S, P1);
-    gpu_basic->cleanup_coo(A, B, S, P1);
-
-    cpu_basic->run_coo(A, B, S, P2);
-
-    EXPECT_EQ(P1, P2);
+    auto& S = dataset->getS_COO();
+    auto& A = dataset->getA();
+    auto& B = dataset->getB();
+    
+    test_all_competitors_coo(A, B, S);
 }
 
-TEST(BasicTest, GPU_advanced_dense)
+TEST(BasicTest, sddmm_random_dense_coo)
 {
     const int rows = 250;
     const int cols = 250;
 
-    auto gpu_basic =
-            std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto cpu_basic =
-            std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
-
     auto dataset =
             std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.7));
 
-    auto S = dataset->getS_COO();
-    auto A = dataset->getA();
-    auto B = dataset->getB();
+    auto& S = dataset->getS_COO();
+    auto& A = dataset->getA();
+    auto& B = dataset->getB();
 
-    COO<float> P1(S);
-    COO<float> P2(S);
-
-    gpu_basic->init_coo(A, B, S, P1);
-    gpu_basic->run_coo(A, B, S, P1);
-    gpu_basic->cleanup_coo(A, B, S, P1);
-
-    cpu_basic->run_coo(A, B, S, P2);
-
-    EXPECT_EQ(P1, P2);
+    test_all_competitors_coo(A, B, S);
 }
 
-TEST(BasicTest, GPU_advanced_sparse)
+TEST(BasicTest, sddmm_random_sparse_coo)
 {
     const int rows = 10000;
     const int cols = 10000;
 
-    auto gpu_basic =
-            std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto cpu_basic =
-            std::unique_ptr<Competitors::CPUBasic<float>>(new Competitors::CPUBasic<float>);
-
     auto dataset =
             std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.001));
 
-    auto S = dataset->getS_COO();
-    auto A = dataset->getA();
-    auto B = dataset->getB();
+    auto& S = dataset->getS_COO();
+    auto& A = dataset->getA();
+    auto& B = dataset->getB();
 
-    COO<float> P1(S);
-    COO<float> P2(S);
-
-    gpu_basic->init_coo(A, B, S, P1);
-    gpu_basic->run_coo(A, B, S, P1);
-    gpu_basic->cleanup_coo(A, B, S, P1);
-
-    cpu_basic->run_coo(A, B, S, P2);
-
-    EXPECT_EQ(P1, P2);
+    test_all_competitors_coo(A, B, S);
 }
 
-TEST(BasicTest, GPU_test_tiled)
+TEST(BasicTest, sddmm_csr_coo)
 {
     const int rows = 500;
     const int cols = 500;
 
-    auto gpu_basic =
-            std::unique_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
-
-    auto gpu_tiled =
-            std::unique_ptr<Competitors::GPUTiled<float>>(new Competitors::GPUTiled<float>);
-
     auto dataset =
             std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 32, 0.3));
 
-    auto S_coo = dataset->getS_COO();
-    auto S_csr = dataset->getS_CSR();
-    auto A = dataset->getA();
-    auto B = dataset->getB();
+    auto& S_coo = dataset->getS_COO();
+    auto& S_csr = dataset->getS_CSR();
+    auto& A = dataset->getA();
+    auto& B = dataset->getB();
 
-    COO<float> P1(S_coo);
-    CSR<float> P2(S_csr);
+    auto P1_csr = test_all_competitors_csr(A, B, S_csr);
+    auto P1_coo = test_all_competitors_coo(A, B, S_coo);
 
-    gpu_basic->init_coo(A, B, S_coo, P1);
-    gpu_basic->run_coo(A, B, S_coo, P1);
-    gpu_basic->cleanup_coo(A, B, S_coo, P1);
-
-    gpu_tiled->init_csr(A, B, S_csr, P2);
-    gpu_tiled->run_csr(A, B, S_csr, P2);
-    gpu_tiled->cleanup_csr(A, B, S_csr, P2);
-
-    EXPECT_EQ(P1, COO<float>(P2));
+    EXPECT_EQ(P1_coo, COO<float>(P1_csr));
 }
 
 /*TEST(BasicTest, CPU_PyTorch)
