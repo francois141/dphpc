@@ -6,6 +6,7 @@
 #include "competitors/gpu/gpu_tiled.hpp"
 #include "competitors/gpu/gpu_thread_dispatcher.hpp"
 #include "competitors/gpu/gpu_pytorch.hpp"
+#include "competitors/gpu/gpu_adaptive_tiling.hpp"
 #include "benchmark/dataset.hpp"
 #include "utils/random_generator.hpp"
 #include "utils/util.hpp"
@@ -498,4 +499,35 @@ TEST(BasicTest, GPU_test_dispatcher){
     gpu_dispatcher->cleanup_csr(A, B, S_csr, P2);
 
     EXPECT_EQ(P1, COO<float>(P2));
+}
+
+TEST(BasicTest, Adaptie_tiling_reorder_s){
+
+    auto gpu_adaptive_tiler =
+            std::unique_ptr<Competitors::GPUAdaptiveTiling<float>>(new Competitors::GPUAdaptiveTiling<float>);
+
+    auto dataset =
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(6, 8, 32, 0.3));
+
+    auto A = dataset->getA();
+    auto B = dataset->getB();
+
+    std::vector<Triplet<float>> triplets_csr{
+        {0,0,1.0},{0,4,2.0},{0,6,3.0},
+        {1,1,4.0},{1,2,5.0},{1,4,5.0},{1,7,6.0},
+        {2,1,8.0},{2,4,9.0},{2,6,10.0},{2,7,11.0},
+        {3,1,12.0},{3,3,13.0},
+        {4,5,14.0},
+        {5,1,15.0},{5,5,16.0}
+    };
+    CSR<float> S_csr(6,8,triplets_csr);
+    CSR<float> P1(S_csr);
+
+    int expected_cols[] = {4,6,0,1,4,7,2,1,4,6,7,1,3,5,1,5};
+    float expected_vals[] = {2,3,1,4,6,7,5,8,9,10,11,12,13,14,15,16};
+
+    gpu_adaptive_tiler->init_csr(A, B, S_csr, P1);
+
+    EXPECT_EQ(expected_cols, gpu_adaptive_tiler->get_reordered_cols());
+    EXPECT_EQ(expected_vals, gpu_adaptive_tiler->get_reordered_vals());
 }
