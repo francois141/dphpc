@@ -63,8 +63,8 @@ __global__ void reorder_csr_row_panel(int* rows, int* cols, float* vals, int* re
 				reordered_vals[heavy_ptr] = vals[sparse_index];
 				heavy_ptr++;
 			} else {
-				reordered_cols[sparse_index] = cols[sparse_index];
-				reordered_vals[sparse_index] = vals[sparse_index];
+				reordered_cols[sparse_ptr] = cols[sparse_index];
+				reordered_vals[sparse_ptr] = vals[sparse_index];
 				sparse_ptr--;
 			}
 			sparse_index++;

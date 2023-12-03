@@ -532,7 +532,7 @@ TEST(BasicTest, Adaptie_tiling_reorder_s){
     int* reordered_cols = gpu_adaptive_tiler->get_reordered_cols();
     float* reordered_vals = gpu_adaptive_tiler->get_reordered_vals();
 
-    for (int i = 0; i < expected_cols.size()){
+    for (int i = 0; i < 16; i++){
         EXPECT_EQ(reordered_cols[i], expected_cols[i]) << "Reordered cols differ at index " << i;
         EXPECT_EQ(reordered_vals[i], expected_vals[i]) << "Reordered vals differ at index " << i;
     }
