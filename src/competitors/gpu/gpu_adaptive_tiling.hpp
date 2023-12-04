@@ -7,7 +7,7 @@ template <typename T>
 void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N);
 
 template <typename T>
-void gpu_reorder_csr_row_panel_wrapper(int* rows, int* cols, T* vals, int* reordered_cols, T* reordered_vals, int* panel_ptr, int num_rows, int num_cols);
+void gpu_reorder_csr_row_panel_wrapper(int* rows, int* cols, T* vals, int* reordered_cols, T* reordered_vals, int* panel_ptr, int* tile_row_ptr, int num_rows, int num_cols);
 
 namespace Competitors {
 
@@ -20,8 +20,8 @@ namespace Competitors {
         {}
 
         virtual inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
-            int panel_size = 128; // num rows per panel
-            int tile_width = 256; // num columns per tile
+            int panel_size = 3; // num rows per panel
+            int tile_width = 2; // num columns per tile
 
             // A is MxK, B is NxK, S and P are MxN sparse
             unsigned int M = A.getRows();
@@ -44,7 +44,7 @@ namespace Competitors {
             // +1 becuase we always have a sparse tile for each row pannel at the end
             // +1 because we have always have a dummy first entry
             // we could try to upperbound this based on the density and the tile_width
-            int max_num_tiles = num_rows * ((num_cols + tile_width - 1) / tile_width + 1) + 1;
+            int max_num_tiles = M * ((N + tile_width - 1) / tile_width + 1) + 1;
             size_t max_num_tile_size = max_num_tiles * sizeof(int);
 
             static_assert(sizeof(T) == sizeof(float), "the kernel is specialized for single precision floating points");
