@@ -39,11 +39,16 @@ __global__ void gpu_shared_csr_kernel(const float* __restrict__  A, const float*
 		int copy_col = tile_j + threadIdx.x;
 		if (copy_col < N) {
 			// each thread copies one full column
-			for (int k = 0; k < local_K; k++) {
+			// vectorized copy
+			for (int k = 0; k < local_K/4; k++) {
+				reinterpret_cast<float4*>(local_B[threadIdx.x])[k] = reinterpret_cast<const float4*>(&B[copy_col * K + tile_k])[k];
+			}
+			// copy the remaining values
+			for (int k = int(local_K / 4) * 4; k < local_K; k++) {
 				local_B[threadIdx.x][k] = B[copy_col * K + tile_k + k];
 			}
 		}
-		__syncthreads();
+		__syncwarp();
 
 		if (my_row >= M)
 			continue;
@@ -54,19 +59,12 @@ __global__ void gpu_shared_csr_kernel(const float* __restrict__  A, const float*
 
 			float result = 0.0f;
 			for (int k = curr_wrap; k < local_K; k += wraps_per_coef) {
-				result += A[my_row * K + tile_k + k] * local_B[cols[sparse_index] - tile_j][k];
+				// fma operation
+				result = __fmaf_rn(A[my_row * K + tile_k + k], local_B[cols[sparse_index] - tile_j][k], result);
 			}
 			result *= S[sparse_index];
 
-			// reduction process
-			const unsigned wraps_idx = (row_delta * wraps_per_coef) % 32;
-			const unsigned reduction_mask = ((1U << wraps_per_coef) - 1) << wraps_idx;
-			for (int idx = wraps_per_coef / 2; idx >= 1; idx /= 2)
-				result += __shfl_xor_sync(reduction_mask, result, idx);
-
-			// use atomic operations because multiple invocation can modify this value at the same time
-			if (curr_wrap == 0)
-				atomicAdd(P + sparse_index, result);
+			atomicAdd(P + sparse_index, result);
 
 			sparse_index++;
 		}
