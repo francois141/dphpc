@@ -282,13 +282,14 @@ private:
             // get sorting order by sorting after col indexes
             std::vector<std::pair<int, int>> cols_to_sort(num_cols);
             for (int j = start_row; j < end_row; j++){
-                cols_to_sort.push_back(std::make_pair(colPositions[j], j));
+                // sort only after first component
+                cols_to_sort[j] = std::make_pair(colPositions[j], values[j]);
             }
             std::sort(cols_to_sort.begin(), cols_to_sort.end());
 
             for (int j = 0; j < num_cols; j++){
                 new_col_positions[start_row+j] = cols_to_sort[j].first;
-                new_values[start_row+j] = values[cols_to_sort[j].second];
+                new_values[start_row+j] = cols_to_sort[j].second;
             }
         }
 
