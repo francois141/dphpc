@@ -280,10 +280,10 @@ private:
             int num_cols = end_row - start_row;
 
             // get sorting order by sorting after col indexes
-            std::vector<std::pair<int, int>> cols_to_sort(num_cols);
+            std::vector<std::pair<int, int>> cols_to_sort;
             for (int j = start_row; j < end_row; j++){
                 // sort only after first component
-                cols_to_sort[j] = std::make_pair(colPositions[j], values[j]);
+                cols_to_sort.push_back(std::make_pair(colPositions[j], values[j]));
             }
             std::sort(cols_to_sort.begin(), cols_to_sort.end());
 
