@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DPHPC_BUILD_TYPE=Release # set to DEBUG if asserts are needed
+DPHPC_BUILD_TYPE=DEBUG # set to DEBUG if asserts are needed
 
 mkdir -p build/
 

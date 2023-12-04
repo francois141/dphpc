@@ -16,7 +16,7 @@ namespace Competitors {
     public:
 
         GPUAdaptiveTiling()
-            : SDDMM::Competitor<T>("GPU-Adaptive-Tiling")
+            : SDDMM::Competitor<T>("GPU-Adaptive-Tiling"), reordered_vals(nullptr), reordered_cols(nullptr)
         {}
 
         virtual inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
@@ -40,9 +40,11 @@ namespace Competitors {
 
             static_assert(sizeof(T) == sizeof(float), "the kernel is specialized for single precision floating points");
 
-            T* reordered_vals = (T*)malloc(SP_size);
-            int* reordered_cols = (int*)malloc(sparse_col_size);
-            int* panel_ptr = (int*)malloc(num_panels_size);
+
+            reordered_vals = (float*)malloc(SP_size);
+            reordered_cols = (int*)malloc(sparse_col_size);
+            panel_ptr = (int*)malloc(num_panels_size);
+
 
             // allocate the matrices on the GPU
             cudaMalloc(&A_gpu, A_size);
@@ -65,9 +67,10 @@ namespace Competitors {
             gpu_reorder_csr_row_panel_wrapper(rows_gpu, cols_gpu, S_gpu, reordered_cols_gpu, reordered_vals_gpu, panel_ptr_gpu, M, N);
 
             // copy from GPU to RAM
-            cudaMemcpy(reordered_cols_gpu, reordered_cols, sparse_col_size, cudaMemcpyDeviceToHost);
-            cudaMemcpy(reordered_vals_gpu, reordered_vals, sparse_col_size, cudaMemcpyDeviceToHost);
-            cudaMemcpy(panel_ptr_gpu, panel_ptr, num_panels_size, cudaMemcpyDeviceToHost);
+            cudaMemcpy(reordered_cols, reordered_cols_gpu, sparse_col_size, cudaMemcpyDeviceToHost);
+            cudaMemcpy(reordered_vals, reordered_vals_gpu, SP_size, cudaMemcpyDeviceToHost);
+            cudaMemcpy(panel_ptr, panel_ptr_gpu, num_panels_size, cudaMemcpyDeviceToHost);
+
         }
 
         virtual inline void run_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {

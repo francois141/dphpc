@@ -516,7 +516,7 @@ TEST(BasicTest, Adaptie_tiling_reorder_s){
 
     std::vector<Triplet<float>> triplets_csr{
         {0,0,1.0},{0,4,2.0},{0,6,3.0},
-        {1,1,4.0},{1,2,5.0},{1,4,5.0},{1,7,6.0},
+        {1,1,4.0},{1,2,5.0},{1,4,6.0},{1,7,7.0},
         {2,1,8.0},{2,4,9.0},{2,6,10.0},{2,7,11.0},
         {3,1,12.0},{3,3,13.0},
         {4,5,14.0},
@@ -536,4 +536,6 @@ TEST(BasicTest, Adaptie_tiling_reorder_s){
         EXPECT_EQ(reordered_cols[i], expected_cols[i]) << "Reordered cols differ at index " << i;
         EXPECT_EQ(reordered_vals[i], expected_vals[i]) << "Reordered vals differ at index " << i;
     }
+
+
 }

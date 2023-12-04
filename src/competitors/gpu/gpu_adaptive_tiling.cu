@@ -19,6 +19,7 @@ __global__ void reorder_csr_row_panel(int* rows, int* cols, float* vals, int* re
 		col_to_tile_id[i] = 0;
 	}
 
+
 	int start_row = PANEL_SIZE * threadIdx.x;
 	int end_row = min(start_row + PANEL_SIZE, num_rows);
 
@@ -70,6 +71,9 @@ __global__ void reorder_csr_row_panel(int* rows, int* cols, float* vals, int* re
 			sparse_index++;
 		}
 	}
+
+	free(col_count);
+	free(col_to_tile_id);
 }
 
 // perform SDDMM, compute P = (A*B^T) dot S (where dot is the term by term product)
