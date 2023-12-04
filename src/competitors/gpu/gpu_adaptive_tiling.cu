@@ -3,7 +3,7 @@
 #include <cuda_runtime.h>
 #include <algorithm>
 
-const int TILE_SIZE = 256;
+const int TILE_SIZE = 2;
 const int PANEL_SIZE = 3;
 const int THRESHOLD = 2;
 
@@ -123,7 +123,7 @@ void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int
 template <typename T>
 void gpu_reorder_csr_row_panel_wrapper(int* rows, int* cols, T* vals, int* reordered_cols, T* reordered_vals, int* panel_ptr, int* tile_row_ptr, int num_rows, int num_cols){
 	int num_threads = (num_rows + PANEL_SIZE - 1) / PANEL_SIZE;
-	reorder_csr_row_panel<<<1, num_threads>>>(rows, cols, vals, reordered_cols, reordered_vals, panel_ptr, num_rows, num_cols);
+	reorder_csr_row_panel<<<1, num_threads>>>(rows, cols, vals, reordered_cols, reordered_vals, panel_ptr, tile_row_ptr, num_rows, num_cols);
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */
