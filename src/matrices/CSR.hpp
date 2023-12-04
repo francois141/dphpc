@@ -149,6 +149,10 @@ public:
         this->computeDispatcher(numThreads);
     }
 
+    void reorderColsAndVals(){
+        this->orderColsAndVals();
+    }
+
 private:
     int rows;
     int cols;
@@ -263,6 +267,33 @@ private:
             // The threads here don't do anything
             this->startIdx.push_back(this->rows);
         }
+    }
+
+    void orderColsAndVals(){
+        // reorders the col and val array such that for each row we have increasing column indices
+        std::vector<int> new_col_positions(cols, 0);
+        std::vector<T> new_values(cols, 0);
+
+        for (int i = 0; i < rows; i++){
+            int start_row = rowPositions[i];
+            int end_row = rowPositions[i+1];
+            int num_cols = end_row - start_row;
+
+            // get sorting order by sorting after col indexes
+            std::vector<std::pair<int, int>> cols_to_sort(num_cols);
+            for (int j = start_row; j < end_row; j++){
+                cols_to_sort.push_back(std::make_pair(colPositions[j], j));
+            }
+            std::sort(cols_to_sort.begin(), cols_to_sort.end());
+
+            for (int j = 0; j < num_cols; j++){
+                new_col_positions[start_row+j] = cols_to_sort[j].first;
+                new_values[start_row+j] = values[cols_to_sort[j].second];
+            }
+        }
+
+        this->setColPositions(new_col_positions);
+        this->setValues(new_values);
     }
 };
 
