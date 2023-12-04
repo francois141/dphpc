@@ -527,15 +527,25 @@ TEST(BasicTest, Adaptie_tiling_reorder_s){
 
     int expected_cols[] = {4,6,0,1,4,7,2,1,4,6,7,1,3,5,1,5};
     float expected_vals[] = {2,3,1,4,6,7,5,8,9,10,11,12,13,14,15,16};
+    int expected_panel_ptr[] = {0,3,5};
+    int expected_tile_row_ptr[] = {0,1,2,3,5,6,7,9,11,11,12,13,14,14,16,16};
 
     gpu_adaptive_tiler->init_csr(A, B, S_csr, P1);
     int* reordered_cols = gpu_adaptive_tiler->get_reordered_cols();
     float* reordered_vals = gpu_adaptive_tiler->get_reordered_vals();
+    int* panel_ptr = gpu_adaptive_tiler->get_panel_ptr();
+    int* tile_row_ptr = gpu_adaptive_tiler->get_tile_row_ptr();
 
     for (int i = 0; i < 16; i++){
-        EXPECT_EQ(reordered_cols[i], expected_cols[i]) << "Reordered cols differ at index " << i;
-        EXPECT_EQ(reordered_vals[i], expected_vals[i]) << "Reordered vals differ at index " << i;
+        EXPECT_EQ(reordered_cols[i], expected_cols[i]);
+        EXPECT_EQ(reordered_vals[i], expected_vals[i]);
     }
 
+    for (int i = 0; i < 3; i++){
+        EXPECT_EQ(panel_ptr[i], expected_panel_ptr[i]);
+    }
 
+    for (int i = 0; i < 16; i++){
+        EXPECT_EQ(tile_row_ptr[i], expected_tile_row_ptr[i]);
+    }
 }
