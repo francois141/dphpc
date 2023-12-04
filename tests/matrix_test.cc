@@ -560,13 +560,14 @@ TEST(BasicTest, reoder_cols_and_vals_already_sorted){
     EXPECT_EQ(S_csr, S_csr_expected);
 }
 
-/*TEST(BasicTest, reoder_cols_and_vals){
-    std::vector<Triplet<float>> triplets_csr{{0,0,1.0},{1,0,1.0},{0,1,1.0},{1,1,1.0}};
+TEST(BasicTest, reoder_cols_and_vals){
+    std::vector<Triplet<float>> triplets_csr{{0,0,1.0},{1,0,3.0},{0,1,2.0},{1,1,4.0}};
     CSR<float> S_csr(2,2,triplets_csr);
-    
     CSR<float> S_csr_expected(2,2,triplets_csr);
 
+    S_csr.setColPositions(std::vector<int>{1,0,1,0});
+    S_csr.setValues(std::vector<float>{2.0,1.0,4.0,3.0});
     S_csr.reorderColsAndVals();
 
     EXPECT_EQ(S_csr, S_csr_expected);
-}*/
+}
