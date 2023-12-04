@@ -271,8 +271,9 @@ private:
 
     void orderColsAndVals(){
         // reorders the col and val array such that for each row we have increasing column indices
-        std::vector<int> new_col_positions(cols, 0);
-        std::vector<T> new_values(cols, 0);
+        int num_values = values.size();
+        std::vector<int> new_col_positions(num_values, 0);
+        std::vector<T> new_values(num_values, 0);
 
         for (int i = 0; i < rows; i++){
             int start_row = rowPositions[i];
@@ -280,7 +281,8 @@ private:
             int num_cols = end_row - start_row;
 
             // get sorting order by sorting after col indexes
-            std::vector<std::pair<int, int>> cols_to_sort;
+            std::vector<std::pair<int, int>> cols_to_sort(0);
+            cols_to_sort.reserve(num_cols);
             for (int j = start_row; j < end_row; j++){
                 // sort only after first component
                 cols_to_sort.push_back(std::make_pair(colPositions[j], values[j]));
