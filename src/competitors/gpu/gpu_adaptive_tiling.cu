@@ -182,7 +182,7 @@ __global__ void gpu_tiled_csr_sparse_kernel(float* A, float* B, float* reordered
 				// first thread of each wrap to scale value and update global memory
 				// use atomic Add because multiple thread blocks can read and write this value
 				if (slice_offset == 0)
-					atomicAdd(P + j, val * reodered_S[j]);
+					atomicAdd(P + j, val * reordered_S[j]);
 			}
 		}
 	}
@@ -206,6 +206,6 @@ void gpu_reorder_csr_row_panel_wrapper(int* rows, int* cols, T* vals, int* reord
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */
-template void gpu_adaptive_tiling_csr_wrapper<float>(float* A_gpu, float* B_gpu, float* S_gpu, float* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N);
+template void gpu_adaptive_tiling_csr_wrapper<float>(float* A_gpu, float* B_gpu, float* S_gpu, float* P_gpu, int* cols_gpu, int* rows_gpu, int* panel_ptr_gpu, int* tile_row_ptr_gpu, int M, int K, int N);
 
 template void gpu_reorder_csr_row_panel_wrapper<float>(int* rows, int* cols, float* vals, int* reordered_cols, float* reordered_vals, int* panel_ptr, int* tile_row_ptr, int num_rows, int num_cols);

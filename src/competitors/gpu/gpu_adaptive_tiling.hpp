@@ -4,7 +4,7 @@
 #include "matrices/matrices.h"
 
 template <typename T>
-void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N);
+void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int* panel_ptr_gpu, int* tile_row_ptr_gpu, int M, int K, int N);
 
 template <typename T>
 void gpu_reorder_csr_row_panel_wrapper(int* rows, int* cols, T* vals, int* reordered_cols, T* reordered_vals, int* panel_ptr, int* tile_row_ptr, int num_rows, int num_cols);
@@ -90,7 +90,7 @@ namespace Competitors {
             int K = A.getCols();
             int N = B.getRows();
 
-            gpu_adaptive_tiling_csr_wrapper(A_gpu, B_gpu, reordered_vals_gpu, P_gpu, reordered_cols_gpu, rows_gpu, M, K, N);
+            gpu_adaptive_tiling_csr_wrapper(A_gpu, B_gpu, reordered_vals_gpu, P_gpu, reordered_cols_gpu, rows_gpu, panel_ptr_gpu, tile_row_ptr_gpu, M, K, N);
             cudaDeviceSynchronize();
         }
 
