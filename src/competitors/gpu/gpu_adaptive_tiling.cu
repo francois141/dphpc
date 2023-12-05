@@ -139,7 +139,7 @@ __global__ void gpu_tiled_csr_dense_kernel(float* A, float* B, float* reordered_
 
 					// reduce all WRAP elements of the inner product
 					for (int l = WRAP_SIZE/2; l >= 1; l /= 2){
-						val += __shfl_down(val, k);
+						val += __shfl_down_sync(0xFFFFFFFF, val, l);
 					}
 
 					// first thread of each wrap to scale value and update global memory
@@ -176,7 +176,8 @@ __global__ void gpu_tiled_csr_sparse_kernel(float* A, float* B, float* reordered
 
 				// reduce all WRAP elements of the inner product
 				for (int l = WRAP_SIZE/2; l >= 1; l /= 2){
-					val += __shfl_down(val, k);
+					// what happens if we have a left over at the end, not divisible by 32?
+					val += __shfl_down_sync(0xFFFFFFFF, val, l);
 				}
 
 				// first thread of each wrap to scale value and update global memory
