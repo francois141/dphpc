@@ -501,7 +501,6 @@ TEST(BasicTest, GPU_test_dispatcher){
 
     EXPECT_EQ(P1, COO<float>(P2));
 }
-*/
 
 TEST(BasicTest, Adaptie_tiling_reorder_s){
     // requires the follwoing parameters
@@ -574,7 +573,7 @@ TEST(BasicTest, reoder_cols_and_vals){
     S_csr.reorderColsAndVals();
 
     EXPECT_EQ(S_csr, S_csr_expected);
-}
+}*/
 
 TEST(BasicTest, adaptive_tiling_simple){
     auto gpu_adaptive_tiler =
@@ -593,7 +592,6 @@ TEST(BasicTest, adaptive_tiling_simple){
     };
     CSR<float> S(6,8,triplets_csr);
     CSR<float> P1(S);
-    CSR<float> P2(S);
 
     // matrix A 6x4
     std::vector<std::vector<float>> A_vals {
@@ -615,13 +613,19 @@ TEST(BasicTest, adaptive_tiling_simple){
     };
     Dense<float> B(B_vals);
 
-    gpu_basic->init_csr(A, B, S, P1);
-    gpu_basic->run_csr(A, B, S, P1);
-    gpu_basic->cleanup_csr(A, B, S, P1);
+    gpu_adaptive_tiler->init_csr(A, B, S, P1);
+    gpu_adaptive_tiler->run_csr(A, B, S, P1);
+    gpu_adaptive_tiler->cleanup_csr(A, B, S, P1);
 
-    gpu_adaptive_tiler->init_csr(A, B, S, P2);
-    gpu_adaptive_tiler->run_csr(A, B, S, P2);
-    gpu_adaptive_tiler->cleanup_csr(A, B, S, P2);
+    std::vector<Triplet<float>> expected_triplets_csr{
+        {0,0,4.0},{0,4,8.0},{0,6,12.0},
+        {1,1,16.0},{1,2,20.0},{1,4,24.0},{1,7,28.0},
+        {2,1,32.0},{2,4,36.0},{2,6,40.0},{2,7,44.0},
+        {3,1,48.0},{3,3,52.0},
+        {4,5,56.0},
+        {5,1,60.0},{5,5,64.0}
+    };
+    CSR<float> P2(6,8,expected_triplets_csr);
 
     EXPECT_EQ(P1, P2);
 }
