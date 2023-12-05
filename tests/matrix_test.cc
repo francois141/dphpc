@@ -504,7 +504,11 @@ TEST(BasicTest, GPU_test_dispatcher){
 */
 
 TEST(BasicTest, Adaptie_tiling_reorder_s){
-
+    // requires the follwoing parameters
+    // PANEL_SIZE = 3
+    // TILE_SIZE = 2
+    // THRESHOLD = 2
+    // matrix taken from https://dl.acm.org/doi/10.1145/3293883.3295712
     auto gpu_adaptive_tiler =
             std::unique_ptr<Competitors::GPUAdaptiveTiling<float>>(new Competitors::GPUAdaptiveTiling<float>);
 
@@ -570,4 +574,54 @@ TEST(BasicTest, reoder_cols_and_vals){
     S_csr.reorderColsAndVals();
 
     EXPECT_EQ(S_csr, S_csr_expected);
+}
+
+TEST(BasicTest, adaptive_tiling_simple){
+    auto gpu_adaptive_tiler =
+            std::unique_ptr<Competitors::GPUAdaptiveTiling<float>>(new Competitors::GPUAdaptiveTiling<float>);
+
+    auto gpu_basic =
+        std::shared_ptr<Competitors::GPUBasic<float>>(new Competitors::GPUBasic<float>);
+
+    std::vector<Triplet<float>> triplets_csr{
+        {0,0,1.0},{0,4,2.0},{0,6,3.0},
+        {1,1,4.0},{1,2,5.0},{1,4,6.0},{1,7,7.0},
+        {2,1,8.0},{2,4,9.0},{2,6,10.0},{2,7,11.0},
+        {3,1,12.0},{3,3,13.0},
+        {4,5,14.0},
+        {5,1,15.0},{5,5,16.0}
+    };
+    CSR<float> S(6,8,triplets_csr);
+    CSR<float> P1(S);
+    CSR<float> P2(S);
+
+    // matrix A 6x4
+    std::vector<std::vector<float>> A_vals {
+        {1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0}
+    }
+    Dense<float> A(A_vals);
+
+    // matix B 4x8
+    std::vector<std::vector<float>> B_vals {
+        {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
+    }
+    Dense<float> B(B_vals);
+
+    gpu_basic->init_csr(A, B, S, P1);
+    gpu_basic->run_csr(A, B, S, P1);
+    gpu_basic->cleanup_csr(A, B, S, P1);
+
+    gpu_adaptive_tiler->init_csr(A, B, S, P2);
+    gpu_adaptive_tiler->run_csr(A, B, S, P2);
+    gpu_adaptive_tiler->cleanup_csr(A, B, S, P2);
+
+    EXPECT_EQ(P1, P2);
 }

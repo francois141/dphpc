@@ -90,17 +90,21 @@ namespace Competitors {
             int K = A.getCols();
             int N = B.getRows();
 
-            // gpu_adaptive_tiling_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N);            
-            // cudaDeviceSynchronize();
+            gpu_adaptive_tiling_csr_wrapper(A_gpu, B_gpu, reordered_vals_gpu, P_gpu, reordered_cols_gpu, rows_gpu, M, K, N);
+            cudaDeviceSynchronize();
         }
 
         virtual inline void cleanup_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {           
             size_t SP_size = S.getValues().size() * sizeof(T);
 
             // copy result back to RAM
-            // cudaMemcpy(P.getValues().data(), P_gpu, SP_size, cudaMemcpyDeviceToHost);
-            // P.setColPositions(S.getColPositions());
-            // P.setRowPositions(S.getRowPositions());
+            cudaMemcpy(P.getValues().data(), P_gpu, SP_size, cudaMemcpyDeviceToHost);
+            // need to get the reordered col indices to be consistent with values
+            P.setColPositions(std::vector<int>(reordered_cols, reordered_cols + S.getValues().size()));
+            P.setRowPositions(S.getRowPositions());
+
+            // reorder columns and values to standard CSR
+            P.reorderColsAndVals();
 
             // free all the CPU allocated memory
             free(reordered_vals);

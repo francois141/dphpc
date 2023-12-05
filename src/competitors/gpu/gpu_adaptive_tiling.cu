@@ -6,6 +6,7 @@
 const int TILE_SIZE = 2;
 const int PANEL_SIZE = 3;
 const int THRESHOLD = 2;
+const int WRAP_SIZE = 2;
 
 /*
 This function reorders the columns of the sparse matrix S (CSR) such that all columns with a density
@@ -109,15 +110,93 @@ __global__ void reorder_csr_row_panel(int* rows, int* cols, float* vals, int* re
 
 // perform SDDMM, compute P = (A*B^T) dot S (where dot is the term by term product)
 // A is MxK, B is NxK, S and P are MxN sparse
-__global__ void gpu_adaptive_tiling_csr_wrapper(float* A, float* B, float* S, float* P, int* cols, int* rows, int M, int K, int N) {
-	int nb_running = gridDim.x * blockDim.x;
+__global__ void gpu_tiled_csr_dense_kernel(float* A, float* B, float* reordered_S, float* P, int* reordered_cols, int* rows, int* panel_ptr, int* tile_row_ptr, int M, int K, int N) {
+	int row_panel_id = blockIdx.x;
+	int row_offset = threadIdx.x / WRAP_SIZE;
+	int slice_base = blockIdx.y * WRAP_SIZE;
+	int slice_offset = threadIdx.x % WRAP_SIZE;
+
+	int num_panels = panel_ptr[row_panel_id + 1] - panel_ptr[row_panel_id];
+
+	// don't process the last tile which is sparse and will be handled by different kernel
+	for (int tile_id = 0; tile_id < num_panels - 1; tile_id++){
+
+		for (int i = row_offset; i < PANEL_SIZE; i += (blockDim.x + WRAP_SIZE - 1)/WRAP_SIZE){
+			int ptr = panel_ptr[row_panel_id] * PANEL_SIZE + i * num_panels + tile_id;
+
+			// iterate over all non zero elements of this row in the given tile
+			int low = tile_row_ptr[ptr];
+			int high = tile_row_ptr[ptr+1];
+
+			// we slice the K dimension among the thread blocks of the grid.y dimension
+			// a thread block always handles WRAP_SIZE elements at a time before moving to the next WRAP_SIZE elements
+			for (int k = slice_base + slice_offset; k < K; k += gridDim.y * WRAP_SIZE){
+				int abs_row_idx = row_panel_id * PANEL_SIZE + i;
+				float element_a = A[abs_row_idx * K + k];
+				for (int j = low; j < high; j++){
+					// B is transposed
+					float val = element_a * B[cols[j] * K + k];
+
+					// reduce all WRAP elements of the inner product
+					for (int l = WRAP_SIZE/2; l >= 1; l /= 2){
+						val += __shfl_down(val, k);
+					}
+
+					// first thread of each wrap to scale value and update global memory
+					// use atomic Add because multiple thread blocks can read and write this value
+					if (slice_offset == 0)
+						atomicAdd(P + j, val * reodered_S[j]);
+				}
+			}
+		}
+	}
+}
+
+__global__ void gpu_tiled_csr_sparse_kernel(float* A, float* B, float* reordered_S, float* P, int* reordered_cols, int* rows, int* panel_ptr, int* tile_row_ptr, int M, int K, int N) {
+	int row_panel_id = blockIdx.x;
+	int row_offset = threadIdx.x / WRAP_SIZE;
+	int slice_base = blockIdx.y * WRAP_SIZE;
+	int slice_offset = threadIdx.x % WRAP_SIZE;
+
+	// calculate number of tiles before this row panel
+	int num_panels = panel_ptr[row_panel_id + 1] - panel_ptr[row_panel_id];
+
+	for (int i = row_offset; i < PANEL_SIZE; i += (blockDim.x + WRAP_SIZE - 1)/WRAP_SIZE){
+		// the sparse tile is always the last tile of the given row
+		int ptr = panel_ptr[row_panel_id] * PANEL_SIZE + (i+1) * num_panels - 1;
+		int low = tile_row_ptr[ptr];
+		int high = tile_row_ptr[ptr+1];
+
+		for (int k = slice_base + slice_offset; k < K; k += gridDim.y * WRAP_SIZE){
+			int abs_row_idx = row_panel_id * PANEL_SIZE + i;
+			float element_a = A[abs_row_idx * K + k];
+			for (int j = low; j < high; j++){
+				// B is transposed
+				float val = element_a * B[cols[j] * K + k];
+
+				// reduce all WRAP elements of the inner product
+				for (int l = WRAP_SIZE/2; l >= 1; l /= 2){
+					val += __shfl_down(val, k);
+				}
+
+				// first thread of each wrap to scale value and update global memory
+				// use atomic Add because multiple thread blocks can read and write this value
+				if (slice_offset == 0)
+					atomicAdd(P + j, val * reodered_S[j]);
+			}
+		}
+	}
 }
 
 template <typename T>
-void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N) {
+void gpu_adaptive_tiling_csr_wrapper(T* A_gpu, T* B_gpu, T* reordered_S_gpu, T* P_gpu, int* reordered_cols_gpu, int* rows_gpu, int* panel_ptr_gpu, int* tile_row_ptr_gpu, int M, int K, int N) {
 	
+	dim3 thread_blocks(2,2);
+	int num_threads_per_block = 8;
+
 	// Perform SDDMM on the GPU
-	// gpu_tiled_csr_kernel<<<32, 512>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N);
+	gpu_tiled_csr_dense_kernel<<<thread_blocks, num_threads_per_block>>>(A_gpu, B_gpu, reordered_S_gpu, P_gpu, reordered_cols_gpu, rows_gpu, panel_ptr_gpu, tile_row_ptr_gpu, M, K, N);
+	gpu_tiled_csr_sparse_kernel<<<thread_blocks, num_threads_per_block>>>(A_gpu, B_gpu, reordered_S_gpu, P_gpu, reordered_cols_gpu, rows_gpu, panel_ptr_gpu, tile_row_ptr_gpu, M, K, N);
 }
 
 template <typename T>
