@@ -1,12 +1,13 @@
 #pragma once
 
-#include <cuda_runtime.h>
-
 #include "benchmark/competitor.hpp"
 #include "matrices/matrices.h"
 
 template <typename T>
-void gpu_tensor_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int* start_idx, int M, int K, int N, int sparse_size, int row_size);
+void gpu_tensor_csr_wrapper(T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int* start_idx, int M, int K, int N, int sparse_size, int row_size);
+
+void setupTensorData(float* A, float* B, size_t A_tensor_size, size_t B_tensor_size);
+void freeTensorData();
 
 namespace Competitors {
 
@@ -29,11 +30,11 @@ namespace Competitors {
             // Make sure stride is good
             if(M% 16 != 0 || N % 16 != 0 || K % 16 != 0)  {
                 std::cout << "This matrix doesn't work for tensor cores" << std::endl;
-                exit(0);
+                return;
             }
 
             // Prepare dispatcher for the tensor cores
-            S.computeDispatcherTensorCores(32*32);
+            S.computeDispatcherTensorCores(32*32/32); // We compute dispatcher per warp
 
             // get the size needed for each matrix
             size_t A_size = M * K * sizeof(T);
@@ -61,6 +62,11 @@ namespace Competitors {
             cudaMemcpy(cols_gpu, S.getColPositions().data(), sparse_dim_size, cudaMemcpyHostToDevice);
             cudaMemcpy(rows_gpu, S.getRowPositions().data(), row_size, cudaMemcpyHostToDevice);
             cudaMemcpy(start_idx_gpu, S.getStartIdx().data(), start_idx_size, cudaMemcpyHostToDevice);
+
+            // Setup data for tensor cores
+            size_t A_tensor_size = M * K;
+            size_t B_tensor_size = K * N;
+            setupTensorData(A_gpu,B_gpu, A_tensor_size, B_tensor_size);
         }
 
         virtual inline void run_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
@@ -68,14 +74,26 @@ namespace Competitors {
             int K = A.getCols();
             int N = B.getRows();
 
+            if(M% 16 != 0 || N % 16 != 0 || K % 16 != 0)  {
+                return;
+            }
+
             size_t sparse_size = S.getValues().size();
             size_t row_size = S.getRowPositions().size();
 
-            gpu_tensor_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx_gpu, M, K, N, sparse_size, row_size);
+            gpu_tensor_csr_wrapper<float>(S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx_gpu, M, K, N, sparse_size, row_size);
             cudaDeviceSynchronize();
         }
 
         virtual inline void cleanup_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
+            int M = A.getRows();
+            int K = A.getCols();
+            int N = B.getRows();
+
+            if(M% 16 != 0 || N % 16 != 0 || K % 16 != 0)  {
+                return;
+            }
+
             size_t SP_size = S.getValues().size() * sizeof(T);
 
             // copy result back to RAM
@@ -91,6 +109,9 @@ namespace Competitors {
             cudaFree(cols_gpu);
             cudaFree(rows_gpu);
             cudaFree(start_idx_gpu);
+
+            // free tensor data
+            freeTensorData();
         }
 
         virtual inline void run_coo(Dense<T>& A, Dense<T>& B, COO<T>& S, COO<T>& P) override {}
@@ -101,6 +122,7 @@ namespace Competitors {
     private:
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu;
         int* cols_gpu, * rows_gpu, * start_idx_gpu;
+
     };
 
 }

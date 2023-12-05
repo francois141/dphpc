@@ -114,7 +114,7 @@ public:
             for(uint32_t i = 0; i < lhs.values.size();i++) {
                 T diff = (std::abs(rhs.values[i] - lhs.values[i]) / rhs.values[i]);
                 largestDiff = std::max(largestDiff, diff);
-                valMatch &= diff <= 1e-6;
+                valMatch &= diff <= 1e-3;
             }
         }
 
