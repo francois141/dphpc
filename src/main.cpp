@@ -17,24 +17,24 @@ static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
 
 void init_float_competitors() {
     /* CPU Competitors */
-    auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
-    float_competitors.push_back(cpu_basic);
+    //auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
+    //float_competitors.push_back(cpu_basic);
 
-    auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
-    float_competitors.push_back(cpu_pytorch);
+    //auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
+    //float_competitors.push_back(cpu_pytorch);
 
-    /* GPU Competitors */
+    ///* GPU Competitors */
     auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
     float_competitors.push_back(gpu_basic);
 
     auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
     float_competitors.push_back(gpu_pytorch);
 
-    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
-    float_competitors.push_back(gpu_tiled);
+    //auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
+    //float_competitors.push_back(gpu_tiled);
 
-    auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
-    float_competitors.push_back(gpu_thread_dispatcher);
+    //auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
+    //float_competitors.push_back(gpu_thread_dispatcher);
     
     auto gpu_shared = std::make_shared< Competitors::GPUShared>();
     float_competitors.push_back(gpu_shared);
@@ -199,11 +199,11 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_human_gene2(config.data_folder, config.K);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_random(config.K);
+     DEBUG_OUT("\n=====================================================\n" << std::endl);
+     benchmark_random(config.K);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_cage14(config.data_folder, config.K);
+     //DEBUG_OUT("\n=====================================================\n" << std::endl);
+     //benchmark_cage14(config.data_folder, config.K);
 
     return 0;
 }

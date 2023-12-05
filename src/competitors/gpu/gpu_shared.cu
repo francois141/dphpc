@@ -6,9 +6,9 @@
 
 // how many wraps are used to compute each coefficient
 // this is in turn how many wraps we affect to each row
-constexpr int threads_per_coef = 4;
+constexpr int threads_per_coef = 8;
 constexpr int Tk = 32;
-constexpr int Ti = 64;
+constexpr int Ti = 32;
 constexpr int Tj = Ti * threads_per_coef;
 // make blocksize = Tj to make the copy code easier (this is not necessary)
 constexpr int blocksize = Tj;
@@ -25,7 +25,7 @@ __global__ void gpu_shared_csr_kernel(const float* __restrict__  A, const float*
 	int tile_k = (blockIdx.x / nb_tiles_row) * Tk;
 
 	// local B matrix which contains the value used in one iteration
-	__shared__ float local_B[Tj][Tk];
+	__shared__ __align__(32) float local_B[Tj*Tk];
 	int sparse_index = rows[my_row];
 
 	// number of coefficients stored locally by this single thread
@@ -47,7 +47,7 @@ __global__ void gpu_shared_csr_kernel(const float* __restrict__  A, const float*
 		if (copy_col < N) {
 			// each thread copies one full column
 			for (int k = 0; k < Tk; k += 4) {
-				*reinterpret_cast<float4*>(&local_B[threadIdx.x][k]) = *reinterpret_cast<const float4*>(&B[copy_col * K + tile_k + k]);
+				*reinterpret_cast<float4*>(&local_B[threadIdx.x*Tk+k]) = *reinterpret_cast<const float4*>(&B[copy_col * K + tile_k + k]);
 			}
 		}
 		__syncthreads();
@@ -61,7 +61,7 @@ __global__ void gpu_shared_csr_kernel(const float* __restrict__  A, const float*
 
 			float result = 0.0f;
 			for (int k = 0; k < nb_coefs_stored / 4; k++) {
-				float4 B_col = *reinterpret_cast<const float4*>(&local_B[cols[sparse_index] - tile_j][curr_thread * nb_coefs_stored + k * 4]);
+				float4 B_col = *reinterpret_cast<const float4*>(&local_B[(cols[sparse_index] - tile_j)*Tk+curr_thread * nb_coefs_stored + k * 4]);
 				// perform the dot product
 				result += line_coefs[k].x * B_col.x + line_coefs[k].y * B_col.y + line_coefs[k].z * B_col.z + line_coefs[k].w * B_col.w;
 			}
