@@ -603,7 +603,7 @@ TEST(BasicTest, adaptive_tiling_simple){
         {1.0, 1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0, 1.0}
-    }
+    };
     Dense<float> A(A_vals);
 
     // matix B 4x8
@@ -612,7 +612,7 @@ TEST(BasicTest, adaptive_tiling_simple){
         {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-    }
+    };
     Dense<float> B(B_vals);
 
     gpu_basic->init_csr(A, B, S, P1);

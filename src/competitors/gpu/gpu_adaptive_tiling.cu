@@ -135,7 +135,7 @@ __global__ void gpu_tiled_csr_dense_kernel(float* A, float* B, float* reordered_
 				float element_a = A[abs_row_idx * K + k];
 				for (int j = low; j < high; j++){
 					// B is transposed
-					float val = element_a * B[cols[j] * K + k];
+					float val = element_a * B[reordered_cols[j] * K + k];
 
 					// reduce all WRAP elements of the inner product
 					for (int l = WRAP_SIZE/2; l >= 1; l /= 2){
@@ -145,7 +145,7 @@ __global__ void gpu_tiled_csr_dense_kernel(float* A, float* B, float* reordered_
 					// first thread of each wrap to scale value and update global memory
 					// use atomic Add because multiple thread blocks can read and write this value
 					if (slice_offset == 0)
-						atomicAdd(P + j, val * reodered_S[j]);
+						atomicAdd(P + j, val * reordered_S[j]);
 				}
 			}
 		}
@@ -172,7 +172,7 @@ __global__ void gpu_tiled_csr_sparse_kernel(float* A, float* B, float* reordered
 			float element_a = A[abs_row_idx * K + k];
 			for (int j = low; j < high; j++){
 				// B is transposed
-				float val = element_a * B[cols[j] * K + k];
+				float val = element_a * B[reordered_cols[j] * K + k];
 
 				// reduce all WRAP elements of the inner product
 				for (int l = WRAP_SIZE/2; l >= 1; l /= 2){
