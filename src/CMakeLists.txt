@@ -58,4 +58,5 @@ endif()
 
 find_package(Torch REQUIRED)
 target_link_libraries(dphpc "${TORCH_LIBRARIES}")
+set_property(TARGET dphpc PROPERTY CUDA_ARCHITECTURES 72)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")

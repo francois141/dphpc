@@ -488,7 +488,7 @@ TEST(BasicTest, GPU_test_tensor){
             std::unique_ptr<Competitors::GPUTensor<float>>(new Competitors::GPUTensor<float>);
 
     auto dataset =
-            std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(512, 512, 32, 0.4));
+            std::unique_ptr<SDDMM::RandomWithDensityDataset<float>>(new SDDMM::RandomWithDensityDataset<float>(rows, cols, 64, 0.4));
 
     auto S_coo = dataset->getS_COO();
     auto S_csr = dataset->getS_CSR();

@@ -35,7 +35,10 @@ void init_float_competitors() {
 
     auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
     float_competitors.push_back(gpu_thread_dispatcher);
-    
+
+    auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
+    float_competitors.push_back(gpu_tensor);
+
     auto gpu_shared = std::make_shared< Competitors::GPUShared>();
     float_competitors.push_back(gpu_shared);
 }

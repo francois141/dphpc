@@ -60,7 +60,7 @@ target_link_libraries(
         GTest::gtest_main
 	    "${TORCH_LIBRARIES}")
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+set_property(TARGET matrix_test PROPERTY CUDA_ARCHITECTURES 72)
 
 include(GoogleTest)
 gtest_discover_tests(matrix_test)
