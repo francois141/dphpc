@@ -35,6 +35,8 @@ set(SRC_FILES
         competitors/gpu/gpu_thread_dispatcher.hpp
         competitors/gpu/gpu_tensor.cu
         competitors/gpu/gpu_tensor.hpp
+        competitors/gpu/gpu_convert.cu
+        competitors/gpu/gpu_convert.hpp
 
         #Helpers
         utils/util.hpp

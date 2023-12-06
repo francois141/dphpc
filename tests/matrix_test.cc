@@ -1,13 +1,6 @@
 #include <gtest/gtest.h>
 #include "matrices/matrices.h"
-#include "competitors/cpu/cpu_basic.hpp"
-#include "competitors/cpu/cpu_pytorch.hpp"
-#include "competitors/gpu/gpu_basic.hpp"
-#include "competitors/gpu/gpu_tiled.hpp"
-#include "competitors/gpu/gpu_shared.hpp"
-#include "competitors/gpu/gpu_thread_dispatcher.hpp"
-#include "competitors/gpu/gpu_tensor.hpp"
-#include "competitors/gpu/gpu_pytorch.hpp"
+#include "competitors/competitors.h"
 #include "benchmark/dataset.hpp"
 #include "utils/random_generator.hpp"
 #include "utils/util.hpp"
@@ -36,6 +29,12 @@ void init_float_competitors(std::vector<std::shared_ptr<SDDMM::Competitor<float>
 
     auto gpu_shared = std::make_shared<Competitors::GPUShared>();
     float_competitors.push_back(gpu_shared);
+
+    auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
+    float_competitors.push_back(gpu_tensor);
+
+    auto gpu_convert = std::make_shared<Competitors::GPUConvert>();
+    float_competitors.push_back(gpu_convert);
 }
 
 COO<float> test_all_competitors_coo(Dense<float>& A, Dense<float>& B, COO<float>& S) {

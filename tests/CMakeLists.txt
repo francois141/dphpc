@@ -45,8 +45,11 @@ add_executable(matrix_test
         ../src/competitors/gpu/gpu_thread_dispatcher.hpp
         ../src/competitors/gpu/gpu_shared.cu
         ../src/competitors/gpu/gpu_shared.hpp
-		../src/competitors/gpu/gpu_tensor.cu
+	../src/competitors/gpu/gpu_tensor.cu
         ../src/competitors/gpu/gpu_tensor.hpp
+        ../src/competitors/gpu/gpu_convert.cu
+        ../src/competitors/gpu/gpu_convert.hpp
+
         #Helpers
         ../src/utils/util.hpp
         ../src/utils/random_generator.hpp

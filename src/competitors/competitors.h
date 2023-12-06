@@ -12,3 +12,4 @@
 #include "competitors/gpu/gpu_thread_dispatcher.hpp"
 #include "competitors/gpu/gpu_tensor.hpp"
 #include "competitors/gpu/gpu_shared.hpp"
+#include "competitors/gpu/gpu_convert.hpp"

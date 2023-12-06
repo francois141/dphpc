@@ -41,6 +41,9 @@ void init_float_competitors() {
 
     auto gpu_shared = std::make_shared< Competitors::GPUShared>();
     float_competitors.push_back(gpu_shared);
+
+    auto gpu_convert = std::make_shared< Competitors::GPUConvert>();
+    float_competitors.push_back(gpu_convert);
 }
 
 /* =========================== */
