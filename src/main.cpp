@@ -36,8 +36,8 @@ void init_float_competitors() {
     auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
     float_competitors.push_back(gpu_thread_dispatcher);
 
-    auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
-    float_competitors.push_back(gpu_tensor);
+    // auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
+    // float_competitors.push_back(gpu_tensor);
 
     auto gpu_shared = std::make_shared< Competitors::GPUShared>();
     float_competitors.push_back(gpu_shared);
@@ -205,8 +205,8 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_human_gene2(config.data_folder, config.K);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_random(config.K);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K);
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
     // benchmark_cage14(config.data_folder, config.K);
