@@ -73,6 +73,8 @@ namespace Competitors {
         bool csr_supported() override { return true; };
         bool coo_supported() override { return false; };
 
+        bool is_gpu() override { return true; };
+
     private:
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu;
         int* cols_gpu, * rows_gpu;
