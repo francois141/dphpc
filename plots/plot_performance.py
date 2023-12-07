@@ -28,8 +28,8 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
 
     ### Titles ###
     plt.xlabel("K", loc="center", fontdict={ "size": "medium" })
-    plt.ylabel("Throughput [GFlops/s]")
-    plt.title(f"SDDMM runtime on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\nRunning on {CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
+    plt.ylabel("Performance [GFlops/s]")
+    plt.title(f"SDDMM runtime on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\n{CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
 
     ### Scale & Ticks ###
     ax.set_xscale("log") # log, linear
@@ -51,15 +51,15 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     ### Plot Computations ###
     # df['exec_time_s'] = df[args.runtime_field] / 1_000_000_000 # from ns to s
     # df['GFlops'] = df.apply(lambda row: flops(row['NZ'], row['K']) / 1_000_000_000, axis=1) # from flops to GFlops
-    # df['throughput'] = df['GFlops'] / df['exec_time_s']
+    # df['performance'] = df['GFlops'] / df['exec_time_s']
 
     df['flops'] = df.apply(lambda row: flops(row['NZ'], row['K']), axis=1)
-    df['throughput'] = df['flops'] / df[args.runtime_field] # (flops / 10^9) / (ns / 10^9) = flops / ns
+    df['performance'] = df['flops'] / df[args.runtime_field] # (flops / 10^9) / (ns / 10^9) = flops / ns
 
     df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
 
-    sns.lineplot(df, x="K", y="throughput", hue="comp_repr", legend=True, zorder=1, ax=ax)
-    sns.scatterplot(df, x="K", y="throughput", hue="comp_repr", style="mat_repr", s=100, legend=False, zorder=5, ax=ax)
+    sns.lineplot(df, x="K", y="performance", hue="comp_repr", legend=True, zorder=1, ax=ax)
+    sns.scatterplot(df, x="K", y="performance", hue="comp_repr", style="mat_repr", s=100, legend=False, zorder=5, ax=ax)
 
     sns.despine(left=True, bottom=False) # do not show axis line on the left but show it on the bottom (needs axes.linewidth & axes.edgecolor set)
 
@@ -68,7 +68,7 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
-    runtime_str = "throughput_" + args.runtime_field.split("_")[0]
+    runtime_str = "performance_" + args.runtime_field.split("_")[0]
     os.makedirs(args.output_folder + runtime_str + "/", exist_ok=True)
     plt.savefig(args.output_folder + runtime_str + "/" + dataset_name + ".png", format="png") # plt.show()
     plt.close()

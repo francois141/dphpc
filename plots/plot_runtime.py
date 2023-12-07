@@ -28,7 +28,7 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     ### Titles ###
     plt.xlabel("K", loc="center", fontdict={ "size": "medium" })
     plt.ylabel("Runtime [ms]")
-    plt.title(f"SDDMM runtime on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\nRunning on {CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
+    plt.title(f"SDDMM runtime on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\n{CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
 
     ### Scale & Ticks ###
     ax.set_xscale("log") # log, linear
