@@ -101,6 +101,19 @@ void benchmark_human_gene2(const std::string& data_folder, const int K) {
     benchmark.benchmark();
 }
 
+
+/* ================================= */
+/* Benchmark the warmup dataset */
+/* ==================================*/
+void benchmark_warmup(const int K) {
+    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(4000, 4000, K, 0.1); // 40k x 40k with 0.01/0.05
+    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+
 /* ================================= */
 /* Benchmark the Random dataset */
 /* ==================================*/
@@ -194,6 +207,9 @@ int main(int argc, char* argv[]) {
     }
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_warmup(config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_NIPS(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
@@ -205,8 +221,8 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_human_gene2(config.data_folder, config.K);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_random(config.K);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K);
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
     // benchmark_cage14(config.data_folder, config.K);
