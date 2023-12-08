@@ -315,7 +315,8 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_stiffness(config.data_folder,config.K);
 
-    /*DEBUG_OUT("\n=====================================================\n" << std::endl);
+    /*
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_semi_conductor(config.data_folder,config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
@@ -328,8 +329,8 @@ int main(int argc, char* argv[]) {
     benchmark_stack_overflow(config.data_folder,config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_europe(config.data_folder,config.K);*/
-
+    benchmark_europe(config.data_folder,config.K);
+    */
 
     return 0;
 }
