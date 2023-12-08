@@ -136,6 +136,88 @@ void benchmark_cage14(const std::string& data_folder, const int K) {
     benchmark.benchmark();
 }
 
+/* ================================= */
+/* Benchmark the Boeing dataset      */
+/* ==================================*/
+void benchmark_boeing(const std::string& data_folder, const int K) {
+    SDDMM::BoeingDataset<float> boeing_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(boeing_dataset, float_competitors, "boeing-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+/* ================================= */
+/* Benchmark the Boeing diagonal dataset      */
+/* ==================================*/
+void benchmark_boeing_diagonal(const std::string& data_folder, const int K) {
+    SDDMM::BoeingDiagonalDataset<float> boeing_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(boeing_dataset, float_competitors, "boeing-diagonal-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+
+/* ================================= */
+/* Benchmark the stiffness matrix dataset      */
+/* ==================================*/
+void benchmark_stiffness(const std::string& data_folder, const int K) {
+    SDDMM::StiffnessDataset<float> stiffness_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(stiffness_dataset, float_competitors, "stiffness-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+/* ================================= */
+/* Benchmark the semi conductor dataset      */
+/* ==================================*/
+void benchmark_semi_conductor(const std::string& data_folder, const int K) {
+    SDDMM::SemiConductorDataset<float> semi_conductor_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(semi_conductor_dataset, float_competitors, "semi-conductor-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+
+/* ================================= */
+/* Benchmark the vlsi dataset      */
+/* ==================================*/
+void benchmark_vlsi(const std::string& data_folder, const int K) {
+    SDDMM::VLSIDataset<float> vlsi_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(vlsi_dataset, float_competitors, "vlsi-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+/* ================================= */
+/* Benchmark the stack overflow dataset      */
+/* ==================================*/
+void benchmark_stack_overflow(const std::string& data_folder, const int K) {
+    SDDMM::StackOverflowDataset<float> stack_overflow_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(stack_overflow_dataset, float_competitors, "stack-overflow-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+/* ================================= */
+/* Benchmark the europe dataset      */
+/* ==================================*/
+void benchmark_europe(const std::string& data_folder, const int K) {
+    SDDMM::EuropeDataset<float> europe_dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(europe_dataset, float_competitors, "europe-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+
+
+
 /* ====================================================================================================================== */
 
 struct Config {
@@ -224,8 +306,30 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_random(config.K);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_cage14(config.data_folder, config.K);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_boeing(config.data_folder,config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_boeing_diagonal(config.data_folder,config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_stiffness(config.data_folder,config.K);
+
+    /*DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_semi_conductor(config.data_folder,config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_vlsi(config.data_folder,config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_stack_overflow(config.data_folder,config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_stack_overflow(config.data_folder,config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_europe(config.data_folder,config.K);*/
+
 
     return 0;
 }

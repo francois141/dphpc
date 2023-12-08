@@ -57,9 +57,9 @@ namespace Competitors {
 		int n_blocks = (M + block_size - 1) / block_size;
 
 		// Convert to COO
-		gpu_convert_kernel << < n_blocks, block_size >> > (rows_gpu, rows_coo_gpu, M);
+		gpu_convert_kernel << < 1024, 1024 >> > (rows_gpu, rows_coo_gpu, M);
 		// Perform SDDMM on the GPU
-		gpu_basic_coo_kernel_2 << <32, 32 >> > (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
+		gpu_basic_coo_kernel_2 << <1024, 1024 >> > (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
 		// No need to convert back to CSR, just reuse S
 
 		cudaDeviceSynchronize();
