@@ -6,18 +6,23 @@ cd data/
 wget -N https://archive.ics.uci.edu/static/public/371/nips+conference+papers+1987+2015.zip
 unzip -n nips+conference+papers+1987+2015.zip -d ./
 
+# https://suitesparse-collection-website.herokuapp.com/SNAP/email-Enron
 wget -N http://snap.stanford.edu/data/email-Enron.txt.gz
 gzip -d email-Enron.txt.gz
 
+# https://suitesparse-collection-website.herokuapp.com/ND/nd12k
 wget -N https://suitesparse-collection-website.herokuapp.com/MM/ND/nd12k.tar.gz
 tar -xf nd12k.tar.gz
 
+# https://suitesparse-collection-website.herokuapp.com/Belcastro/human_gene2
 wget -N https://suitesparse-collection-website.herokuapp.com/MM/Belcastro/human_gene2.tar.gz
 tar -xf human_gene2.tar.gz
 
+# https://suitesparse-collection-website.herokuapp.com/Boeing/ct20stif
 wget https://suitesparse-collection-website.herokuapp.com/MM/Boeing/ct20stif.tar.gz
 tar -xf ct20stif.tar.gz
 
+# https://suitesparse-collection-website.herokuapp.com/Boeing/pwtk
 wget https://suitesparse-collection-website.herokuapp.com/MM/Boeing/pwtk.tar.gz
 tar -xf pwtk.tar.gz
 
