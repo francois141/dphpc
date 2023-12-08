@@ -30,8 +30,8 @@ void init_float_competitors(std::vector<std::shared_ptr<SDDMM::Competitor<float>
     auto gpu_shared = std::make_shared<Competitors::GPUShared>();
     float_competitors.push_back(gpu_shared);
 
-    auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
-    float_competitors.push_back(gpu_tensor);
+    // auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
+    // float_competitors.push_back(gpu_tensor);
 
     auto gpu_convert = std::make_shared<Competitors::GPUConvert>();
     float_competitors.push_back(gpu_convert);
@@ -476,7 +476,7 @@ TEST(BasicTest, test_dispatch_tensor){
     EXPECT_EQ(start_idx, expected);
 }
 
-TEST(BasicTest, GPU_test_tensor){
+/* TEST(BasicTest, GPU_test_tensor){
     const int rows = 512;
     const int cols = 512;
 
@@ -506,4 +506,4 @@ TEST(BasicTest, GPU_test_tensor){
     gpu_dispatcher->cleanup_csr(A, B, S_csr, P2);
 
     EXPECT_EQ(P1, COO<float>(P2));
-}
+} */

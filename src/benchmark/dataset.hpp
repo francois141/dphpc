@@ -166,6 +166,11 @@ namespace SDDMM {
 
                 while (fscanf(c_file, "%u %u %f\n", &row, &col, &value) == 3) {
                     row--; col--;
+
+                    if(std::fabs(value) < 1e-7) {
+                        continue;
+                    }
+
                     triplets.push_back({row, col, value});
                 }
 
@@ -308,7 +313,6 @@ namespace SDDMM {
             {}
     };
 
-
     template<typename T>
     class HumanGene2Dataset : public MatrixMarketDataset<T> {
         public:
@@ -385,4 +389,61 @@ namespace SDDMM {
                 : MatrixMarketDataset<T>("Cage14", data_folder, K, "cage14/cage14.mtx")
         {}
     };
+
+    template<typename T>
+    class BoeingDataset : public MatrixMarketDataset<T> {
+    public:
+        BoeingDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("Boeing", data_folder, K, "nd12k/nd12k.mtx")
+        {}
+    };
+
+    template<typename T>
+    class BoeingDiagonalDataset : public MatrixMarketDataset<T> {
+    public:
+        BoeingDiagonalDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("Boeing Diagonal", data_folder, K, "ct20stif/ct20stif.mtx")
+        {}
+    };
+
+    template<typename T>
+    class StiffnessDataset : public MatrixMarketDataset<T> {
+    public:
+        StiffnessDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("Stiffness", data_folder, K, "inline_1/inline_1.mtx")
+        {}
+    };
+
+    template<typename T>
+    class SemiConductorDataset : public MatrixMarketDataset<T> {
+    public:
+        SemiConductorDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("Semi-conductor", data_folder, K, "vas_stokes_1M/vas_stokes_1M.mtx")
+        {}
+    };
+
+    template<typename T>
+    class VLSIDataset : public MatrixMarketDataset<T> {
+    public:
+        VLSIDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("VLSI", data_folder, K, "nv2/nv2.mtx")
+        {}
+    };
+
+    template<typename T>
+    class StackOverflowDataset : public MatrixMarketDataset<T> {
+    public:
+        StackOverflowDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("stack-overflow", data_folder, K, "sx-stackoverflow/sx-stackoverflow.mtx")
+        {}
+    };
+
+    template<typename T>
+    class EuropeDataset : public MatrixMarketDataset<T> {
+    public:
+        EuropeDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("europe", data_folder, K, "europe_osm/europe_osm.mtx")
+        {}
+    };
+
 }
