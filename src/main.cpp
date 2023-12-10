@@ -328,8 +328,8 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_stack_overflow(config.data_folder,config.K);*/
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_europe(config.data_folder,config.K);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_europe(config.data_folder,config.K);
 
     return 0;
 }
