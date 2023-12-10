@@ -16,7 +16,7 @@
 static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
 
 void init_float_competitors() {
-    /* CPU Competitors */
+    // /* CPU Competitors */
     auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
     float_competitors.push_back(cpu_basic);
 
@@ -49,9 +49,9 @@ void init_float_competitors() {
 /* =========================== */
 /* Benchmark the dummy dataset */
 /* =========================== */
-void benchmark_dummy() {
+void benchmark_dummy(const int num_runs) {
     SDDMM::DummyDataset dataset;
-    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "dummy_measures.csv");
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "dummy_measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -60,9 +60,9 @@ void benchmark_dummy() {
 /* ========================== */
 /* Benchmark the NIPS dataset */
 /* ========================== */
-void benchmark_NIPS(const std::string& data_folder, const int K) {
+void benchmark_NIPS(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::NIPSDataset<float> nips_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(nips_dataset, float_competitors, "nips_measures.csv");
+    SDDMM::Benchmark<float> benchmark(nips_dataset, float_competitors, "nips_measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -71,9 +71,9 @@ void benchmark_NIPS(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the EMail-Enron dataset */
 /* ==================================*/
-void benchmark_email_enron(const std::string& data_folder, const int K) {
+void benchmark_email_enron(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::EMailEnronDataset<float> email_enron_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(email_enron_dataset, float_competitors, "enron-measures.csv");
+    SDDMM::Benchmark<float> benchmark(email_enron_dataset, float_competitors, "enron-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -82,9 +82,9 @@ void benchmark_email_enron(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the ND12K dataset */
 /* ==================================*/
-void benchmark_ND12K(const std::string& data_folder, const int K) {
+void benchmark_ND12K(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::ND12KDataset<float> nd12k_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(nd12k_dataset, float_competitors, "nd12k-measures.csv");
+    SDDMM::Benchmark<float> benchmark(nd12k_dataset, float_competitors, "nd12k-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -93,9 +93,9 @@ void benchmark_ND12K(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the Human Gene 2 dataset */
 /* ==================================*/
-void benchmark_human_gene2(const std::string& data_folder, const int K) {
+void benchmark_human_gene2(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::HumanGene2Dataset<float> human_gene2(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(human_gene2, float_competitors, "human_gene2-measures.csv");
+    SDDMM::Benchmark<float> benchmark(human_gene2, float_competitors, "human_gene2-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -105,9 +105,9 @@ void benchmark_human_gene2(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the warmup dataset */
 /* ==================================*/
-void benchmark_warmup(const int K) {
+void benchmark_warmup(const int K, const int num_runs) {
     SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(4000, 4000, K, 0.1); // 40k x 40k with 0.01/0.05
-    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
+    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -117,9 +117,9 @@ void benchmark_warmup(const int K) {
 /* ================================= */
 /* Benchmark the Random dataset */
 /* ==================================*/
-void benchmark_random(const int K) {
+void benchmark_random(const int K, const int num_runs) {
     SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(4000, 4000, K, 0.1); // 40k x 40k with 0.01/0.05
-    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv");
+    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -128,9 +128,9 @@ void benchmark_random(const int K) {
 /* ================================= */
 /* Benchmark the Cage14 dataset */
 /* ==================================*/
-void benchmark_cage14(const std::string& data_folder, const int K) {
+void benchmark_cage14(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::Cage14Dataset<float> cage14_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(cage14_dataset, float_competitors, "cage14-measures.csv");
+    SDDMM::Benchmark<float> benchmark(cage14_dataset, float_competitors, "cage14-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -139,9 +139,9 @@ void benchmark_cage14(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the Boeing dataset      */
 /* ==================================*/
-void benchmark_boeing(const std::string& data_folder, const int K) {
+void benchmark_boeing(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::BoeingDataset<float> boeing_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(boeing_dataset, float_competitors, "boeing-measures.csv");
+    SDDMM::Benchmark<float> benchmark(boeing_dataset, float_competitors, "boeing-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -150,9 +150,9 @@ void benchmark_boeing(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the Boeing diagonal dataset      */
 /* ==================================*/
-void benchmark_boeing_diagonal(const std::string& data_folder, const int K) {
+void benchmark_boeing_diagonal(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::BoeingDiagonalDataset<float> boeing_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(boeing_dataset, float_competitors, "boeing-diagonal-measures.csv");
+    SDDMM::Benchmark<float> benchmark(boeing_dataset, float_competitors, "boeing-diagonal-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -162,9 +162,9 @@ void benchmark_boeing_diagonal(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the stiffness matrix dataset      */
 /* ==================================*/
-void benchmark_stiffness(const std::string& data_folder, const int K) {
+void benchmark_stiffness(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::StiffnessDataset<float> stiffness_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(stiffness_dataset, float_competitors, "stiffness-measures.csv");
+    SDDMM::Benchmark<float> benchmark(stiffness_dataset, float_competitors, "stiffness-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -173,9 +173,9 @@ void benchmark_stiffness(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the semi conductor dataset      */
 /* ==================================*/
-void benchmark_semi_conductor(const std::string& data_folder, const int K) {
+void benchmark_semi_conductor(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::SemiConductorDataset<float> semi_conductor_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(semi_conductor_dataset, float_competitors, "semi-conductor-measures.csv");
+    SDDMM::Benchmark<float> benchmark(semi_conductor_dataset, float_competitors, "semi-conductor-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -185,9 +185,9 @@ void benchmark_semi_conductor(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the vlsi dataset      */
 /* ==================================*/
-void benchmark_vlsi(const std::string& data_folder, const int K) {
+void benchmark_vlsi(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::VLSIDataset<float> vlsi_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(vlsi_dataset, float_competitors, "vlsi-measures.csv");
+    SDDMM::Benchmark<float> benchmark(vlsi_dataset, float_competitors, "vlsi-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -196,9 +196,9 @@ void benchmark_vlsi(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the stack overflow dataset      */
 /* ==================================*/
-void benchmark_stack_overflow(const std::string& data_folder, const int K) {
+void benchmark_stack_overflow(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::StackOverflowDataset<float> stack_overflow_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(stack_overflow_dataset, float_competitors, "stack-overflow-measures.csv");
+    SDDMM::Benchmark<float> benchmark(stack_overflow_dataset, float_competitors, "stack-overflow-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -207,9 +207,9 @@ void benchmark_stack_overflow(const std::string& data_folder, const int K) {
 /* ================================= */
 /* Benchmark the europe dataset      */
 /* ==================================*/
-void benchmark_europe(const std::string& data_folder, const int K) {
+void benchmark_europe(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::EuropeDataset<float> europe_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(europe_dataset, float_competitors, "europe-measures.csv");
+    SDDMM::Benchmark<float> benchmark(europe_dataset, float_competitors, "europe-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -224,6 +224,7 @@ struct Config {
     std::string data_folder;
 	int K; // 32 // 128 // 512
     bool no_csv_header;
+    int num_runs;
 };
 
 static void print_config(Config config) {
@@ -246,14 +247,15 @@ static void usage() {
 
 /* ====================================================================================================================== */
 
-// Runs by default with: ./src/dphpc -data_folder ../data/ -K 32
+// Runs by default with: ./src/dphpc -data_folder ../data/ -K 32 -num_runs 1
 
 int main(int argc, char* argv[]) {
     // default values config
     Config config = {
         std::string("../data/"),
         32,
-        false
+        false,
+        1
     };
 
     #ifndef _WIN32
@@ -261,6 +263,7 @@ int main(int argc, char* argv[]) {
         { .name = "data_folder", .has_arg = 1, .val = 'd' },
 		{ .name = "K", .has_arg = 1, .val = 'k' },
         { .name = "no_csv_header", .has_arg = 0, .val = 'h' },
+        { .name = "num_runs", .has_arg = 1, .val = 'n' },
 		{ .name = NULL, .has_arg = 0, .val = '\0' }
 	};
 
@@ -272,6 +275,8 @@ int main(int argc, char* argv[]) {
             config.K = std::stoi(optarg);
         } else if (c == 'h') {
             config.no_csv_header = true;
+        } else if () {
+            config.num_runs = std::stoi(optarg);
         } else {
             usage();
             return 1;
@@ -289,47 +294,47 @@ int main(int argc, char* argv[]) {
     }
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_warmup(config.K);
+    benchmark_warmup(config.K, 1);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_NIPS(config.data_folder, config.K);
+    benchmark_NIPS(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_email_enron(config.data_folder, config.K);
+    benchmark_email_enron(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_ND12K(config.data_folder, config.K);
+    benchmark_ND12K(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_human_gene2(config.data_folder, config.K);
+    benchmark_human_gene2(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_random(config.K);
+    benchmark_random(config.K, config.num_runs, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_boeing(config.data_folder,config.K);
+    benchmark_boeing(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_boeing_diagonal(config.data_folder,config.K);
+    benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stiffness(config.data_folder,config.K);
+    benchmark_stiffness(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_semi_conductor(config.data_folder,config.K);
+    benchmark_semi_conductor(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_vlsi(config.data_folder,config.K);
+    benchmark_vlsi(config.data_folder, config.K, config.num_runs);
 
     /*
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stack_overflow(config.data_folder,config.K);
+    benchmark_stack_overflow(config.data_folder,config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stack_overflow(config.data_folder,config.K);*/
+    benchmark_stack_overflow(config.data_folder,config.K, config num_runs);*/
 
     // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_europe(config.data_folder,config.K);
+    // benchmark_europe(config.data_folder,config.K, config num_runs);
 
     return 0;
 }

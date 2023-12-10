@@ -33,8 +33,8 @@ namespace SDDMM {
     class Benchmark {
         public:
                                 
-            Benchmark(Dataset<T> &dataset, std::vector<std::shared_ptr<Competitor<T>>> &competitors, std::string path)
-            : dataset(dataset), competitors(competitors), path(path) {}
+            Benchmark(Dataset<T> &dataset, std::vector<std::shared_ptr<Competitor<T>>> &competitors, std::string path, int num_runs)
+            : dataset(dataset), competitors(competitors), path(path), num_runs(num_runs) {}
 
             ~Benchmark() = default;
 
@@ -69,32 +69,34 @@ namespace SDDMM {
                     /* Sparse matrices in CSR format */
                     /* ============================= */
                     if (competitor->csr_supported()) {
-                        DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as CSR)" << std::endl);
+                        DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as CSR) " << num_runs << " times" << std::endl);
 
-                        CSR<T> P_csr(this->getDataset().getS_CSR());
-                        P_csr.clearValues();
+                        for (int i = 0; i < num_runs; i++){
+                            CSR<T> P_csr(this->getDataset().getS_CSR());
+                            P_csr.clearValues();
 
-                        // Running competitor
-                        SDDMM::timing_result res = timing(
-                            competitor->is_gpu(),
-                            [&] { competitor->init_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); },
-                            [&] { competitor->run_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); },
-                            [&] { competitor->cleanup_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); }
-                        );
-                        
-                        // Checking correctness if available
-                        if (this->getDataset().hasExpected()) {
-                            csr_correctness = (P_csr == this->getDataset().getExpected_CSR());
-                            if (!csr_correctness) {
-                                DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
-                                FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                            // Running competitor
+                            SDDMM::timing_result res = timing(
+                                competitor->is_gpu(),
+                                [&] { competitor->init_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); },
+                                [&] { competitor->run_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); },
+                                [&] { competitor->cleanup_csr(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_CSR(), P_csr); }
+                            );
+                            
+                            // Checking correctness if available
+                            if (this->getDataset().hasExpected()) {
+                                csr_correctness = (P_csr == this->getDataset().getExpected_CSR());
+                                if (!csr_correctness) {
+                                    DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                                    FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                                }
                             }
+                            DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds (" << res.comp_ns << "ns)" << std::endl << std::endl);
+                            FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR,"
+                                << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
+                                << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << csr_correctness << std::endl
+                            );
                         }
-                        DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds (" << res.comp_ns << "ns)" << std::endl << std::endl);
-                        FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR,"
-                            << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
-                            << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << csr_correctness << std::endl
-                        );
 
                     }
 
@@ -102,33 +104,34 @@ namespace SDDMM {
                     /* Sparse matrices in COO format */
                     /* ============================= */
                     if (competitor->coo_supported()) {
-                        DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as COO)" << std::endl);
+                        DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as COO) " << num_runs << " times" << std::endl);
                         
-                        COO<T> P_coo(this->getDataset().getS_COO());
-                        P_coo.clearValues();
+                        for (int i = 0; i < num_runs; i++){
+                            COO<T> P_coo(this->getDataset().getS_COO());
+                            P_coo.clearValues();
 
-                        // Running competitor
-                        SDDMM::timing_result res = timing(
-                            competitor->is_gpu(),
-                            [&] { competitor->init_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); },
-                            [&] { competitor->run_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); },
-                            [&] { competitor->cleanup_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); }
-                        );
+                            // Running competitor
+                            SDDMM::timing_result res = timing(
+                                competitor->is_gpu(),
+                                [&] { competitor->init_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); },
+                                [&] { competitor->run_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); },
+                                [&] { competitor->cleanup_coo(this->getDataset().getA(), this->getDataset().getB(), this->getDataset().getS_COO(), P_coo); }
+                            );
 
-                        // Checking correctness if available
-                        if (competitor->coo_supported() && this->getDataset().hasExpected()) {
-                            coo_correcntess = (P_coo == this->getDataset().getExpected_COO());
-                            if (!coo_correcntess) {
-                                DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
-                                FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                            // Checking correctness if available
+                            if (competitor->coo_supported() && this->getDataset().hasExpected()) {
+                                coo_correcntess = (P_coo == this->getDataset().getExpected_COO());
+                                if (!coo_correcntess) {
+                                    DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                                    FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                                }
                             }
+                            DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds - (" << res.comp_ns << "ns)" << std::endl << std::endl);
+                            FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO,"
+                                << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
+                                << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << std::endl
+                            );
                         }
-                        DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds - (" << res.comp_ns << "ns)" << std::endl << std::endl);
-                        FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO,"
-                            << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
-                            << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << std::endl
-                        );
-
                     }
                 });
             }
@@ -138,6 +141,8 @@ namespace SDDMM {
             std::vector<std::shared_ptr<Competitor<T>>> competitors;
 
             std::string path;
+
+            int num_runs;
 
             SDDMM::timing_result timing(bool is_gpu, std::function<void()> init_fnc, std::function<void()> comp_fnc, std::function<void()> cleanup_fnc) {
                 std::chrono::time_point<std::chrono::high_resolution_clock> start, init_checkpoint, comp_checkpoint, end;
