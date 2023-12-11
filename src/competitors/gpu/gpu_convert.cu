@@ -54,12 +54,25 @@ namespace Competitors {
 		int N = B.getRows();
 
 		size_t sparse_size = S.getValues().size();
-		int n_blocks = (M + block_size - 1) / block_size;
+
+		cudaDeviceProp prop;
+		cudaGetDeviceProperties(&prop, 0);  // Assumes device 0, change if using multiple GPUs
+
+		int num_sm = prop.multiProcessorCount;
+		int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
+		int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
+		int max_threads_per_block = prop.maxThreadsPerBlock;
+
+		// Use maximum number of threads per streaming multiprocessor
+		int threads_per_block = std::min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
+
+		// calculate number of thread blocks by using all available streaming multiprocessors
+		int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
 
 		// Convert to COO
-		gpu_convert_kernel << < 1024, 1024 >> > (rows_gpu, rows_coo_gpu, M);
+		gpu_convert_kernel <<< num_thread_blocks, threads_per_block >>> (rows_gpu, rows_coo_gpu, M);
 		// Perform SDDMM on the GPU
-		gpu_basic_coo_kernel_2 << <1024, 1024 >> > (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
+		gpu_basic_coo_kernel_2 <<< num_thread_blocks, threads_per_block >>> (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
 		// No need to convert back to CSR, just reuse S
 
 		cudaDeviceSynchronize();
