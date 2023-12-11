@@ -8,11 +8,12 @@ constexpr int block_size = 32;
 
 __global__ void gpu_convert_kernel(int* rows, int* rows_coo, int M) {
 	int row = blockIdx.x * blockDim.x + threadIdx.x;
-	if (row >= M) return;
-	int start = rows[row];
-	int end = rows[row + 1];
-	for (int i = start; i < end; i++) {
-		rows_coo[i] = row;
+	for (; row < M; row += (gridDim.x * blockDim.x)){
+		int start = rows[row];
+		int end = rows[row + 1];
+		for (int i = start; i < end; i++) {
+			rows_coo[i] = row;
+		}
 	}
 }
 
