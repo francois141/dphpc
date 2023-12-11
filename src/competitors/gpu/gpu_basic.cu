@@ -76,8 +76,6 @@ void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu
 	// calculate number of thread blocks by using all available streaming multiprocessors
 	int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
 
-	std::cout << "num thread blocks basic coo " << num_thread_blocks << std::endl;
-	std::cout << "num threads per block basic coo " << threads_per_block << std::endl;
 	// Perform SDDMM on the GPU
 	gpu_basic_coo_kernel<<<num_thread_blocks, threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);
 }
@@ -98,8 +96,6 @@ void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu
 	// calculate number of thread blocks by using all available streaming multiprocessors
 	int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
 
-	std::cout << "num thread blocks basic csr " << num_thread_blocks << std::endl;
-	std::cout << "num threads per block basic csr " << threads_per_block << std::endl;
     // Perform SDDMM on the GPU
     gpu_basic_csr_kernel<<<num_thread_blocks, threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, row_size);
 }
