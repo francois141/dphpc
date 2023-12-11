@@ -65,19 +65,21 @@ void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu
 	cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, 0);  // Assumes device 0, change if using multiple GPUs
 
-	std::cout << "Device Name " << prop.name << std::endl;
-	std::cout << "Major.Minor " << prop.major << "." << prop.minor << std::endl;
-	std::cout << "Multiprocessor count " << prop.multiProcessorCount << std::endl;
-	std::cout << "Max Blocks per Multiprocessor " << prop.maxBlocksPerMultiProcessor << std::endl;
-	std::cout << "Max ThreadsPerMultiProcessor " << prop.maxThreadsPerMultiProcessor << std::endl;
-	std::cout << "Shared Mem Per Multiprocessor " << prop.sharedMemPerMultiProcessor << std::endl;
-	std::cout << "Shared Mem Per Block " << prop.sharedMemPerBlock << std::endl;
-    std::cout << "Max Threads Per Block: " << prop.maxThreadsPerBlock << std::endl;
-    std::cout << "Max Grid Size (x, y, z): " << prop.maxGridSize[0] << ", " << prop.maxGridSize[1] << ", " << prop.maxGridSize[2] << std::endl;
-	std::cout << "Max Threads Dim " << prop.maxThreadsDim << std::endl;
+	int num_sm = prop.multiProcessorCount;
+	int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
+	int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
+	int max_threads_per_block = prop.maxThreadsPerBlock;
 
+	// Use maximum number of threads per streaming multiprocessor
+	int threads_per_block = std::min(max_threads_per_block, (max_thread_blocks_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
+
+	// calculate number of thread blocks by using all available streaming multiprocessors
+	int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
+
+	std::cout << "num thread blocks " << num_thread_blocks << std::endl;
+	std::cout << "num threads per block " << threads_per_block << std::endl;
 	// Perform SDDMM on the GPU
-	gpu_basic_coo_kernel<<<32, 32>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);
+	gpu_basic_coo_kernel<<<num_thread_blocks, threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);
 }
 
 template <typename T>
