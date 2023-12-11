@@ -41,11 +41,6 @@ tar -xf nv2.tar.gz
 # http://sparse.tamu.edu/SNAP/sx-stackoverflow
 wget https://suitesparse-collection-website.herokuapp.com/MM/SNAP/sx-stackoverflow.tar.gz
 
-# http://sparse.tamu.edu/DIMACS10/europe_osm
-wget https://suitesparse-collection-website.herokuapp.com/MM/DIMACS10/europe_osm.tar.gz
-tar -xf europe_osm.tar.gz
-cd ..
-
 
 #cd
 #wget https://download.pytorch.org/libtorch/cu121/libtorch-cxx11-abi-shared-with-deps-2.1.0%2Bcu121.zip

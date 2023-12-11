@@ -57,17 +57,6 @@ void benchmark_dummy() {
     benchmark.benchmark();
 }
 
-/* ========================== */
-/* Benchmark the NIPS dataset */
-/* ========================== */
-void benchmark_NIPS(const std::string& data_folder, const int K) {
-    SDDMM::NIPSDataset<float> nips_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(nips_dataset, float_competitors, "nips_measures.csv");
-
-    /* Run the benchmark */
-    benchmark.benchmark();
-}
-
 /* ================================= */
 /* Benchmark the EMail-Enron dataset */
 /* ==================================*/
@@ -216,19 +205,6 @@ void benchmark_stack_overflow(const std::string& data_folder, const int K) {
     benchmark.benchmark();
 }
 
-/* ================================= */
-/* Benchmark the europe dataset      */
-/* ==================================*/
-void benchmark_europe(const std::string& data_folder, const int K) {
-    SDDMM::EuropeDataset<float> europe_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(europe_dataset, float_competitors, "europe-measures.csv");
-
-    /* Run the benchmark */
-    benchmark.benchmark();
-}
-
-
-
 
 /* ====================================================================================================================== */
 
@@ -304,9 +280,6 @@ int main(int argc, char* argv[]) {
     benchmark_warmup(config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_NIPS(config.data_folder, config.K);
-
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_email_enron(config.data_folder, config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
@@ -340,10 +313,7 @@ int main(int argc, char* argv[]) {
     benchmark_stack_overflow(config.data_folder,config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stack_overflow(config.data_folder,config.K);
-
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_europe(config.data_folder,config.K);*/
+    benchmark_stack_overflow(config.data_folder,config.K);*/
 
 
     return 0;

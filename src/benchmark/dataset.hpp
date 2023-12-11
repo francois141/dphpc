@@ -202,63 +202,6 @@ namespace SDDMM {
             }
 
     };
-    
-    template<typename T>
-    class NIPSDataset : public Dataset<T> {
-        private:
-            const std::string file_name = "NIPS_1987-2015.csv";
-
-        public:
-
-            NIPSDataset(const std::string& data_folder, const int K)
-            : Dataset<T>("NIPS"), K(K)
-            {
-                this->generateDense(M, N, K);
-
-                std::vector<Triplet<T>> triplets;
-
-                std::string dataset_path(data_folder);
-                dataset_path.append(file_name);
-
-                std::fstream data_file;
-                data_file.open(dataset_path, std::ios::in);
-
-                assert(data_file.is_open()); // failed to open file
-
-                data_file.ignore(61000, '\n'); // skip the long header line
-
-                int i = 0, row = 0, col = 0;
-
-                std::string line;
-                while (std::getline(data_file, line)) {
-                    std::stringstream lineStream(line);
-                    std::string cell;
-
-                    lineStream.ignore(64, ','); // skip the first column (word name)
-
-                    while (std::getline(lineStream, cell, ',')) {
-                        if (cell == "0") { col++; continue; }
-
-                        triplets.push_back({ row, col, (T) std::stod(cell) });
-                        i++;
-
-                        col++;
-                    }
-                    row++; col = 0;
-                }
-                data_file.close();
-
-                this->S_csr = CSR<T>(M, N, triplets);
-                this->S_coo = COO<T>(M, N, triplets);
-
-                DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from file ===\n" << std::endl);
-            }
-
-        private:
-            const int M = 11463;
-            const int N = 5811;
-            const int K;          
-    };
 
     template<typename T>
     class EMailEnronDataset : public Dataset<T> {
@@ -459,13 +402,4 @@ namespace SDDMM {
                 : MatrixMarketDataset<T>("stack-overflow", data_folder, K, "sx-stackoverflow/sx-stackoverflow.mtx")
         {}
     };
-
-    template<typename T>
-    class EuropeDataset : public MatrixMarketDataset<T> {
-    public:
-        EuropeDataset(const std::string &data_folder, const int K)
-                : MatrixMarketDataset<T>("europe", data_folder, K, "europe_osm/europe_osm.mtx")
-        {}
-    };
-
 }
