@@ -275,7 +275,7 @@ int main(int argc, char* argv[]) {
             config.K = std::stoi(optarg);
         } else if (c == 'h') {
             config.no_csv_header = true;
-        } else if () {
+        } else if (c == 'n') {
             config.num_runs = std::stoi(optarg);
         } else {
             usage();

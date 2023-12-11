@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-//#define DEBUG // if defined, print pretty benchmark messages to std::cout
-#define DUMP // if defined, print CSV style results to std::cout
+#define DEBUG // if defined, print pretty benchmark messages to std::cout
+// #define DUMP // if defined, print CSV style results to std::cout
 
 #ifdef DEBUG
     #define DEBUG_OUT(x) do { std::cout << x; } while (0)
