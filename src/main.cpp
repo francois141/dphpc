@@ -293,38 +293,38 @@ int main(int argc, char* argv[]) {
         FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
     }
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_warmup(config.K, 1);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_NIPS(config.data_folder, config.K, config.num_runs);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_email_enron(config.data_folder, config.K, config.num_runs);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_ND12K(config.data_folder, config.K, config.num_runs);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_human_gene2(config.data_folder, config.K, config.num_runs);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_random(config.K, config.num_runs);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_boeing(config.data_folder, config.K, config.num_runs);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
-
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_stiffness(config.data_folder, config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_warmup(config.K, 1);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_semi_conductor(config.data_folder, config.K, config.num_runs);
+    benchmark_NIPS(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_vlsi(config.data_folder, config.K, config.num_runs);
+    benchmark_email_enron(config.data_folder, config.K, config.num_runs);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_ND12K(config.data_folder, config.K, config.num_runs);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_human_gene2(config.data_folder, config.K, config.num_runs);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K, config.num_runs);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_boeing(config.data_folder, config.K, config.num_runs);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_stiffness(config.data_folder, config.K, config.num_runs);
+
+    //DEBUG_OUT("\n=====================================================\n" << std::endl);
+    //benchmark_semi_conductor(config.data_folder, config.K, config.num_runs);
+
+    //DEBUG_OUT("\n=====================================================\n" << std::endl);
+    //benchmark_vlsi(config.data_folder, config.K, config.num_runs);
 
     /*
     DEBUG_OUT("\n=====================================================\n" << std::endl);
