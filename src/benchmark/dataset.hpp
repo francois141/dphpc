@@ -349,6 +349,28 @@ namespace SDDMM {
     };
 
     template<typename T>
+    class LatinHypercubeDataset : public Dataset<T> {
+    public:
+
+        LatinHypercubeDataset(const int M, const int N, const int K) : Dataset<T>("LatinHypercube"), M(M), N(N), K(K)
+        {
+            this->generateDense(M, N, K);
+
+            std::vector<Triplet<T>> triplets = sampleLatin<T>(M, N);
+
+            this->S_csr = CSR<T>(M, N, triplets);
+            this->S_coo = COO<T>(M, N, triplets);
+
+            DEBUG_OUT("=== [" << this->getName() << "] Loaded " << triplets.size() << " sparse values from latin generator ===\n" << std::endl);
+        }
+
+    private:
+        const int M;
+        const int N;
+        const int K;
+    };
+
+    template<typename T>
     class UnbalancedDataset : public Dataset<T> {
     public:
 

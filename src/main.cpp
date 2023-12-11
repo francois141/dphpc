@@ -126,6 +126,18 @@ void benchmark_random(const int K) {
 }
 
 /* ================================= */
+/* Benchmark the Latin dataset */
+/* ==================================*/
+void benchmark_latin(const int K) {
+    SDDMM::LatinHypercubeDataset<float> latin_dataset(4000, 4000, K); // 40k x 40k with 0.01/0.05
+    SDDMM::Benchmark<float> benchmark(latin_dataset, float_competitors, "latin-matrix-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+
+/* ================================= */
 /* Benchmark the Cage14 dataset */
 /* ==================================*/
 void benchmark_cage14(const std::string& data_folder, const int K) {
@@ -305,6 +317,9 @@ int main(int argc, char* argv[]) {
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_random(config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_latin(config.K);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_boeing(config.data_folder,config.K);

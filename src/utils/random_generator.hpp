@@ -5,7 +5,7 @@
 #include <random>
 #include <type_traits>
 #include <map>
-
+#include <numeric>
 
 // https://stackoverflow.com/a/69646192/8803949 & https://stackoverflow.com/a/32887614/8803949
 template<typename T>
@@ -46,7 +46,8 @@ inline T randomValue(distributor<T>& distribution, std::mt19937 &generator) {
 
 // TODO: Francois Costa - if sampling is too slow, make a faster algorithm
 template<typename T>
-std::vector<Triplet<T>> sampleTriplets(const int M, const int N, const int nbSamples) {
+std::vector<Triplet<T>>
+sampleTriplets(const int M, const int N, const int nbSamples) {
     assert(M > 0 && N > 0);
 
     static std::random_device                  rand_dev;
@@ -76,6 +77,31 @@ std::vector<Triplet<T>> sampleTriplets(const int M, const int N, const int nbSam
     return triplets;
 }
 
+template<typename T>
+std::vector<Triplet<T>>
+sampleLatin(const int M, const int N) {
+    assert(M > 0 && N > 0 && M == N);
+
+    const int size = N;
+
+    std::vector<int> rows(size), cols(size);
+    std::iota(rows.begin(), rows.end(),0);
+    std::random_shuffle(rows.begin(), rows.end());
+
+    std::iota(cols.begin(), cols.end(),0);
+    std::random_shuffle(rows.begin(), rows.end());
+
+    std::vector<T> values(size);
+    generate_data(values, 0.0f, 1.0f);
+
+    std::vector<Triplet<T>> triplets;
+    triplets.reserve(size);
+    for(size_t i = 0; i < rows.size();i++) {
+        triplets.push_back(Triplet<T>{rows[i], cols[i], values[i]});
+    }
+
+    return triplets;
+}
 
 template <typename S>
 std::ostream& operator<<(std::ostream& os, const std::vector<S>& vector) {
