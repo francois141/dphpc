@@ -41,6 +41,26 @@ tar -xf nv2.tar.gz
 # http://sparse.tamu.edu/SNAP/sx-stackoverflow
 wget https://suitesparse-collection-website.herokuapp.com/MM/SNAP/sx-stackoverflow.tar.gz
 
+# https://sparse.tamu.edu/Freescale/FullChip
+wget https://suitesparse-collection-website.herokuapp.com/MM/Freescale/FullChip.tar.gz
+
+# https://sparse.tamu.edu/HB/bcsstk30
+wget https://suitesparse-collection-website.herokuapp.com/MM/HB/bcsstk30.tar.gz
+
+# https://sparse.tamu.edu/FEMLAB/sme3Db
+wget https://suitesparse-collection-website.herokuapp.com/MM/FEMLAB/sme3Db.tar.gz
+
+# https://sparse.tamu.edu/IPSO/TSC_OPF_1047
+wget https://suitesparse-collection-website.herokuapp.com/MM/IPSO/TSC_OPF_1047.tar.gz
+
+# https://sparse.tamu.edu/JGD_Groebner/c8_mat11
+wget https://suitesparse-collection-website.herokuapp.com/MM/JGD_Groebner/c8_mat11.tar.gz
+
+# https://sparse.tamu.edu/TKK/smt
+wget https://suitesparse-collection-website.herokuapp.com/MM/TKK/smt.tar.gz
+
+# https://sparse.tamu.edu/Belcastro/mouse_gene
+wget https://suitesparse-collection-website.herokuapp.com/MM/Belcastro/mouse_gene.tar.gz
 
 #cd
 #wget https://download.pytorch.org/libtorch/cu121/libtorch-cxx11-abi-shared-with-deps-2.1.0%2Bcu121.zip
