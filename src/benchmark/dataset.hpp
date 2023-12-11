@@ -402,4 +402,60 @@ namespace SDDMM {
                 : MatrixMarketDataset<T>("stack-overflow", data_folder, K, "sx-stackoverflow/sx-stackoverflow.mtx")
         {}
     };
+
+    template<typename T>
+    class ChipDataset : public MatrixMarketDataset<T> {
+    public:
+        ChipDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("chip", data_folder, K, "FullChip/FullChip.mtx")
+        {}
+    };
+
+    template<typename T>
+    class PlatformDataset : public MatrixMarketDataset<T> {
+    public:
+        PlatformDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("platform", data_folder, K, "bcsstk30/bcsstk30.mtx")
+        {}
+    };
+
+    template<typename T>
+    class MechanicsDataset : public MatrixMarketDataset<T> {
+    public:
+        MechanicsDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("mechanics", data_folder, K, "sme3Db/sme3Db.mtx")
+        {}
+    };
+
+    template<typename T>
+    class PowerDataset : public MatrixMarketDataset<T> {
+    public:
+        PowerDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("power", data_folder, K, "TSC_OPF_1047/TSC_OPF_1047.mtx")
+        {}
+    };
+
+    template<typename T>
+    class CombinatoricsDataset : public MatrixMarketDataset<T> {
+    public:
+        CombinatoricsDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("combinatorics", data_folder, K, "c8_mat11/c8_mat11.mtx")
+        {}
+    };
+
+    template<typename T>
+    class StressDataset : public MatrixMarketDataset<T> {
+    public:
+        StressDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("stress", data_folder, K, "smt/smt.mtx")
+        {}
+    };
+
+    template<typename T>
+    class MouseGeneDataset : public MatrixMarketDataset<T> {
+    public:
+        MouseGeneDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("mouse-gene", data_folder, K, "mouse_gene/mouse_gene.mtx")
+        {}
+    };
 }
