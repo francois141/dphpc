@@ -67,9 +67,9 @@ def main(args: argparse.Namespace):
     sns.set_theme(context="notebook", font_scale=1, style="darkgrid", rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
 
     df = read_df(args.input)
-    drop_mask = df['competitor'].eq('CPU-Basic')
-    drop_mask |= df['competitor'].eq('GPU-Basic') & df['mat_repr'].eq('CSR')
-    df = df.drop(df.index[drop_mask])
+    #drop_mask = df['competitor'].eq('CPU-Basic')
+    #drop_mask |= df['competitor'].eq('GPU-Basic') & df['mat_repr'].eq('CSR')
+    #df = df.drop(df.index[drop_mask])
 
     datasets = pd.unique(df['dataset'])
     for dataset in datasets:
