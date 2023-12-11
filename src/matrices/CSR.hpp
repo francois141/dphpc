@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <cuda_runtime.h>
 
 #include "triplet.h"
 #include "COO.hpp"
