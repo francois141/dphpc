@@ -54,14 +54,6 @@ void benchmark_dummy(const int num_runs) {
     benchmark.benchmark();
 }
 
-void benchmark_NIPS(const std::string& data_folder, const int K, const int num_runs) {
-    SDDMM::NIPSDataset<float> nips_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(nips_dataset, float_competitors, "nips_measures.csv", num_runs);
-
-    /* Run the benchmark */
-    benchmark.benchmark();
-}
-
 void benchmark_email_enron(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::EMailEnronDataset<float> email_enron_dataset(data_folder, K);
     SDDMM::Benchmark<float> benchmark(email_enron_dataset, float_competitors, "enron-measures.csv", num_runs);
@@ -344,7 +336,7 @@ int main(int argc, char* argv[]) {
     benchmark_email_enron(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_boeing(config.data_folder, config.K, config.num_runs, config.num_runs);
+    benchmark_boeing(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
