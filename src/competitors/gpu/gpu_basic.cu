@@ -1,5 +1,8 @@
 #include "gpu_basic.hpp"
 
+#include <cuda_runtime.h>
+#include <iostream>
+
 __global__ void gpu_basic_csr_kernel(float* A, float* B, float* S, float* P, int* cols, int* rows, int M, int K, int N, int sparse_size, int row_size) {
     int nb_running = gridDim.x * blockDim.x;
     int min_per_instance = (row_size-1) / nb_running;
@@ -59,16 +62,42 @@ __global__ void gpu_basic_coo_kernel(float* A, float* B, float* S, float* P, int
 
 template <typename T>
 void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size) {
-	
+	cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, 0);  // Assumes device 0, change if using multiple GPUs
+
+	int num_sm = prop.multiProcessorCount;
+	int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
+	int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
+	int max_threads_per_block = prop.maxThreadsPerBlock;
+
+	// Use maximum number of threads per streaming multiprocessor
+	int threads_per_block = std::min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
+
+	// calculate number of thread blocks by using all available streaming multiprocessors
+	int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
+
 	// Perform SDDMM on the GPU
-	gpu_basic_coo_kernel<<<32, 32>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);
+	gpu_basic_coo_kernel<<<num_thread_blocks, threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);
 }
 
 template <typename T>
 void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size) {
+	cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, 0);  // Assumes device 0, change if using multiple GPUs
+
+	int num_sm = prop.multiProcessorCount;
+	int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
+	int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
+	int max_threads_per_block = prop.maxThreadsPerBlock;
+
+	// Use maximum number of threads per streaming multiprocessor
+	int threads_per_block = std::min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
+
+	// calculate number of thread blocks by using all available streaming multiprocessors
+	int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
 
     // Perform SDDMM on the GPU
-    gpu_basic_csr_kernel<<<32, 32>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, row_size);
+    gpu_basic_csr_kernel<<<num_thread_blocks, threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, row_size);
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */

@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <cuda_runtime.h>
 
 #include "triplet.h"
 #include "COO.hpp"
@@ -186,7 +187,20 @@ private:
 
         this->rowPositions.emplace_back(idx);
 
-        this->_dispatch(32*32,1);
+        // calculte number of threads to be used
+        cudaDeviceProp prop;
+        cudaGetDeviceProperties(&prop, 0);  // Assumes device 0, change if using multiple GPUs
+
+        int num_sm = prop.multiProcessorCount;
+        int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
+        int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
+        int max_threads_per_block = prop.maxThreadsPerBlock;
+        // Use maximum number of threads per streaming multiprocessor
+        int threads_per_block = std::min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
+        // calculate number of thread blocks by using all available streaming multiprocessors
+        int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
+
+        this->_dispatch(num_thread_blocks * threads_per_block,1);
     }
 
     bool testValue(const std::vector<int> &sizes, int val, int nbThreads) {
