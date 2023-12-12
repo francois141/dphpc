@@ -84,12 +84,15 @@ sampleLatin(const int M, const int N) {
 
     const int size = N;
 
+    std::random_device rd;
+    std::mt19937 g(rd());
+
     std::vector<int> rows(size), cols(size);
     std::iota(rows.begin(), rows.end(),0);
-    std::random_shuffle(rows.begin(), rows.end());
+    std::shuffle(rows.begin(), rows.end(), g);
 
     std::iota(cols.begin(), cols.end(),0);
-    std::random_shuffle(rows.begin(), rows.end());
+    std::shuffle(rows.begin(), rows.end(), g);
 
     std::vector<T> values(size);
     generate_data(values, 0.0f, 1.0f);
