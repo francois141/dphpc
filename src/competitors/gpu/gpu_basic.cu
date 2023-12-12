@@ -20,9 +20,15 @@ __global__ void gpu_basic_csr_kernel(float* A, float* B, float* S, float* P, int
         while(idx < rows[row_idx+1]) {
             int col = cols[idx];
 
+			// Note: Test if ILP improves performance
             float result = 0.f;
-            for (int i = 0; i < K; i++) {
-                result += A[row * K + i] * B[col * K + i];
+            for (int i = 0; i < K; i += 8) {
+				float4 a1 = *reinterpret_cast<float4*>(&A[row * K + i]);
+				float4 a2 = *reinterpret_cast<float4*>(&A[row * K + i + 4]);
+				float4 b1 = *reinterpret_cast<float4*>(&B[col * K + i]);
+				float4 b2 = *reinterpret_cast<float4*>(&B[col * K + i + 4]);
+                result += a1.x * b1.x + a1.y * b1.y + a1.z * b1.z + a1.w * b1.w;
+				result += a2.x * b2.x + a2.y * b2.y + a2.z * b2.z + a2.w * b2.w;
             }
             result *= S[idx];
             P[idx] = result;
@@ -51,9 +57,14 @@ __global__ void gpu_basic_coo_kernel(float* A, float* B, float* S, float* P, int
 
 		float result = 0.f;
 		// matrix multiplication
-		for (int i = 0; i < K; i++) {
-			// B is transposed
-			result += A[row * K + i] * B[col * K + i];
+		// Note: Test if ILP improves performance
+		for (int i = 0; i < K; i += 8) {
+			float4 a1 = *reinterpret_cast<float4*>(&A[row * K + i]);
+			float4 a2 = *reinterpret_cast<float4*>(&A[row * K + i + 4]);
+			float4 b1 = *reinterpret_cast<float4*>(&B[col * K + i]);
+			float4 b2 = *reinterpret_cast<float4*>(&B[col * K + i + 4]);
+			result += a1.x * b1.x + a1.y * b1.y + a1.z * b1.z + a1.w * b1.w;
+			result += a2.x * b2.x + a2.y * b2.y + a2.z * b2.z + a2.w * b2.w;
 		}
 		result *= S[entry];
 		P[entry] = result;
@@ -64,6 +75,11 @@ template <typename T>
 void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size) {
 	cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, 0);  // Assumes device 0, change if using multiple GPUs
+
+	if (K % 8 != 0) {
+		std::cerr << "Implementation requires that K is a multiple of 8 (current K = " << K << ")" << std::endl;
+		return;
+	}
 
 	int num_sm = prop.multiProcessorCount;
 	int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
@@ -84,6 +100,11 @@ template <typename T>
 void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size) {
 	cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, 0);  // Assumes device 0, change if using multiple GPUs
+
+	if (K % 8 != 0) {
+		std::cerr << "Implementation requires that K is a multiple of 8 (current K = " << K << ")" << std::endl;
+		return;
+	}
 
 	int num_sm = prop.multiProcessorCount;
 	int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
