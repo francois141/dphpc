@@ -167,11 +167,6 @@ private:
 
         std::sort(triplets.begin(), triplets.end());
 
-        for (auto e: triplets) {
-            assert(e.row >= 0 && e.row < this->rows);
-            assert(e.col >= 0 && e.col < this->cols);
-        }
-
         this->rowPositions = std::vector<int>(0);
         this->colPositions = std::vector<int>(0);
         this->values       = std::vector<T>(0);
