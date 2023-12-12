@@ -2,6 +2,7 @@
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# for Paul on CSCS
 #https://stackoverflow.com/questions/62693218/how-to-solve-gtest-and-libtorch-linkage-conflict
 add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
