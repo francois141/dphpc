@@ -77,7 +77,7 @@ namespace Competitors {
 		int threads_per_block = min(static_cast<int>(max_threads_per_block), 512);
 
 		int max_num_threads = num_sm * max_threads_per_sm;
-		int num_threads = min((static_cast<int>((sparse_size + nnz_per_thread - 1) / nnz_per_thread), static_cast<int>(max_num_threads));
+		int num_threads = min(static_cast<int>((sparse_size + nnz_per_thread - 1) / nnz_per_thread), static_cast<int>(max_num_threads));
 		int num_thread_blocks = (num_threads + threads_per_block - 1) / threads_per_block;
 
 		// Convert to COO
