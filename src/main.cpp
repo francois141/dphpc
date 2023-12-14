@@ -57,6 +57,75 @@ void benchmark_dummy(const int num_runs) {
 void benchmark_email_enron(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::EMailEnronDataset<float> email_enron_dataset(data_folder, K);
     SDDMM::Benchmark<float> benchmark(email_enron_dataset, float_competitors, "enron-measures.csv", num_runs);
+}
+
+void benchmark_fluid(const std::string& data_folder, const int K) {
+    SDDMM::FluidDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "fluid-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_oil(const std::string& data_folder, const int K) {
+    SDDMM::OilDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "oil-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_biochemical(const std::string& data_folder, const int K) {
+    SDDMM::BiochemicalDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "biochemical-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_circuit(const std::string& data_folder, const int K) {
+    SDDMM::CircuitDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "circuit-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_heat(const std::string& data_folder, const int K) {
+    SDDMM::HeatDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "heat-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_mass(const std::string& data_folder, const int K) {
+    SDDMM::MassDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "mass-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_adder(const std::string& data_folder, const int K) {
+    SDDMM::AdderDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "adder-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_trackball(const std::string& data_folder, const int K) {
+    SDDMM::TrackballDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "trackball-measures.csv");
+
+    /* Run the benchmark */
+    benchmark.benchmark();
+}
+
+void benchmark_email_enron(const std::string& data_folder, const int K) {
+    SDDMM::EMailEnronDataset<float> dataset(data_folder, K);
+    SDDMM::Benchmark<float> benchmark(dataset, float_competitors, "enron-measures.csv");
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -102,13 +171,6 @@ void benchmark_latin(const int K, const int num_runs) {
     benchmark.benchmark();
 }
 
-void benchmark_cage14(const std::string& data_folder, const int K, const int num_runs) {
-    SDDMM::Cage14Dataset<float> cage14_dataset(data_folder, K);
-    SDDMM::Benchmark<float> benchmark(cage14_dataset, float_competitors, "cage14-measures.csv", num_runs);
-
-    /* Run the benchmark */
-    benchmark.benchmark();
-}
 
 void benchmark_boeing(const std::string& data_folder, const int K, const int num_runs) {
     SDDMM::BoeingDataset<float> boeing_dataset(data_folder, K);
@@ -294,7 +356,7 @@ int main(int argc, char* argv[]) {
     // Warmup dataset
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_warmup(config.K, 1);
+    benchmark_warmup(config.K);
 
     // Artificial datasets
 
@@ -303,6 +365,32 @@ int main(int argc, char* argv[]) {
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_latin(config.K, config.num_runs);
+
+    // Small datasets
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_fluid(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_oil(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_biochemical(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_circuit(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_heat(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_mass(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_adder(config.data_folder, config.K);
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_trackball(config.data_folder, config.K);
 
     // Dense datasets
 

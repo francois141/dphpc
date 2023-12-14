@@ -3,9 +3,45 @@
 mkdir -p data/
 cd data/
 
+# Small matrices
+
+# http://sparse.tamu.edu/FIDAP/ex21
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/FIDAP/ex21.tar.gz
+tar -xf ex21.tar.gz
+
+# http://sparse.tamu.edu/HB/bcsstk02
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/HB/bcsstk02.tar.gz
+tar -xf bcsstk02.tar.gz
+
+# http://sparse.tamu.edu/Schulthess/N_biocarta
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/Schulthess/N_biocarta.tar.gz
+tar -xf N_biocarta.tar.gz
+
+# http://sparse.tamu.edu/Sandia/fpga_dcop_06
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/Sandia/fpga_dcop_06.tar.gz
+tar -xf fpga_dcop_06.tar.gz
+
+# http://sparse.tamu.edu/Averous/epb0
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/Averous/epb0.tar.gz
+tar -xf epb0.tar.gz
+
+# http://sparse.tamu.edu/HB/bcsstk07
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/HB/bcsstk07.tar.gz
+tar -xf bcsstk07.tar.gz
+
+# http://sparse.tamu.edu/Sandia/adder_dcop_33
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/Sandia/adder_dcop_33.tar.gz
+tar -xf adder_dcop_33.tar.gz
+
+# http://sparse.tamu.edu/Boeing/bcsstm37
+wget -N https://suitesparse-collection-website.herokuapp.com/MM/Boeing/bcsstm37.tar.gz
+tar -xf  bcsstm37.tar.gz
+
+# Large matrices
+
 # https://suitesparse-collection-website.herokuapp.com/SNAP/email-Enron
 wget -N http://snap.stanford.edu/data/email-Enron.txt.gz
-gzip -d email-Enron.txt.gz
+tar -xf email-Enron.txt.gz
 
 # https://suitesparse-collection-website.herokuapp.com/ND/nd12k
 wget -N https://suitesparse-collection-website.herokuapp.com/MM/ND/nd12k.tar.gz

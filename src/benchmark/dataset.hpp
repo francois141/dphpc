@@ -204,6 +204,70 @@ namespace SDDMM {
     };
 
     template<typename T>
+    class FluidDataset : public MatrixMarketDataset<T> {
+    public:
+        FluidDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("fluid", data_folder, K, "ex21/ex21.mtx")
+        {}
+    };
+
+    template<typename T>
+    class OilDataset : public MatrixMarketDataset<T> {
+    public:
+        OilDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("oil", data_folder, K, "bcsstk02/bcsstk02.mtx")
+        {}
+    };
+
+    template<typename T>
+    class BiochemicalDataset : public MatrixMarketDataset<T> {
+    public:
+        BiochemicalDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("biochemical", data_folder, K, "N_biocarta/N_biocarta.mtx")
+        {}
+    };
+
+    template<typename T>
+    class CircuitDataset : public MatrixMarketDataset<T> {
+    public:
+        CircuitDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("circuit", data_folder, K, "fpga_dcop_06/fpga_dcop_06.mtx")
+        {}
+    };
+
+    template<typename T>
+    class HeatDataset : public MatrixMarketDataset<T> {
+    public:
+        HeatDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("heat", data_folder, K, "epb0/epb0.mtx")
+        {}
+    };
+
+    template<typename T>
+    class MassDataset : public MatrixMarketDataset<T> {
+    public:
+        MassDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("mass", data_folder, K, "bcsstk07/bcsstk07.mtx")
+        {}
+    };
+
+    template<typename T>
+    class AdderDataset : public MatrixMarketDataset<T> {
+    public:
+        AdderDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("adder", data_folder, K, "adder_dcop_33/adder_dcop_33.mtx")
+        {}
+    };
+
+    template<typename T>
+    class TrackballDataset : public MatrixMarketDataset<T> {
+    public:
+        TrackballDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("trackball", data_folder, K, "bcsstm37/bcsstm37.mtx")
+        {}
+    };
+
+    template<typename T>
     class EMailEnronDataset : public Dataset<T> {
         private:
             const std::string file_name = "email-Enron.txt";
@@ -345,14 +409,6 @@ namespace SDDMM {
         const int N;
         const int K;
         const double density;
-    };
-
-    template<typename T>
-    class Cage14Dataset : public MatrixMarketDataset<T> {
-    public:
-        Cage14Dataset(const std::string &data_folder, const int K)
-                : MatrixMarketDataset<T>("Cage14", data_folder, K, "cage14/cage14.mtx")
-        {}
     };
 
     template<typename T>

@@ -2,6 +2,20 @@
 
 ### List of matrices we have until now
 
+#### Small matrices
+
+|   Matrix    |    Rows     |   Cols   |  Non-Zero  | Density |                 Image                  |
+|:-----------:|:-----------:|:--------:|:----------:|:-------:|:--------------------------------------:|
+|    Fluid    |     656     |     656     |  	18,964 |  4.4%   |    <img src="./images/fluid.png" />    |
+|     Oil     |     	66     |  	66  |  	4,356 |  100%   |     <img src="./images/oil.png" />     |
+| Biochemical |      	 	1,922      |   	1,922 |  	4,335 |  0.1%   | <img src="./images/biochemical.png" /> |
+|   Circuit   |  	 	1,220  |  	1,220 |  	5,860 |  0.39%  |   <img src="./images/circuit.png" />   |
+|    Heat     |  	  	1,794  |  	1,794  |  	7,764 |  0.24%  |    <img src="./images/heat.png" />     |
+|    Mass     |  	  	420  | 420  |  	 	7,860 |  4.45%  |    <img src="./images/mass.png" />     |
+|    Adder    | 	  	1,813  |  1,813  |  	 	11,246 |  0.34%  |    <img src="./images/adder.png" />    |
+|  Trackball  |  	   	25,503  |   	25,503  |  	 	15,525 |  0.01%  |  <img src="./images/trackball.png" />  |
+
+
 #### Dense matrices
 
 |    Matrix     |    Rows    |   Cols   |  Non-Zero  | Density |                  Image                   |
