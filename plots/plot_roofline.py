@@ -2,6 +2,7 @@ import argparse
 import math
 import os
 
+import colorcet as cc
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as plticker
@@ -10,22 +11,20 @@ import pandas as pd
 import seaborn as sns
 
 pd.set_option('mode.chained_assignment', None) # should remove and fix the warning ...
+np.seterr(divide = 'ignore') # same
 
-CPU_SPEC = "Intel(R) Core(TM) iX-XXXXXX CPU @ X.00GHz"
-GPU_SPEC = "NVIDIA XXX"
+# peak_perf: GPU peak performance on FP32 (theoretical) in [flops/s]
+# mem_bandwidth: GPU memory bandwidth (theoretical) in [bytes/s]
+SPECS = {
+    "v100": { "cpu": "Intel(R) 6140 @ 2.30 GHz", "gpu": "NVIDIA V100", "peak_perf": 14.13 * 10e12, "mem_bandwidth": 0.897 * 10e12 },
+    "a100": { "cpu": "AMD EPYC 7742 @ 2.25 GHz", "gpu": "NVIDIA A100", "peak_perf": 19.49 * 10e12, "mem_bandwidth": 1.555 * 10e12 },
+}
 
 RUNTIME_FIELD = "comp_ns" # total_ns, init_ns, comp_ns, cleanup_ns
 flops = lambda NZ, K : 2*K * NZ + NZ # each NZ requires K multiplications and K additions to sum up. Finally to scale the result by S need NZ multiplications.
 trans_bytes = lambda M, N, K, NZ: (M*K + N*K)*4 + NZ*4  # Assuming infinite cache and floats: need to bring in dense A and B and sparse S (ignoring writes to P)
 
-# GPU peak performance on FP32 (theoretical) in [Flops/s]
-PI_GPU = 48.74 * 10e12 # A100: 19.5 TFlops/s
-
-# GPU memory bandwidth (theoretical)
-BETA_GPU = 0.7168 * 10e12 # A100: 1.555 TB/s
-
-BOUND = PI_GPU / BETA_GPU # memory/compute bound (horizontal line)
-MAX_OP_INTENSITY = 1000
+MAX_OP_INTENSITY = 100
 
 def read_df(path):
     df = pd.read_csv(path)
@@ -41,11 +40,20 @@ def plot_roofline_all(args: argparse.Namespace, df: pd.DataFrame):
 
     # Change figure size before plotting
     fig.set_size_inches((12, 10))
+    
+    # Device & Input Metadata
+    specs = SPECS[args.gpu]
+    cpu = specs['cpu']
+    gpu = specs['gpu']
+    gpu_pi = specs['peak_perf'] # GPU peak performance on FP32
+    gpu_beta = specs['mem_bandwidth'] # GPU peak memory bandwidth
+    gpu_bound = gpu_pi / gpu_beta # memory/compute bound (horizontal line)
+    print(f"Plotting results for all")
 
     ### Titles ###
     plt.xlabel("Operational Intensity [Flops/byte]", loc="center", fontdict={ "size": "medium" })
     plt.ylabel("Performance [Flops/s]")
-    plt.title(f"SDDMM Roofline plot\n{CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
+    plt.title(f"SDDMM roofline plot\nRunning on {cpu} and {gpu}\n", loc="center", y=1, fontdict={ "weight": "bold", "size": "large" })
 
     ### Scale & Ticks ###
     ax.set_xscale("log") # log, linear
@@ -67,11 +75,11 @@ def plot_roofline_all(args: argparse.Namespace, df: pd.DataFrame):
 
     ### Rooflines ###
     x = np.arange(0, MAX_OP_INTENSITY, 0.25)
-    y = BETA_GPU * x
+    y = gpu_beta * x
     sns.lineplot(x=x, y=y, color="black")
 
-    plt.hlines(PI_GPU, color="green", ls="solid", xmin=BOUND, xmax=MAX_OP_INTENSITY)
-    plt.vlines(BOUND, color="green", alpha=0.4, ls="--", ymin=0, ymax=PI_GPU)
+    plt.hlines(gpu_pi, color="black", ls="solid", xmin=gpu_bound, xmax=MAX_OP_INTENSITY)
+    plt.vlines(gpu_bound, color="black", alpha=0.4, ls="--", ymin=0, ymax=gpu_pi)
 
     ### Plot Computations ###
     df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
@@ -82,6 +90,9 @@ def plot_roofline_all(args: argparse.Namespace, df: pd.DataFrame):
 
     df['performance'] = df['flops'] / df['seconds']
     df['op_intensity'] = df['flops'] / df['bytes']
+
+    df = df[ [ 'dataset', 'comp_repr', 'K', 'performance', 'op_intensity' ] ]
+    df = df.groupby([ 'dataset', 'comp_repr', 'K' ]).quantile(args.percentile)
 
     sns.lineplot(df, x="op_intensity", y="performance", hue="dataset", style="comp_repr", dashes=False, legend=False, zorder=1, ax=ax)
     sns.scatterplot(df, x="op_intensity", y="performance", hue="dataset", style="comp_repr", s=100, legend=True, zorder=5, ax=ax)
@@ -97,12 +108,13 @@ def plot_roofline_all(args: argparse.Namespace, df: pd.DataFrame):
     del handles[labels.index("comp_repr")]
     labels.remove("comp_repr")
 
-    ax.legend(handles=handles, labels=labels, loc="best", ncol=2, fancybox=True, fontsize="small")
+    ax.legend(handles=handles, labels=labels, loc="best", ncol=3, fancybox=True, fontsize="small")
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
-    os.makedirs(args.output_folder + "roofline/", exist_ok=True)
-    plt.savefig(args.output_folder + "roofline/all.png", format="png") # plt.show()
+    plot_dir = f"{args.output_folder}{args.gpu}/roofline/"
+    os.makedirs(plot_dir, exist_ok=True)
+    plt.savefig(plot_dir + "all.png", format="png") # plt.show()
     plt.close()
 
 
@@ -111,11 +123,28 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
 
     # Change figure size before plotting
     fig.set_size_inches((12, 10))
+    
+    # Device & Input Metadata
+    specs = SPECS[args.gpu]
+    cpu = specs['cpu']
+    gpu = specs['gpu']
+    gpu_pi = specs['peak_perf'] # GPU peak performance on FP32
+    gpu_beta = specs['mem_bandwidth'] # GPU peak memory bandwidth
+    gpu_bound = gpu_pi / gpu_beta # memory/compute bound (horizontal line)
+    first = df.iloc[0]
+    runs = df[ (df["competitor"] == first['competitor']) & (df['mat_repr'] == first['mat_repr']) & (df['K'] == first['K']) ].shape[0]
+    N = df.iloc[0]['N']
+    M = df.iloc[0]['M']
+    NZ = df.iloc[0]['NZ']
+    density = (NZ / (N * M)) * 100
+    density = round(density, 2 if density > 0.01 else 4)
+    dataset_name = str(dataset_name[0].upper() + dataset_name[1:])
+    print(f"Plotting results for {dataset_name}")
 
     ### Titles ###
     plt.xlabel("Operational Intensity [Flops/byte]", loc="center", fontdict={ "size": "medium" })
     plt.ylabel("Performance [Flops/s]")
-    plt.title(f"SDDMM Roofline plot on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\n{CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
+    plt.title(f"SDDMM roofline plot with R={runs}\n{dataset_name} dataset: {N}x{M} with {density}% density\nRunning on {cpu} and {gpu}\n", loc="center", y=1, fontdict={ "weight": "bold", "size": "large" })
 
     ### Scale & Ticks ###
     ax.set_xscale("log") # log, linear
@@ -137,11 +166,11 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
 
     ### Rooflines ###
     x = np.arange(0, MAX_OP_INTENSITY, 1)
-    y = BETA_GPU * x
+    y = gpu_beta * x
     sns.lineplot(x=x, y=y, color="black")
 
-    plt.hlines(PI_GPU, color="green", ls="solid", xmin=BOUND, xmax=MAX_OP_INTENSITY)
-    plt.vlines(BOUND, color="green", alpha=0.4, ls="--", ymin=0, ymax=PI_GPU)
+    plt.hlines(gpu_pi, color="black", ls="solid", xmin=gpu_bound, xmax=MAX_OP_INTENSITY)
+    plt.vlines(gpu_bound, color="black", alpha=0.4, ls="--", ymin=0, ymax=gpu_pi)
 
     ### Plot Computations ###
     df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
@@ -152,6 +181,9 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
 
     df['performance'] = df['flops'] / df['seconds']
     df['op_intensity'] = df['flops'] / df['bytes']
+
+    df = df[ [ 'dataset', 'comp_repr', 'K', 'performance', 'op_intensity' ] ]
+    df = df.groupby([ 'dataset', 'comp_repr', 'K' ]).quantile(args.percentile)
 
     sns.lineplot(df, x="op_intensity", y="performance", hue="comp_repr", legend=False, zorder=1, ax=ax)
     sns.scatterplot(df, x="op_intensity", y="performance", hue="comp_repr", style="K", s=100, legend=True, zorder=5, ax=ax)
@@ -169,13 +201,15 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
-    os.makedirs(args.output_folder + "roofline/", exist_ok=True)
-    plt.savefig(args.output_folder + "roofline/" + dataset_name + ".png", format="png") # plt.show()
+    plot_dir = f"{args.output_folder}{args.gpu}/roofline/"
+    os.makedirs(plot_dir, exist_ok=True)
+    plt.savefig(plot_dir + dataset_name + ".png", format="png") # plt.show()
     plt.close()
 
 
 def main(args: argparse.Namespace):
-    sns.set_theme(context="notebook", font_scale=1, style="darkgrid", rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
+    sns.set_theme(context="notebook", font_scale=1, rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
+    sns.set_palette(sns.color_palette(cc.glasbey_hv), 20)
 
     df = read_df(args.input)
     drop_mask = df['competitor'].eq('CPU-Basic') & df['mat_repr'].eq('COO')
@@ -184,13 +218,18 @@ def main(args: argparse.Namespace):
 
     plot_roofline_all(args, df)
 
+    sns.reset_defaults()
+    sns.set_theme(context="notebook", font_scale=1, rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
+
     datasets = pd.unique(df['dataset'])
     for dataset in datasets:
         plot_roofline(args, df[df['dataset'] == dataset], dataset)
 
 if __name__ == "__main__":    
     argParser = argparse.ArgumentParser()
-    argParser.add_argument("--input", default="results/results.csv", type=str, help="CSV input path")
+    argParser.add_argument("--input", default="results/results-v100.csv", type=str, help="CSV input path")
     argParser.add_argument("--output_folder", default="results/", type=str, help="Output folder")
+    argParser.add_argument("--percentile", default=0.95, type=float, help="Performance & Operational Intensity percentile")
+    argParser.add_argument("--gpu", default="v100", type=str, help="GPU model")
     args = argParser.parse_args()
     main(args)
