@@ -202,6 +202,7 @@ private:
 
         // number of non-zero elements per thread
         int nnz_per_thread = 64;
+        int sparse_size = triplets.size();
 
         // set the number of threads per block
         int threads_per_block = min(max_threads_per_block, 512);
