@@ -196,9 +196,19 @@ private:
         int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
         int max_threads_per_block = prop.maxThreadsPerBlock;
         // Use maximum number of threads per streaming multiprocessor
-        int threads_per_block = std::min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
+        // int threads_per_block = std::min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
         // calculate number of thread blocks by using all available streaming multiprocessors
-        int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
+        // int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
+
+        // number of non-zero elements per thread
+        int nnz_per_thread = 64;
+
+        // set the number of threads per block
+        int threads_per_block = std::min(max_threads_per_block, 512);
+
+        int max_num_threads = num_sm * max_threads_per_sm;
+        int num_threads = std::min((sparse_size + nnz_per_thread - 1) / nnz_per_thread, max_num_threads);
+        int num_thread_blocks = (num_threads + threads_per_block - 1) / threads_per_block;
 
         this->_dispatch(num_thread_blocks * threads_per_block,1);
     }
