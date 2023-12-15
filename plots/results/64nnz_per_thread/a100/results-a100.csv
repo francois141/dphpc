@@ -2024,51 +2024,6 @@ GPU-Basic,platform,COO,28924,28924,64,690805,7208505,3508863,2269312,1404723,1
 GPU-Basic,platform,COO,28924,28924,64,690805,7152545,3444454,2262784,1420422,1
 GPU-Basic,platform,COO,28924,28924,64,690805,7180675,3459043,2265760,1429713,1
 GPU-Basic,platform,COO,28924,28924,64,690805,7177225,3445184,2277408,1429633,1
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11643163,2850646,6500960,2287459,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11676923,2926846,6488480,2256249,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11690113,2902416,6485984,2297639,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11768182,2985505,6485536,2292468,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11753223,2935646,6486336,2326749,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11755652,2983705,6484192,2283699,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11808242,2931655,6482656,2389638,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11861352,2980525,6483264,2393088,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11845032,2956045,6487136,2396728,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11772062,2996375,6500768,2270799,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11827332,2948935,6482816,2390488,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,12246860,3533872,6483136,2226169,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,11700423,2964465,6478752,2252699,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,10324620,2932646,5087072,2299789,0
-Largest relative difference is : 1
-[ GPU-PyTorch] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!
-GPU-PyTorch,platform,CSR,28924,28924,64,690805,10284530,2974016,5086688,2219349,0
 GPU-Tiled,platform,CSR,28924,28924,64,690805,25009418,3209444,20561792,1231644,1
 GPU-Tiled,platform,CSR,28924,28924,64,690805,24476670,3080475,20158240,1233524,1
 GPU-Tiled,platform,CSR,28924,28924,64,690805,24633440,3074445,20293632,1260254,1

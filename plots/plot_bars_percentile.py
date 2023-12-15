@@ -59,8 +59,8 @@ def plot_bars(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
-    os.makedirs(args.output_folder + f"{args.gpu}_p{int(args.percentile * 100)}/", exist_ok=True)
-    plt.savefig(args.output_folder + f"{args.gpu}_p{int(args.percentile * 100)}/" + dataset_name + ".png", format="png") # plt.show()
+    os.makedirs(args.output_folder + f"p{int(args.percentile * 100)}/", exist_ok=True)
+    plt.savefig(args.output_folder + f"p{int(args.percentile * 100)}/" + dataset_name + ".png", format="png") # plt.show()
     plt.close()
 
 def main(args: argparse.Namespace):
@@ -77,10 +77,10 @@ def main(args: argparse.Namespace):
 
 if __name__ == "__main__":    
     argParser = argparse.ArgumentParser()
-    argParser.add_argument("--input", default="results/results-v100.csv", type=str, help="CSV input path")
-    argParser.add_argument("--output_folder", default="results/", type=str, help="Output folder")
-    argParser.add_argument("--percentile", default=0.95, type=float, help="Runtime percentile")
-    argParser.add_argument("--gpu", default="v100", type=str, help="GPU model")
+    argParser.add_argument("--input", type=str, help="CSV input path")
+    argParser.add_argument("--output_folder", type=str, help="Output folder")
+    argParser.add_argument("--percentile", type=float, help="Runtime percentile")
+    argParser.add_argument("--gpu", type=str, help="GPU model")
     args = argParser.parse_args()
     main(args)
     
