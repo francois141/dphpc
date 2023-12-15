@@ -33,14 +33,25 @@ void gpu_thread_dispatcher_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, i
 
 	int num_sm = prop.multiProcessorCount;
 	int max_threads_per_sm = prop.maxThreadsPerMultiProcessor;
-	int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
+	// int max_thread_blocks_per_sm = prop.maxBlocksPerMultiProcessor;
 	int max_threads_per_block = prop.maxThreadsPerBlock;
 
 	// Use maximum number of threads per streaming multiprocessor
-	int threads_per_block = std::min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
+	// int threads_per_block = min(max_threads_per_block, (max_threads_per_sm + max_thread_blocks_per_sm - 1) / max_thread_blocks_per_sm);
 
 	// calculate number of thread blocks by using all available streaming multiprocessors
-	int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
+	// int num_thread_blocks = (max_threads_per_sm * num_sm + threads_per_block - 1) / threads_per_block;
+
+    // number of non-zero elements per thread
+	int nnz_per_thread = 64;
+
+	// set the number of threads per block
+	int threads_per_block = min(max_threads_per_block, 512);
+
+	int max_num_threads = num_sm * max_threads_per_sm;
+	int num_threads = min((sparse_size + nnz_per_thread - 1) / nnz_per_thread, max_num_threads);
+	int num_thread_blocks = (num_threads + threads_per_block - 1) / threads_per_block;
+
     gpu_thread_dispatcher_csr_kernel<<<num_thread_blocks, threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx, M, K, N, sparse_size, row_size);
 }
 

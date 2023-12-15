@@ -419,29 +419,29 @@ int main(int argc, char* argv[]) {
 
     // Sparse datasets
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_email_enron(config.data_folder, config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_email_enron(config.data_folder, config.K, config.num_runs);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_boeing(config.data_folder, config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_boeing(config.data_folder, config.K, config.num_runs);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_stiffness(config.data_folder, config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_stiffness(config.data_folder, config.K, config.num_runs);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_semi_conductor(config.data_folder,config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_semi_conductor(config.data_folder,config.K, config.num_runs);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_vlsi(config.data_folder,config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_vlsi(config.data_folder,config.K, config.num_runs);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_stack_overflow(config.data_folder,config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_stack_overflow(config.data_folder,config.K, config.num_runs);
 
-    // DEBUG_OUT("\n=====================================================\n" << std::endl);
-    // benchmark_chip(config.data_folder, config.K, config.num_runs);
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_chip(config.data_folder, config.K, config.num_runs);
 
     return 0;
 }
