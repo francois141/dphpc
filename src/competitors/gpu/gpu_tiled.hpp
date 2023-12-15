@@ -4,7 +4,7 @@
 #include "matrices/matrices.h"
 
 template <typename T>
-void gpu_tiled_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N);
+void gpu_tiled_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size);
 
 namespace Competitors {
 
@@ -55,7 +55,9 @@ namespace Competitors {
             int K = A.getCols();
             int N = B.getRows();
 
-            gpu_tiled_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N);            
+            size_t sparse_size = S.getValues().size();
+
+            gpu_tiled_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);            
             cudaDeviceSynchronize();
         }
 
