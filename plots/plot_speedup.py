@@ -10,8 +10,10 @@ import seaborn as sns
 
 pd.set_option('mode.chained_assignment', None) # should remove and fix the warning ...
 
-CPU_SPEC = "Intel(R) Core(TM) iX-XXXXXX CPU @ X.00GHz"
-GPU_SPEC = "NVIDIA XXX"
+SPECS = {
+    "v100": [ "Intel(R) 6140 @ 2.30 GHz", "NVIDIA V100" ],
+    "a100": [ "AMD EPYC 7742 @ 2.25 GHz", "NVIDIA A100" ],
+}
 
 BASELINE = { "competitor": "CPU-Basic", "mat_repr": "CSR" }
 
@@ -21,16 +23,40 @@ def read_df(path):
     df = pd.read_csv(path)
     return df
 
+def mean_baseline_group(group):
+    group[args.runtime_field] = int(group[args.runtime_field].mean())
+    return group
+
+def calc_speedup(group, baseline_times):
+    global args
+
+    group = group.reset_index()
+    group['speedup'] = baseline_times / group[args.runtime_field]
+    return group.set_index("index")
+
 def plot_speedup(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     fig, ax = plt.subplots()
 
     # Change figure size before plotting
     fig.set_size_inches((12, 10))
 
+    # Device & Input Metadata
+    cpu, gpu = SPECS[args.gpu]
+    first = df.iloc[0]
+    runs = df[ (df["competitor"] == first['competitor']) & (df['mat_repr'] == first['mat_repr']) & (df['K'] == first['K']) ].shape[0]
+    N = df.iloc[0]['N']
+    M = df.iloc[0]['M']
+    NZ = df.iloc[0]['NZ']
+    density = (NZ / (N * M)) * 100
+    density = round(density, 2 if density > 0.01 else 4)
+    ci = int(args.ci * 100)
+    dataset_name = str(dataset_name[0].upper() + dataset_name[1:])
+    print(f"Plotting results for {dataset_name}")
+
     ### Titles ###
     plt.xlabel("K", loc="center", fontdict={ "size": "medium" })
     plt.ylabel(f"Speedup [Baseline is {BASELINE['competitor']} ({BASELINE['mat_repr']})]")
-    plt.title(f"SDDMM speedup on the {dataset_name} dataset ({df.iloc[0]['N']}x{df.iloc[0]['M']})\n{CPU_SPEC} & {GPU_SPEC}\n", loc="center", y=1.05, fontdict={ "weight": "bold", "size": "large" })
+    plt.title(f"SDDMM speedup with R={runs} runs (showing {ci}% CI)\n{dataset_name} dataset: {N}x{M} with {density}% density\nRunning on {cpu} and {gpu}\n", loc="center", y=1, fontdict={ "weight": "bold", "size": "large" })
 
     ### Scale & Ticks ###
     ax.set_xscale("log") # log, linear
@@ -51,31 +77,25 @@ def plot_speedup(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
 
     ### Plot Computations ###
     baselines = df[np.logical_and.reduce([ df[k] == v for k,v in BASELINE.items() ])]
+    baselines = baselines.groupby("K").apply(mean_baseline_group)
     baseline_times = baselines[args.runtime_field].reset_index(drop=True)
 
     df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
     df['speedup'] = 0.0
-    grouped = df.groupby([ "competitor", "mat_repr" ])
-    for _, group in grouped:
-        reset_group = group.reset_index()
-        reset_group['speedup'] = baseline_times / reset_group[args.runtime_field]
-        reset_group = reset_group.set_index("index")
-        df.loc[reset_group.index, 'speedup'] = reset_group['speedup']
-    # => there must be a smarter way to do this ...
+    df = df.groupby([ "competitor", "mat_repr" ]).apply(lambda group: calc_speedup(group, baseline_times))
 
-    sns.lineplot(df, x="K", y="speedup", hue="comp_repr", legend=True, zorder=1, ax=ax)
-    sns.scatterplot(df, x="K", y="speedup", hue="comp_repr", style="mat_repr", s=100, legend=False, zorder=5, ax=ax)
+    sns.lineplot(df, x="K", y="speedup", hue="comp_repr", legend=True, zorder=1, errorbar=("ci", ci), err_style="band", ax=ax)
 
     sns.despine(left=True, bottom=False) # do not show axis line on the left but show it on the bottom (needs axes.linewidth & axes.edgecolor set)
 
     ### Legend ###
-    plt.legend(loc="upper center", bbox_to_anchor=(0.5, -0.175), ncol=6, fancybox=True, fontsize="small")
+    plt.legend(loc="upper center", bbox_to_anchor=(0.5, -0.175), ncol=4, fancybox=True, fontsize="small")
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
-    speedup_str = "speedup_" + args.runtime_field.split("_")[0]
-    os.makedirs(args.output_folder + speedup_str + "/", exist_ok=True)
-    plt.savefig(args.output_folder + speedup_str + "/" + dataset_name + ".png", format="png") # plt.show()
+    plot_dir = f"{args.output_folder}{args.gpu}/speedup_{args.runtime_field.split('_')[0]}/"
+    os.makedirs(plot_dir, exist_ok=True)
+    plt.savefig(plot_dir + dataset_name + ".png", format="png") # plt.show()
     plt.close()
 
 def main(args: argparse.Namespace):
@@ -89,9 +109,11 @@ def main(args: argparse.Namespace):
 
 if __name__ == "__main__":    
     argParser = argparse.ArgumentParser()
-    argParser.add_argument("--input", default="results/results.csv", type=str, help="CSV input path")
+    argParser.add_argument("--input", default="results/results-v100.csv", type=str, help="CSV input path")
     argParser.add_argument("--output_folder", default="results/", type=str, help="Output folder")
     argParser.add_argument("--runtime_field", default=RUNTIME_FIELD, type=str, help="Runtime field")
+    argParser.add_argument("--ci", default=0.95, type=float, help="Percentage confidence interval to draw")
+    argParser.add_argument("--gpu", default="v100", type=str, help="GPU model")
     args = argParser.parse_args()
     main(args)
     

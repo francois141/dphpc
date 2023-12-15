@@ -44,6 +44,10 @@ void init_float_competitors() {
 
     auto gpu_convert = std::make_shared<Competitors::GPUConvert>();
     float_competitors.push_back(gpu_convert);
+
+
+    auto gpu_preprocessing = std::make_shared<Competitors::GPUPreprocessing>();
+    float_competitors.push_back(gpu_preprocessing);
 }
 
 void benchmark_dummy(const int num_runs) {
