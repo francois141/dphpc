@@ -1,8 +1,8 @@
 #/bin/bash
 
-folder="results/64nnz_per_thread"
-input_v100="${input_folder}/v100/results-v100.csv"
-input_a100="${input_folder}/a100/results-a100.csv"
+folder="results/64nnz_per_thread/"
+input_v100="${folder}v100/results-v100.csv"
+input_a100="${folder}a100/results-a100.csv"
 
 ### ================ Percentile bar plots ================ ###
 
@@ -19,8 +19,8 @@ python3 plot_bars_percentile.py --input $input_v100 --output_folder $folder --gp
 python3 plot_bars_percentile.py --input $input_v100 --output_folder $folder --gpu v100 --K 64 --percentile 0.95
 
 # K = 128
-python3 plot_bars_percentile.py --input $input_v100 --output_folder $folder --gpu v100 --K 128 --percentile 0.5
-python3 plot_bars_percentile.py --input $input_v100 --output_folder $folder --gpu v100 --K 128 --percentile 0.95
+# python3 plot_bars_percentile.py --input $input_v100 --output_folder $folder --gpu v100 --K 128 --percentile 0.5
+# python3 plot_bars_percentile.py --input $input_v100 --output_folder $folder --gpu v100 --K 128 --percentile 0.95
 
 ### A100 ###
 python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K all --percentile 0.5
@@ -31,12 +31,12 @@ python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gp
 python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 32 --percentile 0.95
 
 # K = 64
-python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 64 --percentile 0.5
-python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 64 --percentile 0.95
+# python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 64 --percentile 0.5
+# python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 64 --percentile 0.95
 
-# K = 128
-python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 128 --percentile 0.5
-python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 128 --percentile 0.95
+# # K = 128
+# python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 128 --percentile 0.5
+# python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 128 --percentile 0.95
 
 ### ================ Speedup plots ================ ###
 
