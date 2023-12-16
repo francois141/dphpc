@@ -41,7 +41,7 @@ tar -xf  bcsstm37.tar.gz
 
 # https://suitesparse-collection-website.herokuapp.com/SNAP/email-Enron
 wget -N http://snap.stanford.edu/data/email-Enron.txt.gz
-tar -xf email-Enron.txt.gz
+gzip -d email-Enron.txt.gz
 
 # https://suitesparse-collection-website.herokuapp.com/ND/nd12k
 wget -N https://suitesparse-collection-website.herokuapp.com/MM/ND/nd12k.tar.gz
@@ -79,9 +79,9 @@ tar -xf sx-stackoverflow.tar.gz
 wget https://suitesparse-collection-website.herokuapp.com/MM/Freescale/FullChip.tar.gz
 tar -xf FullChip.tar.gz
 
-# https://sparse.tamu.edu/HB/bcsstk30
-wget https://suitesparse-collection-website.herokuapp.com/MM/HB/bcsstk30.tar.gz
-tar -xf bcsstk30.tar.gz
+# http://sparse.tamu.edu/POLYFLOW/mixtank_new
+wget https://suitesparse-collection-website.herokuapp.com/MM/POLYFLOW/mixtank_new.tar.gz
+tar -xf mixtank_new.tar.gz
 
 # https://sparse.tamu.edu/FEMLAB/sme3Db
 wget https://suitesparse-collection-website.herokuapp.com/MM/FEMLAB/sme3Db.tar.gz

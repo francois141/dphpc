@@ -22,12 +22,12 @@
 |:-------------:|:----------:|:--------:|:----------:|:-------:|:----------------------------------------:|
 | Human Gene 2  |   14,340   |  14,340  | 18,068,388 |  8.8%   |  <img src="./images/human_gene2.png" />  |
 |     ND12k     |   36,000   |  36,000  | 14,220,946 |   1%    |     <img src="./images/nd12k.png" />     |
-|   Platform    |  	28,924   |  28,924  | 2,043,492 |  0.25%  |   <img src="./images/platform.png" />    |
+|      Mix      |  	29,957   |     29,957     | 1,990,919 |  0.22%  |      <img src="./images/mix.png" />      |
 |   Mecanics    |  	 29,067  |  29,067  | 2,081,063 |  0.24%  |   <img src="./images/mecanics.png" />    |
-|     Power     |  	  	8,140  |   	8,140  |  	2,012,833 |  3.03%  |     <img src="./images/power.png" />     |
-| Combinatorics |  	  	4,562  |  5,761  |  	2,462,970 |  9.37%  | <img src="./images/combinatorics.png" /> |
-|    Stress     |  	  	25,710 | 25,710  |  	3,749,582 |  0.56%  |    <img src="./images/stress.png" />     |
-|     Mouse     |  	  45,101 | 45,101  |  	 	28,967,291 |  1.42%  |     <img src="./images/mouse.png" />     |
+|     Power     |  	  	8,140  |  	8,140  |  	2,012,833 |  3.03%  |     <img src="./images/power.png" />     |
+| Combinatorics |  	  	4,562  |  5,761   |  	2,462,970 |  9.37%  | <img src="./images/combinatorics.png" /> |
+|    Stress     |  	  	25,710 |  25,710  |  	3,749,582 |  0.56%  |    <img src="./images/stress.png" />     |
+|     Mouse     |  	  45,101 |  45,101  |  	 	28,967,291 |  1.42%  |     <img src="./images/mouse.png" />     |
 
 
 #### Sparse Matrices

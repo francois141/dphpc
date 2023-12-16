@@ -468,10 +468,10 @@ namespace SDDMM {
     };
 
     template<typename T>
-    class PlatformDataset : public MatrixMarketDataset<T> {
+    class MixDataset : public MatrixMarketDataset<T> {
     public:
-        PlatformDataset(const std::string &data_folder, const int K)
-                : MatrixMarketDataset<T>("platform", data_folder, K, "bcsstk30/bcsstk30.mtx")
+        MixDataset(const std::string &data_folder, const int K)
+                : MatrixMarketDataset<T>("mix", data_folder, K, "mixtank_new/mixtank_new.mtx")
         {}
     };
 
