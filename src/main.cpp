@@ -351,7 +351,7 @@ int main(int argc, char* argv[]) {
 
     // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Non_Zeros,Total_Execution_Time,Initialization_Time,Computation_Time,Cleanup_Time,Correctness
     if (!config.no_csv_header) {
-        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
+        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness,num_thread_blocks,num_threads_per_block" << std::endl);
     }
 
     // Warmup dataset

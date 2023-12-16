@@ -6,7 +6,7 @@
 #include "matrices/matrices.h"
 
 template <typename T>
-void gpu_thread_dispatcher_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int* start_idx, int M, int K, int N, int sparse_size, int row_size);
+void gpu_thread_dispatcher_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int* start_idx, int M, int K, int N, int sparse_size, int row_size, int num_thread_blocks, int num_threads_per_block);
 
 namespace Competitors {
 
@@ -16,6 +16,10 @@ namespace Competitors {
 
         GPUThreadDispatcher()
             : SDDMM::Competitor<T>("GPU-Thread-Dispatcher")
+        {}
+
+        GPUThreadDispatcher(int num_threads_per_block, int num_thread_blocks)
+            : SDDMM::Competitor<T>("GPU-Thread-Dispatcher", num_threads_per_block, num_thread_blocks)
         {}
 
         virtual inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
@@ -61,8 +65,10 @@ namespace Competitors {
 
             size_t sparse_size = S.getValues().size();
             size_t row_size = S.getRowPositions().size();
+            int num_thread_blocks = this->get_num_thread_blocks();
+            int num_threads_per_block = this->get_num_threads_per_block();
 
-            gpu_thread_dispatcher_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx_gpu, M, K, N, sparse_size, row_size);
+            gpu_thread_dispatcher_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx_gpu, M, K, N, sparse_size, row_size, num_thread_blocks, num_threads_per_block);
             cudaDeviceSynchronize();
         }
 

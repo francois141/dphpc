@@ -13,6 +13,10 @@ namespace Competitors {
             : SDDMM::Competitor<T>("GPU-Shared")
         {}
 
+        GPUShared(int num_threads_per_block, int num_thread_blocks)
+            : SDDMM::Competitor<T>("GPU-Shared", num_threads_per_block, num_thread_blocks)
+        {}
+
         inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
             // A is MxK, B is NxK, S and P are MxN sparse
             unsigned int M = A.getRows();
