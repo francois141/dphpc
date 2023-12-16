@@ -15,7 +15,7 @@ namespace SDDMM {
             const std::string name;
         
             Competitor(const std::string& name)
-            : name(name), num_threads_per_block(1), num_thread_blocks(1);
+            : name(name), num_threads_per_block(1), num_thread_blocks(1)
             {}
 
             Competitor(const std::string& name, int num_threads_per_block, int num_thread_blocks)
