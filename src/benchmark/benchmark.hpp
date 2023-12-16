@@ -87,8 +87,8 @@ namespace SDDMM {
                             if (this->getDataset().hasExpected()) {
                                 csr_correctness = (P_csr == this->getDataset().getExpected_CSR());
                                 if (!csr_correctness) {
-                                    DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
-                                    FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                                    //DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl);
+                                    //FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl);
                                 }
                             }
                             DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds (" << res.comp_ns << "ns)" << std::endl << std::endl);
@@ -122,8 +122,8 @@ namespace SDDMM {
                             if (competitor->coo_supported() && this->getDataset().hasExpected()) {
                                 coo_correcntess = (P_coo == this->getDataset().getExpected_COO());
                                 if (!coo_correcntess) {
-                                    DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
-                                    FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl); 
+                                    //DEBUG_OUT(" - !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl);
+                                    //FILE_DUMP("[ " << competitor->name << "] !!! Wrong results calculated compared to CPU-Basic (CSR) !!!" << std::endl);
                                 }
                             }
                             DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds - (" << res.comp_ns << "ns)" << std::endl << std::endl);

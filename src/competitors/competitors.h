@@ -14,3 +14,4 @@
 #include "competitors/gpu/gpu_shared.hpp"
 #include "competitors/gpu/gpu_convert.hpp"
 #include "competitors/gpu/gpu_preprocessing.hpp"
+#include "competitors/gpu/gpu_dynamic.hpp"

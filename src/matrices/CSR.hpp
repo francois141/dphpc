@@ -96,7 +96,7 @@ public:
         }
 
         if(!valMatch) {
-            std::cout << "Largest relative difference is : " << largestDiff << std::endl;
+            //std::cout << "Largest relative difference is : " << largestDiff << std::endl;
         }
 
         return posMatch && valMatch;
@@ -152,6 +152,10 @@ public:
 
     void computeDispatcherTensorCores(int nbThreads) {
         this->_dispatch(nbThreads, 16);
+    }
+
+    double getDensity() {
+        return this->values.size() / ((double)(rows * cols));
     }
 
 private:

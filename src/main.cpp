@@ -45,9 +45,11 @@ void init_float_competitors() {
     auto gpu_convert = std::make_shared<Competitors::GPUConvert>();
     float_competitors.push_back(gpu_convert);
 
-
     auto gpu_preprocessing = std::make_shared<Competitors::GPUPreprocessing>();
     float_competitors.push_back(gpu_preprocessing);
+
+    auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>();
+    float_competitors.push_back(gpu_dynamic);
 }
 
 void benchmark_dummy(const int num_runs) {
@@ -148,7 +150,7 @@ void benchmark_human_gene2(const std::string& data_folder, const int K, const in
 
 void benchmark_warmup(const int K, const int num_runs) {
     SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(4000, 4000, K, 0.1); // 40k x 40k with 0.01/0.05
-    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv", num_runs);
+    SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "warmup-measures.csv", num_runs);
 
     /* Run the benchmark */
     benchmark.benchmark();
@@ -419,29 +421,29 @@ int main(int argc, char* argv[]) {
 
     // Sparse datasets
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_email_enron(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_email_enron(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_boeing(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_boeing(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stiffness(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_stiffness(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_semi_conductor(config.data_folder,config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_semi_conductor(config.data_folder,config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_vlsi(config.data_folder,config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_vlsi(config.data_folder,config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stack_overflow(config.data_folder,config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_stack_overflow(config.data_folder,config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_chip(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_chip(config.data_folder, config.K, config.num_runs);
 
     return 0;
 }
