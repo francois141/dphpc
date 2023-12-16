@@ -63,9 +63,9 @@ namespace Competitors {
         int threads_per_block = this->get_num_threads_per_block();
 
 		// Convert to COO
-		gpu_convert_kernel <<< num_thread_blocks, num_threads_per_block >>> (rows_gpu, rows_coo_gpu, M);
+		gpu_convert_kernel <<< thread_blocks, threads_per_block >>> (rows_gpu, rows_coo_gpu, M);
 		// Perform SDDMM on the GPU
-		gpu_basic_coo_kernel_2 <<< num_thread_blocks, num_threads_per_block >>> (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
+		gpu_basic_coo_kernel_2 <<< thread_blocks, threads_per_block >>> (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
 		// No need to convert back to CSR, just reuse S
 	}
 }

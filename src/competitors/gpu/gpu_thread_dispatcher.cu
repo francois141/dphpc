@@ -27,7 +27,7 @@ __global__ void gpu_thread_dispatcher_csr_kernel(float* A, float* B, float* S, f
 
 template <typename T>
 void gpu_thread_dispatcher_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int* start_idx, int M, int K, int N, int sparse_size, int row_size, int thread_blocks, int threads_per_block) {
-    gpu_thread_dispatcher_csr_kernel<<<num_thread_blocks, num_threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx, M, K, N, sparse_size, row_size);
+    gpu_thread_dispatcher_csr_kernel<<<thread_blocks, threads_per_block>>>(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx, M, K, N, sparse_size, row_size);
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */
