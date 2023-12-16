@@ -15,8 +15,8 @@ namespace Competitors {
             : SDDMM::Competitor<T>("GPU-PyTorch")
             {}
 
-            GPUPyTorch(int num_threads_per_block, int num_thread_blocks)
-            : SDDMM::Competitor<T>("GPU-PyTorch", num_threads_per_block, num_thread_blocks)
+            GPUPyTorch(int threads_per_block, int thread_blocks)
+            : SDDMM::Competitor<T>("GPU-PyTorch", threads_per_block, thread_blocks)
         {}
 
             virtual inline void init_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {

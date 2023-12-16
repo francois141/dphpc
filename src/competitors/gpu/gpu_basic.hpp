@@ -21,8 +21,8 @@ namespace Competitors {
             : SDDMM::Competitor<T>("GPU-Basic")
         {}
 
-        GPUBasic(int num_threads_per_block, int num_thread_blocks)
-            : SDDMM::Competitor<T>("GPU-Basic", num_threads_per_block, num_thread_blocks)
+        GPUBasic(int threads_per_block, int thread_blocks)
+            : SDDMM::Competitor<T>("GPU-Basic", threads_per_block, thread_blocks)
         {}
 
         virtual inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {

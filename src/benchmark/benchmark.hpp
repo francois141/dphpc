@@ -77,8 +77,10 @@ namespace SDDMM {
                         for (int j = 0; j < num_thread_blocks_v.size(); j++){
                             for (int l = 0; l < num_threads_per_block_v.size(); l++){
                                 // check best combination
-                                competitor->set_num_threads_per_block(num_threads_per_block_v[l]);
-                                competitor->set_num_thread_blocks(num_thread_blocks_v[j]);
+                                int num_threads_per_block = num_threads_per_block_v[l];
+                                int num_thread_blocks = num_thread_blocks_v[j];
+                                competitor->set_num_threads_per_block(num_threads_per_block);
+                                competitor->set_num_thread_blocks(num_thread_blocks);
                             
                                 for (int i = 0; i < num_runs; i++){
                                     CSR<T> P_csr(this->getDataset().getS_CSR());
@@ -120,8 +122,10 @@ namespace SDDMM {
                         for (int j = 0; j < num_thread_blocks_v.size(); j++){
                             for (int l = 0; l < num_threads_per_block_v.size(); l++){
                                 // check best combination
-                                competitor->set_num_threads_per_block(num_threads_per_block_v[l]);
-                                competitor->set_num_thread_blocks(num_thread_blocks_v[j]);
+                                int num_threads_per_block = num_threads_per_block_v[l];
+                                int num_thread_blocks = num_thread_blocks_v[j];
+                                competitor->set_num_threads_per_block(num_threads_per_block);
+                                competitor->set_num_thread_blocks(num_thread_blocks);
                             
                                 for (int i = 0; i < num_runs; i++){
                                     COO<T> P_coo(this->getDataset().getS_COO());
