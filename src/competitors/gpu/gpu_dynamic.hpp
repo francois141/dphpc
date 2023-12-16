@@ -37,7 +37,7 @@ namespace Competitors {
         }
 
         virtual inline void cleanup_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
-            if(S.getDensity() >= 0.0001) {
+            if(S.getDensity() >= 0.0001 ) {
                 this->denseCompetitor.cleanup_csr(A,B,S,P);
             } else {
                 this->sparseCompetitor.cleanup_csr(A,B,S,P);
@@ -59,7 +59,7 @@ namespace Competitors {
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu;
         int* cols_gpu, * rows_gpu;
 
-        Competitors::GPUShared denseCompetitor = Competitors::GPUShared();
+        Competitors::GPUPreprocessing denseCompetitor = Competitors::GPUPreprocessing();
         Competitors::GPUConvert sparseCompetitor = Competitors::GPUConvert();
     };
 
