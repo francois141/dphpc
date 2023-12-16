@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cassert>
 
-constexpr int block_size = 32;
 
 __global__ void gpu_convert_kernel(int* rows, int* rows_coo, int M) {
 	int row = blockIdx.x * blockDim.x + threadIdx.x;
@@ -85,11 +84,9 @@ namespace Competitors {
 		int num_thread_blocks = (num_threads + threads_per_block - 1) / threads_per_block;
 
 		// Convert to COO
-		gpu_convert_kernel <<< num_thread_blocks, threads_per_block >>> (rows_gpu, rows_coo_gpu, M);
+		gpu_convert_kernel <<< 1024, 1204 >>> (rows_gpu, rows_coo_gpu, M);
 		// Perform SDDMM on the GPU
-		gpu_basic_coo_kernel_2 <<< num_thread_blocks, threads_per_block >>> (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
+		gpu_basic_coo_kernel_2 <<< 1024, 1024 >>> (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
 		// No need to convert back to CSR, just reuse S
-
-		cudaDeviceSynchronize();
 	}
 }
