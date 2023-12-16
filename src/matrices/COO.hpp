@@ -37,6 +37,7 @@ public:
         this->values.reserve(values.size());
 
         std::sort(values.begin(), values.end());
+        values.erase(std::unique(values.begin(),values.end()),values.end());
 
         for (const Triplet<T> &triplet: values) {
             assert(triplet.row >= 0 && triplet.row < this->rows);

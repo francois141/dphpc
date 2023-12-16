@@ -170,6 +170,7 @@ private:
         assert(triplets.size() > 0);
 
         std::sort(triplets.begin(), triplets.end());
+        triplets.erase(std::unique(triplets.begin(),triplets.end()),triplets.end());
 
         this->rowPositions = std::vector<int>(0);
         this->colPositions = std::vector<int>(0);
