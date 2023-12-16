@@ -44,9 +44,6 @@ namespace SDDMM {
 
             void benchmark() {
 
-                std::vector<int> num_thread_blocks_v{ 128, 256, 512, 1024, 2048 };
-                std::vector<int> num_threads_per_block_v{ 64, 128, 256, 512, 1024};
-
                 cudaFree(0); // lazy context establishment to prevent first call to cudaMalloc to perform device initialization (and take substantially longer than other cudaMalloc calls)
 
                 /* Select and run correctness baseline */
@@ -67,6 +64,10 @@ namespace SDDMM {
                 std::for_each(competitors.begin(), competitors.end(), [this](std::shared_ptr<Competitor<T>> competitor_ptr) {
                     auto competitor = competitor_ptr.get();
                     bool csr_correctness = false, coo_correcntess = false;
+
+                    // possible values for thread blocks and num threads per block
+                    std::vector<int> num_thread_blocks_v{ 128, 256, 512, 1024, 2048 };
+                    std::vector<int> num_threads_per_block_v{ 64, 128, 256, 512, 1024};
 
                     /* ============================= */
                     /* Sparse matrices in CSR format */
