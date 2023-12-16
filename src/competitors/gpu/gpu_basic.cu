@@ -72,7 +72,7 @@ __global__ void gpu_basic_coo_kernel(float* A, float* B, float* S, float* P, int
 }
 
 template <typename T>
-void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int num_thread_blocks, int num_threads_per_block) {
+void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int thread_blocks, int threads_per_block) {
 
 	if (K % 8 != 0) {
 		std::cerr << "Implementation requires that K is a multiple of 8 (current K = " << K << ")" << std::endl;
@@ -84,7 +84,7 @@ void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu
 }
 
 template <typename T>
-void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size, int num_thread_blocks, int num_threads_per_block) {
+void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size, int thread_blocks, int threads_per_block) {
 
 	if (K % 8 != 0) {
 		std::cerr << "Implementation requires that K is a multiple of 8 (current K = " << K << ")" << std::endl;
@@ -96,5 +96,5 @@ void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu
 }
 
 /* Workaround because the wrappers need to be inside the CUDA file (Would normally write templated functions inside the header file!) */
-template void gpu_basic_coo_wrapper<float>(float* A_gpu, float* B_gpu, float* S_gpu, float* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int num_thread_blocks, int num_threads_per_block);
-template void gpu_basic_csr_wrapper<float>(float* A_gpu, float* B_gpu, float* S_gpu, float* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size, int num_thread_blocks, int num_threads_per_block);
+template void gpu_basic_coo_wrapper<float>(float* A_gpu, float* B_gpu, float* S_gpu, float* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int thread_blocks, int threads_per_block);
+template void gpu_basic_csr_wrapper<float>(float* A_gpu, float* B_gpu, float* S_gpu, float* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size, int thread_blocks, int threads_per_block);

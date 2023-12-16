@@ -6,10 +6,10 @@
 #include "matrices/matrices.h"
 
 template <typename T>
-void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int num_thread_blocks, int num_threads_per_block);
+void gpu_basic_coo_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int thread_blocks, int threads_per_block);
 
 template <typename T>
-void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size, int num_thread_blocks, int num_threads_per_block);
+void gpu_basic_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int row_size, int thread_blocks, int threads_per_block);
 
 namespace Competitors {
 
@@ -65,10 +65,10 @@ namespace Competitors {
 
             size_t sparse_size = S.getValues().size();
             size_t row_size = S.getRowPositions().size();
-            int num_thread_blocks = this->get_num_thread_blocks();
-            int num_threads_per_block = this->get_num_threads_per_block();
+            int thread_blocks = this->get_num_thread_blocks();
+            int threads_per_block = this->get_num_threads_per_block();
 
-            gpu_basic_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, row_size, num_thread_blocks, num_threads_per_block);
+            gpu_basic_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, row_size, thread_blocks, threads_per_block);
             cudaDeviceSynchronize();
         }
 
@@ -128,10 +128,10 @@ namespace Competitors {
             int N = B.getRows();
 
             size_t sparse_size = S.getValues().size();
-            int num_thread_blocks = this->get_num_thread_blocks();
-            int num_threads_per_block = this->get_num_threads_per_block();
+            int thread_blocks = this->get_num_thread_blocks();
+            int threads_per_block = this->get_num_threads_per_block();
 
-            gpu_basic_coo_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, num_thread_blocks, num_threads_per_block);            
+            gpu_basic_coo_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, thread_blocks, threads_per_block);            
             cudaDeviceSynchronize();
         }
 
