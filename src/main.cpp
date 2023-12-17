@@ -24,16 +24,16 @@ void init_float_competitors() {
     float_competitors.push_back(cpu_pytorch);
 
     /* GPU Competitors */
-    auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>(2048, 512);
+    auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>(512, 2048);
     float_competitors.push_back(gpu_basic);
 
     auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
     float_competitors.push_back(gpu_pytorch);
 
-    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>(512, 64);
+    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>(64, 512);
     float_competitors.push_back(gpu_tiled);
 
-    auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>(512, 64);
+    auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>(64, 512);
     float_competitors.push_back(gpu_thread_dispatcher);
 
     // auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
@@ -42,13 +42,13 @@ void init_float_competitors() {
     auto gpu_shared = std::make_shared<Competitors::GPUShared>();
     float_competitors.push_back(gpu_shared);
 
-    auto gpu_convert = std::make_shared<Competitors::GPUConvert>(2048, 1024);
+    auto gpu_convert = std::make_shared<Competitors::GPUConvert>(1024, 2048);
     float_competitors.push_back(gpu_convert);
 
     auto gpu_preprocessing = std::make_shared<Competitors::GPUPreprocessing>();
     float_competitors.push_back(gpu_preprocessing);
 
-    auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>(2048, 1024);
+    auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>(1024, 2048);
     float_competitors.push_back(gpu_dynamic);
 }
 
