@@ -33,6 +33,12 @@ namespace Competitors {
         }
 
         virtual inline void run_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
+            
+            int thread_blocks = 2048;
+            int threads_per_block = 1024;
+            this->set_num_thread_blocks(thread_blocks);
+            this->set_num_threads_per_block(threads_per_block);
+
             if(S.getDensity() >= 0.0001) {
                 this->denseCompetitor.run_csr(A,B,S,P);
             } else {

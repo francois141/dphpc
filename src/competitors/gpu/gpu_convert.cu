@@ -59,8 +59,10 @@ namespace Competitors {
 
 		size_t sparse_size = S.getValues().size();
 		
-		int thread_blocks = this->get_num_thread_blocks();
-        int threads_per_block = this->get_num_threads_per_block();
+		int thread_blocks = 2048;
+		int threads_per_block = 1024;
+		this->set_num_thread_blocks(thread_blocks);
+		this->set_num_threads_per_block(threads_per_block);
 
 		// Convert to COO
 		gpu_convert_kernel <<< thread_blocks, threads_per_block >>> (rows_gpu, rows_coo_gpu, M);

@@ -25,6 +25,12 @@ namespace Competitors {
                     return;
                 }
 
+                // set dummy thread numbers
+                int thread_blocks = 1;
+                int threads_per_block = 1;
+                this->set_num_thread_blocks(thread_blocks);
+                this->set_num_threads_per_block(threads_per_block);
+
                 const unsigned int A_col = A.getCols();
                 const unsigned int A_row = A.getRows();
                 const unsigned int B_col = B.getCols();
