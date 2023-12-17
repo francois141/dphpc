@@ -70,7 +70,7 @@ namespace SDDMM {
                     /* ============================= */
                     if (competitor->csr_supported()) {
                         DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as CSR) " << num_runs << " times" << std::endl);
-
+                        
                         for (int i = 0; i < num_runs; i++){
                             CSR<T> P_csr(this->getDataset().getS_CSR());
                             P_csr.clearValues();
@@ -94,7 +94,7 @@ namespace SDDMM {
                             DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds (" << res.comp_ns << "ns)" << std::endl << std::endl);
                             FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",CSR,"
                                 << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
-                                << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << csr_correctness << std::endl
+                                << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << csr_correctness << "," << competitor->get_num_thread_blocks() << "," << competitor->get_num_threads_per_block() <<  std::endl
                             );
                         }
 
@@ -105,7 +105,7 @@ namespace SDDMM {
                     /* ============================= */
                     if (competitor->coo_supported()) {
                         DEBUG_OUT("Running competitor " << competitor->name << " (Sparse matrices represented as COO) " << num_runs << " times" << std::endl);
-                        
+                            
                         for (int i = 0; i < num_runs; i++){
                             COO<T> P_coo(this->getDataset().getS_COO());
                             P_coo.clearValues();
@@ -129,9 +129,10 @@ namespace SDDMM {
                             DEBUG_OUT(" - Execution took " << MILLISECOND(res.comp_ns) << " milliseconds - (" << res.comp_ns << "ns)" << std::endl << std::endl);
                             FILE_DUMP(competitor->name << "," << this->getDataset().getName() << ",COO,"
                                 << this->getDataset().getS_COO().getRows() << "," << this->getDataset().getS_COO().getCols() << "," << this->getDataset().getA().getCols() << "," << this->getDataset().getS_COO().getValues().size() << ","
-                                << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << std::endl
+                                << res.total_ns << "," << res.init_ns << "," << res.comp_ns << "," << res.cleanup_ns << "," << coo_correcntess << "," << competitor->get_num_thread_blocks() << "," << competitor->get_num_threads_per_block() << std::endl
                             );
                         }
+
                     }
                 });
             }
