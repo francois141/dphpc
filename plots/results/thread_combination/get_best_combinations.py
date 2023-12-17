@@ -20,7 +20,7 @@ def get_best_thread_combination(competitor: str, df: pd.DataFrame):
     sum_df = sum_df.groupby(["num_thread_blocks", "num_threads_per_block"]).sum()
     
     # sort the ranks in ascending order, lowest rank is supposed to perform best in general
-    sorted_df = sum_df.sort_values(by=["rank"]).reset_index(drop=True)
+    sorted_df = sum_df.sort_values(by=["rank"]).reset_index()
     #print(f"\trank: ({sorted_df.loc[0, 'num_thread_blocks']}, {sorted_df.loc[0, 'num_threads_per_block']})")
     print(sorted_df)
 
@@ -30,19 +30,17 @@ def main(args: argparse.Namespace):
     # keep only values for K=64
     df = df[df["K"] == 64]
 
-    #competitors = df["competitor"].unique()
-    competitors = ["GPU-Dynamic"]
+    competitors = df["competitor"].unique()
     for competitor in competitors:
         if competitor in ["GPU-Shared", "GPU-Preprocessing", "GPU-PyTorch"]:
             continue
         print(competitor)
         get_best_thread_combination(competitor, df[df["competitor"] == competitor])
-        get_best_thread_combination_overall_runtime(competitor, df[df["competitor"] == competitor])
+        #get_best_thread_combination_overall_runtime(competitor, df[df["competitor"] == competitor])
 
 
 if __name__ == "__main__":
     argParser = argparse.ArgumentParser()
     argParser.add_argument("--input", default="v100/results-v100.csv", type=str, help="CSV input path")
-    argParser.add_argument("--output", default="v100/best-thread-combinations.csv", type=str, help="CSV output path")
     args = argParser.parse_args()
     main(args)
