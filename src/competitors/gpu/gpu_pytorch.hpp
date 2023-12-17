@@ -36,10 +36,12 @@ namespace Competitors {
                 
                 const auto gpu = torch::device(torch::kCUDA);
 
+                std::cout << "Arrived here 1" << std::endl;
                 // create tensors out of flat vector, by setting (row_stride, col_stride) to (num_cols, 1) on CPU, then copy them to the GPU
                 A_tensor = torch::from_blob(A.get_pointer(), { A_row, A_col }, { A_col, 1 }, scalar_type).to(gpu);
                 B_tensor = at::transpose(torch::from_blob(B.get_pointer(), {B_row, B_col}, {B_col, 1}, scalar_type), 0, 1).to(gpu);
 
+                std::cout << "Arrived here 2" << std::endl;
                 // create sparse CSR tensor for CPU
                 torch::ScalarType int_type = torch::kInt;
                 torch::Tensor crow_indices = torch::tensor(S.getRowPositions(), int_type);
@@ -47,21 +49,27 @@ namespace Competitors {
                 torch::Tensor values = torch::tensor(S.getValues(), scalar_type);
                 std::vector<int64_t> size = {static_cast<int64_t>(S.getRows()), static_cast<int64_t>(S.getCols())};
                 sparse_tensor = torch::sparse_csr_tensor(crow_indices, col_indices, values, size, scalar_type).to(gpu);
+                std::cout << "Arrived here 3" << std::endl;
             }
 
             virtual inline void run_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
+                std::cout << "Arrived here 4" << std::endl;
                 torch::Tensor non_scaled_result = at::native::sparse_sampled_addmm_sparse_csr_cuda(sparse_tensor, A_tensor, B_tensor, 0, 1);
                 result = at::native::mul_out_sparse_csr(non_scaled_result, sparse_tensor, non_scaled_result);
                 torch::cuda::synchronize();
+                std::cout << "Arrived here 5" << std::endl;
             }
 
             virtual inline void cleanup_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
+                std::cout << "Arrived here 6" << std::endl;
                 const auto cpu = torch::device(torch::kCPU);
                 result = result.to(cpu);
 
+                std::cout << "Arrived here 7" << std::endl;
                 P.setRowPositions(copy_pytorch_mat<int>(result.crow_indices().const_data_ptr<int64_t>(), result.crow_indices().numel()));
                 P.setColPositions(copy_pytorch_mat<int>(result.col_indices().const_data_ptr<int64_t>(), result.col_indices().numel()));
                 P.setValues(std::vector<T>(result.values().const_data_ptr<T>(), result.values().const_data_ptr<T>() + result.values().numel()));
+                std::cout << "Arrived here 8" << std::endl;
             }
             
             // https://pytorch.org/docs/stable/generated/torch.sparse.sampled_addmm.html
