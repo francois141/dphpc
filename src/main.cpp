@@ -27,8 +27,8 @@ void init_float_competitors() {
     auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>(512, 2048);
     float_competitors.push_back(gpu_basic);
 
-    auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>(1, 1);
-    float_competitors.push_back(gpu_pytorch);
+    // auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
+    // float_competitors.push_back(gpu_pytorch);
 
     auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>(64, 512);
     float_competitors.push_back(gpu_tiled);
