@@ -31,8 +31,10 @@ namespace Competitors {
             assert(K == B.getCols());
 
             // calculate startIdx based on num of threads used
-            int thread_blocks = this->get_num_thread_blocks();
-            int threads_per_block = this->get_num_threads_per_block();
+            int thread_blocks = 512;
+            int threads_per_block = 64;
+	    this->set_num_thread_blocks(thread_blocks);
+            this->set_num_threads_per_block(threads_per_block);
             S.computeDispatcher(thread_blocks * threads_per_block);
 
             // get the size needed for each matrix
@@ -70,10 +72,8 @@ namespace Competitors {
 
             size_t sparse_size = S.getValues().size();
             size_t row_size = S.getRowPositions().size();
-            int thread_blocks = 512;
-            int threads_per_block = 64;
-            this->set_num_thread_blocks(thread_blocks);
-            this->set_num_threads_per_block(threads_per_block);
+            int thread_blocks = this->get_num_thread_blocks();
+            int threads_per_block = this->get_num_threads_per_block();
 
             gpu_thread_dispatcher_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, start_idx_gpu, M, K, N, sparse_size, row_size, thread_blocks, threads_per_block);
             cudaDeviceSynchronize();
