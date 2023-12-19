@@ -415,7 +415,7 @@ namespace SDDMM {
     class BoeingDataset : public MatrixMarketDataset<T> {
     public:
         BoeingDataset(const std::string &data_folder, const int K)
-                : MatrixMarketDataset<T>("Boeing", data_folder, K, "nd12k/nd12k.mtx")
+                : MatrixMarketDataset<T>("Boeing", data_folder, K, "ct20stif/ct20stif.mtx")
         {}
     };
 
@@ -423,7 +423,7 @@ namespace SDDMM {
     class BoeingDiagonalDataset : public MatrixMarketDataset<T> {
     public:
         BoeingDiagonalDataset(const std::string &data_folder, const int K)
-                : MatrixMarketDataset<T>("Boeing Diagonal", data_folder, K, "ct20stif/ct20stif.mtx")
+                : MatrixMarketDataset<T>("Boeing Diagonal", data_folder, K, "pwtk/pwtk.mtx")
         {}
     };
 
