@@ -16,39 +16,39 @@
 static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
 
 void init_float_competitors() {
-    /* CPU Competitors */
-    auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
-    float_competitors.push_back(cpu_basic);
+    // /* CPU Competitors */
+    // auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
+    // float_competitors.push_back(cpu_basic);
 
-    auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
-    float_competitors.push_back(cpu_pytorch);
+    // auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
+    //  float_competitors.push_back(cpu_pytorch);
 
     /* GPU Competitors */
-    auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>(512, 2048);
-    float_competitors.push_back(gpu_basic);
+    // auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
+    // float_competitors.push_back(gpu_basic);
 
     auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
     float_competitors.push_back(gpu_pytorch);
 
-    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>(64, 512);
-    float_competitors.push_back(gpu_tiled);
+    // auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
+    // float_competitors.push_back(gpu_tiled);
 
-    auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>(64, 512);
-    float_competitors.push_back(gpu_thread_dispatcher);
+    // auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
+    // float_competitors.push_back(gpu_thread_dispatcher);
 
     // auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
     // float_competitors.push_back(gpu_tensor);
 
-    auto gpu_shared = std::make_shared<Competitors::GPUShared>();
-    float_competitors.push_back(gpu_shared);
+    // auto gpu_shared = std::make_shared<Competitors::GPUShared>();
+    // float_competitors.push_back(gpu_shared);
 
-    auto gpu_convert = std::make_shared<Competitors::GPUConvert>(1024, 2048);
+    auto gpu_convert = std::make_shared<Competitors::GPUConvert>();
     float_competitors.push_back(gpu_convert);
 
     auto gpu_preprocessing = std::make_shared<Competitors::GPUPreprocessing>();
     float_competitors.push_back(gpu_preprocessing);
 
-    auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>(1024, 2048);
+    auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>();
     float_competitors.push_back(gpu_dynamic);
 }
 
@@ -351,7 +351,7 @@ int main(int argc, char* argv[]) {
 
     // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Non_Zeros,Total_Execution_Time,Initialization_Time,Computation_Time,Cleanup_Time,Correctness
     if (!config.no_csv_header) {
-        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness,num_thread_blocks,num_threads_per_block" << std::endl);
+        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
     }
 
     // Warmup dataset
@@ -430,20 +430,20 @@ int main(int argc, char* argv[]) {
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_boeing_diagonal(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stiffness(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_stiffness(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_semi_conductor(config.data_folder,config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_semi_conductor(config.data_folder,config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_vlsi(config.data_folder,config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_vlsi(config.data_folder,config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stack_overflow(config.data_folder,config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_stack_overflow(config.data_folder,config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_chip(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_chip(config.data_folder, config.K, config.num_runs);
 
     return 0;
 }
