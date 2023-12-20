@@ -22,7 +22,7 @@ def read_df(path):
     df = pd.read_csv(path)
     return df
 
-def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
+def plot_performance(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     fig, ax = plt.subplots()
 
     # Change figure size before plotting
@@ -32,9 +32,9 @@ def plot_runtime(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     cpu, gpu = SPECS[args.gpu]
     first = df.iloc[0]
     runs = df[ (df["competitor"] == first['competitor']) & (df['mat_repr'] == first['mat_repr']) & (df['K'] == first['K']) ].shape[0]
-    N = df.iloc[0]['N']
-    M = df.iloc[0]['M']
-    NZ = df.iloc[0]['NZ']
+    N = int(df.iloc[0]['N'])
+    M = int(df.iloc[0]['M'])
+    NZ = int(df.iloc[0]['NZ'])
     density = (NZ / (N * M)) * 100
     density = round(density, 2 if density > 0.01 else 4)
     ci = int(args.ci * 100)
@@ -91,10 +91,19 @@ def main(args: argparse.Namespace):
     sns.set_theme(context="notebook", font_scale=1, style="darkgrid", rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
 
     df = read_df(args.input)
+    
+    drop_mask = df['competitor'] == 'CPU-Basic'
+    drop_mask |= df['competitor'] == 'CPU-PyTorch'
+    drop_mask |= df['competitor'] == 'GPU-Basic'
+    drop_mask |= df['competitor'] == 'GPU-Thread-Dispatcher'
+    drop_mask |= df['competitor'] == 'GPU-Tiled'
+    df = df.drop(df.index[drop_mask])
+    
+    df = df.apply(lambda row: row if math.log2(row['K']).is_integer() else None, axis=1).dropna()
 
     datasets = pd.unique(df['dataset'])
     for dataset in datasets:
-        plot_runtime(args, df[df['dataset'] == dataset], dataset)
+        plot_performance(args, df[df['dataset'] == dataset], dataset)
 
 if __name__ == "__main__":    
     argParser = argparse.ArgumentParser()

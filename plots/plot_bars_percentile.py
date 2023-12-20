@@ -45,8 +45,8 @@ def plot_bars(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str):
 
     ### Plot Computations ###
     runtime_cols_ns = [ 'total_ns', 'init_ns', 'comp_ns', 'cleanup_ns' ]
-    runtime_cols_ms = [ 'total_ms', 'Initialization', 'Computation', 'Cleanup' ]
-    df[runtime_cols_ms] = df[runtime_cols_ns] / 1_000_000
+    runtime_cols_us = [ 'total_us', 'Initialization', 'Computation', 'Cleanup' ]
+    df[runtime_cols_us] = df[runtime_cols_ns] / 1_000
 
     plot_df = df[ [ 'competitor', 'mat_repr', 'K', 'Initialization', 'Computation', 'Cleanup' ] ]
     plot_df = plot_df.groupby([ 'competitor', 'mat_repr', 'K' ]).quantile(args.percentile)
@@ -62,7 +62,7 @@ def plot_bars(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str):
 
     ### Titles ###
     plt.xlabel("Competitor - Matrix representation (K)", loc="center", fontdict={ "size": "medium" })
-    plt.ylabel(f"p{percentile} runtime [ms]")
+    plt.ylabel(f"p{percentile} runtime [μs]")
     plt.title(f"SDDMM {percentile}-percentile runtime with R={runs} runs\n{dataset_name} dataset: {N}x{M} with {density}% density\nRunning on {cpu} and {gpu}\n", loc="center", y=1, fontdict={ "weight": "bold", "size": "large" })
 
     ### Legend ###
@@ -80,9 +80,12 @@ def main(args: argparse.Namespace):
 
     df = read_df(args.input)
     
-    #drop_mask = df['competitor'].eq('CPU-Basic')
-    #drop_mask |= df['competitor'].eq('GPU-Basic') & df['mat_repr'].eq('CSR')
-    #df = df.drop(df.index[drop_mask])
+    drop_mask = df['competitor'] == 'CPU-Basic'
+    drop_mask |= df['competitor'] == 'CPU-PyTorch'
+    drop_mask |= df['competitor'] == 'GPU-Basic'
+    drop_mask |= df['competitor'] == 'GPU-Thread-Dispatcher'
+    drop_mask |= df['competitor'] == 'GPU-Tiled'
+    df = df.drop(df.index[drop_mask])
 
     datasets = pd.unique(df['dataset'])
     for dataset_name in datasets:
