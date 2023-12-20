@@ -4,7 +4,7 @@
 #include "matrices/matrices.h"
 
 template <typename T>
-void gpu_tiled_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size);
+void gpu_tiled_csr_wrapper(T* A_gpu, T* B_gpu, T* S_gpu, T* P_gpu, int* cols_gpu, int* rows_gpu, int M, int K, int N, int sparse_size, int thread_blocks, int threads_per_block);
 
 namespace Competitors {
 
@@ -14,6 +14,10 @@ namespace Competitors {
 
         GPUTiled()
             : SDDMM::Competitor<T>("GPU-Tiled")
+        {}
+
+        GPUTiled(int threads_per_block, int thread_blocks)
+            : SDDMM::Competitor<T>("GPU-Tiled", threads_per_block, thread_blocks)
         {}
 
         virtual inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
@@ -56,8 +60,12 @@ namespace Competitors {
             int N = B.getRows();
 
             size_t sparse_size = S.getValues().size();
+            int thread_blocks = 512;
+            int threads_per_block = 64;
+            this->set_num_thread_blocks(thread_blocks);
+            this->set_num_threads_per_block(threads_per_block);
 
-            gpu_tiled_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size);            
+            gpu_tiled_csr_wrapper(A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, M, K, N, sparse_size, thread_blocks, threads_per_block);            
             cudaDeviceSynchronize();
         }
 

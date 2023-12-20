@@ -20,6 +20,10 @@ namespace Competitors {
                 : SDDMM::Competitor<T>("GPU-Dynamic")
         {}
 
+        GPUDynamic(int threads_per_block, int thread_blocks)
+            : SDDMM::Competitor<T>("GPU-Dynamic", threads_per_block, thread_blocks)
+        {}
+
         virtual inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
             if(S.getDensity() >= 0.0001) {
                 this->denseCompetitor.init_csr(A,B,S,P);
@@ -29,6 +33,12 @@ namespace Competitors {
         }
 
         virtual inline void run_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
+            
+            int thread_blocks = 2048;
+            int threads_per_block = 1024;
+            this->set_num_thread_blocks(thread_blocks);
+            this->set_num_threads_per_block(threads_per_block);
+
             if(S.getDensity() >= 0.0001) {
                 this->denseCompetitor.run_csr(A,B,S,P);
             } else {
@@ -59,8 +69,8 @@ namespace Competitors {
         float* A_gpu, * B_gpu, * S_gpu, * P_gpu;
         int* cols_gpu, * rows_gpu;
 
-        Competitors::GPUPreprocessing denseCompetitor = Competitors::GPUPreprocessing();
-        Competitors::GPUConvert sparseCompetitor = Competitors::GPUConvert();
+        Competitors::GPUPreprocessing denseCompetitor = Competitors::GPUPreprocessing(this->get_num_thread_blocks(), this->get_num_threads_per_block());
+        Competitors::GPUConvert sparseCompetitor = Competitors::GPUConvert(this->get_num_thread_blocks(), this->get_num_threads_per_block());
     };
 
 }

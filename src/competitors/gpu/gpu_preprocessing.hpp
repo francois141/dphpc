@@ -15,6 +15,10 @@ namespace Competitors {
 			: SDDMM::Competitor<T>("GPU-Preprocessing")
 		{}
 
+		GPUPreprocessing(int threads_per_block, int thread_blocks)
+            : SDDMM::Competitor<T>("GPU-Preprocessing", threads_per_block, thread_blocks)
+        {}
+
 		inline void init_csr(Dense<T>& A, Dense<T>& B, CSR<T>& S, CSR<T>& P) override {
 			// A is MxK, B is NxK, S and P are MxN sparse
 			unsigned int M = A.getRows();
