@@ -111,6 +111,10 @@ namespace Competitors {
 		int nb_tiles_row = (M + Ti - 1) / Ti;
 		int nb_tiles_k = (K + Tk - 1) / Tk;
 		int block_count = nb_tiles_row * nb_tiles_k;
+
+		this->set_num_thread_blocks(block_count);
+		this->set_num_threads_per_block(blocksize);
+
 		gpu_preprocessing_csr_kernel << < block_count, blocksize >> > (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_gpu, prep_pos_gpu, prep_ind_gpu, prep_col_gpu, M, K, N);
 
 		cudaDeviceSynchronize();

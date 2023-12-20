@@ -16,31 +16,31 @@
 static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
 
 void init_float_competitors() {
-    // /* CPU Competitors */
-    // auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
-    // float_competitors.push_back(cpu_basic);
+    /* CPU Competitors */
+    auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
+    float_competitors.push_back(cpu_basic);
 
-    // auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
-    //  float_competitors.push_back(cpu_pytorch);
+    auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
+    float_competitors.push_back(cpu_pytorch);
 
     /* GPU Competitors */
-    // auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
-    // float_competitors.push_back(gpu_basic);
+    auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
+    float_competitors.push_back(gpu_basic);
 
     auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
     float_competitors.push_back(gpu_pytorch);
 
-    // auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
-    // float_competitors.push_back(gpu_tiled);
+    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
+    float_competitors.push_back(gpu_tiled);
 
-    // auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
-    // float_competitors.push_back(gpu_thread_dispatcher);
+    auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
+    float_competitors.push_back(gpu_thread_dispatcher);
 
     // auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
     // float_competitors.push_back(gpu_tensor);
 
-    // auto gpu_shared = std::make_shared<Competitors::GPUShared>();
-    // float_competitors.push_back(gpu_shared);
+    auto gpu_shared = std::make_shared<Competitors::GPUShared>();
+    float_competitors.push_back(gpu_shared);
 
     auto gpu_convert = std::make_shared<Competitors::GPUConvert>();
     float_competitors.push_back(gpu_convert);
@@ -351,78 +351,78 @@ int main(int argc, char* argv[]) {
 
     // CSV Header Format: Competitor_Name,Dataset_Name,Matrix_Representation,M,N,K,Non_Zeros,Total_Execution_Time,Initialization_Time,Computation_Time,Cleanup_Time,Correctness
     if (!config.no_csv_header) {
-        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness" << std::endl);
+        FILE_DUMP("competitor,dataset,mat_repr,M,N,K,NZ,total_ns,init_ns,comp_ns,cleanup_ns,correctness,num_thread_blocks,num_threads_per_block" << std::endl);
     }
 
     // Warmup dataset
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_warmup(config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_warmup(config.K, config.num_runs);
 
-    // Artificial datasets
+    // // Artificial datasets
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_random(config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_random(config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_latin(config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_latin(config.K, config.num_runs);
 
-    // Small datasets
+    // // Small datasets
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_fluid(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_fluid(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_oil(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_oil(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_biochemical(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_biochemical(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_circuit(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_circuit(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_heat(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_heat(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_mass(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_mass(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_adder(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_adder(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_trackball(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_trackball(config.data_folder, config.K, config.num_runs);
 
-    // Dense datasets
+    // // Dense datasets
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_human_gene2(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_human_gene2(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_ND12K(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_ND12K(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_mix(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_mix(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_mechanics(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_mechanics(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_power(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_power(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_combinatorics(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_combinatorics(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_stress(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_stress(config.data_folder, config.K, config.num_runs);
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_mouse(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_mouse(config.data_folder, config.K, config.num_runs);
 
-    // Sparse datasets
+    // // Sparse datasets
 
-    DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_email_enron(config.data_folder, config.K, config.num_runs);
+    // DEBUG_OUT("\n=====================================================\n" << std::endl);
+    // benchmark_email_enron(config.data_folder, config.K, config.num_runs);
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_boeing(config.data_folder, config.K, config.num_runs);

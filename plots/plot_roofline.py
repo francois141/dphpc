@@ -24,7 +24,7 @@ RUNTIME_FIELD = "comp_ns" # total_ns, init_ns, comp_ns, cleanup_ns
 flops = lambda NZ, K : 2*K * NZ + NZ # each NZ requires K multiplications and K additions to sum up. Finally to scale the result by S need NZ multiplications.
 trans_bytes = lambda M, N, K, NZ: (M*K + N*K)*4 + NZ*4  # Assuming infinite cache and floats: need to bring in dense A and B and sparse S (ignoring writes to P)
 
-MAX_OP_INTENSITY = 100
+MAX_OP_INTENSITY = 500
 
 def read_df(path):
     df = pd.read_csv(path)
@@ -108,7 +108,7 @@ def plot_roofline_all(args: argparse.Namespace, df: pd.DataFrame):
     del handles[labels.index("comp_repr")]
     labels.remove("comp_repr")
 
-    ax.legend(handles=handles, labels=labels, loc="best", ncol=3, fancybox=True, fontsize="small")
+    ax.legend(handles=handles, labels=labels, loc="upper left", ncol=4, fancybox=True, fontsize="small")
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
@@ -133,9 +133,9 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
     gpu_bound = gpu_pi / gpu_beta # memory/compute bound (horizontal line)
     first = df.iloc[0]
     runs = df[ (df["competitor"] == first['competitor']) & (df['mat_repr'] == first['mat_repr']) & (df['K'] == first['K']) ].shape[0]
-    N = df.iloc[0]['N']
-    M = df.iloc[0]['M']
-    NZ = df.iloc[0]['NZ']
+    N = int(df.iloc[0]['N'])
+    M = int(df.iloc[0]['M'])
+    NZ = int(df.iloc[0]['NZ'])
     density = (NZ / (N * M)) * 100
     density = round(density, 2 if density > 0.01 else 4)
     dataset_name = str(dataset_name[0].upper() + dataset_name[1:])
@@ -197,7 +197,7 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
     del handles[labels.index("K")] # Remove legend sub-titles
     labels.remove("K")
 
-    ax.legend(handles=handles, labels=labels, loc="best", ncol=2, fancybox=True, fontsize="small")
+    ax.legend(handles=handles, labels=labels, loc="best", ncol=3, fancybox=True, fontsize="small")
 
     plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
     
@@ -209,12 +209,19 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
 
 def main(args: argparse.Namespace):
     sns.set_theme(context="notebook", font_scale=1, rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
-    sns.set_palette(sns.color_palette(cc.glasbey_hv), 20)
+    sns.set_palette(sns.color_palette(cc.glasbey_hv), 30)
 
     df = read_df(args.input)
-    drop_mask = df['competitor'].eq('CPU-Basic') & df['mat_repr'].eq('COO')
-    drop_mask |= df['competitor'].eq('GPU-Basic') & df['mat_repr'].eq('CSR')
+    
+    drop_mask = df['competitor'] == 'CPU-Basic'
+    drop_mask |= df['competitor'] == 'CPU-PyTorch'
+    drop_mask |= df['competitor'] == 'GPU-Basic'
+    drop_mask |= df['competitor'] == 'GPU-Thread-Dispatcher'
+    drop_mask |= df['competitor'] == 'GPU-Tiled'
     df = df.drop(df.index[drop_mask])
+
+    df = df.apply(lambda row: row if math.log2(row['K']).is_integer() else None, axis=1).dropna()
+    df['K'] = df['K'].apply(int)
 
     plot_roofline_all(args, df)
 
