@@ -39,6 +39,7 @@ set(SRC_FILES
         competitors/gpu/gpu_convert.hpp
         competitors/gpu/gpu_preprocessing.cu
         competitors/gpu/gpu_preprocessing.hpp
+        competitors/gpu/gpu_dgl.hpp
 
         #Helpers
         utils/util.hpp
@@ -66,7 +67,8 @@ target_link_libraries(dphpc "${TORCH_LIBRARIES}")
 
 target_include_directories(dphpc PUBLIC "${DGL_LOCATION}/include")
 target_include_directories(dphpc PUBLIC "${DGL_LOCATION}/third_party/dmlc-core/include")
-target_include_directories(dphpc PUBLIC "${DGL_LOCATION}/dgl_sparse/include/sparse")
+target_include_directories(dphpc PUBLIC "${DGL_LOCATION}/dgl_sparse/include/")
 target_link_libraries(dphpc dgl)
+target_link_libraries(dphpc dgl_sparse_pytorch_2.1.2)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")

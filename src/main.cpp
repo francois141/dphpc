@@ -12,16 +12,10 @@
 #include "competitors/competitors.h"
 
 #include "matrices/matrices.h"
-#include "dgl/graph.h"
-#include "dgl/array.h"
-#include "dgl/array.h"
 
 static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
 
 void init_float_competitors() {
-    // dgl::FloatArray matrix1;
-    std::vector<float> vals = { 0.0, 1.0, 2.0, 4.0, -1.0, 2.0 };
-    dgl::NDArray matrix1 = dgl::NDArray::FromVector(vals);
     /* CPU Competitors */
     auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
     float_competitors.push_back(cpu_basic);
@@ -56,6 +50,9 @@ void init_float_competitors() {
 
     auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>();
     float_competitors.push_back(gpu_dynamic);
+
+    auto gpu_dgl = std::make_shared<Competitors::GPUDgl<float>>();
+    float_competitors.push_back(gpu_dgl);
 }
 
 void benchmark_dummy(const int num_runs) {
