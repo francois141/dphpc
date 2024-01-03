@@ -63,4 +63,10 @@ endif()
 find_package(Torch REQUIRED)
 target_link_libraries(dphpc "${TORCH_LIBRARIES}")
 #set_property(TARGET dphpc PROPERTY CUDA_ARCHITECTURES 72)
+
+target_include_directories(dphpc PUBLIC "${DGL_LOCATION}/include")
+target_include_directories(dphpc PUBLIC "${DGL_LOCATION}/third_party/dmlc-core/include")
+target_include_directories(dphpc PUBLIC "${DGL_LOCATION}/dgl_sparse/include/sparse")
+target_link_libraries(dphpc dgl)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")

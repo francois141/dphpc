@@ -17,7 +17,8 @@
 #include "utils/util.hpp"
 #include "utils/helpers.hpp"
 
-#define header "algorithm; size; time"
+// this define conflicts with dgl
+// #define header "algorithm; size; time"
 
 namespace SDDMM {
 

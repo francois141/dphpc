@@ -1,5 +1,14 @@
 # SDDMM Project
 
+## Installation
+
+- Install libtorch GPU,
+- Build DGL from source and install it (`cmake --install`),
+- Update the installation locations in `run_cmake.sh`,
+- Make sure `LD_LIBRARY_PATH` contains `/usr/local/lib`,
+- Run `./run_cmake`,
+- Build and run.
+
 ### List of matrices we have until now
 
 #### Small matrices
