@@ -52,8 +52,9 @@ namespace Competitors {
             }
 
             virtual inline void run_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
-                torch::Tensor non_scaled_result = at::native::sparse_sampled_addmm_sparse_csr_cuda(sparse_tensor, A_tensor, B_tensor, 0, 1);
-                result = at::native::mul_out_sparse_csr(non_scaled_result, sparse_tensor, non_scaled_result);
+                // torch::Tensor non_scaled_result = at::native::sparse_sampled_addmm_sparse_csr_cuda(sparse_tensor, A_tensor, B_tensor, 0, 1);
+                result = at::native::sparse_sampled_addmm_sparse_csr_cuda(sparse_tensor, A_tensor, B_tensor, 0, 1);
+                // result = at::native::mul_out_sparse_csr(non_scaled_result, sparse_tensor, non_scaled_result);
                 torch::cuda::synchronize();
             }
 
