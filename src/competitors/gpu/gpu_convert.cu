@@ -70,6 +70,6 @@ namespace Competitors {
 		gpu_basic_coo_kernel_2 <<< thread_blocks, threads_per_block >>> (A_gpu, B_gpu, S_gpu, P_gpu, cols_gpu, rows_coo_gpu, M, K, N, sparse_size);
 		// No need to convert back to CSR, just reuse S
 
-        cudaDeviceSynchronize()
+        cudaDeviceSynchronize();
 	}
 }
