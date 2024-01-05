@@ -5,6 +5,7 @@
 
 #include <cuda_runtime_api.h>
 #include <cusparse.h>         // cusparseSDDMM
+#include <cublas_v2.h>        // cublasSdgmm
 
 namespace Competitors {
 
@@ -23,7 +24,7 @@ namespace Competitors {
                 unsigned int K = A.getCols();
                 unsigned int N = B.getRows();
 
-                int S_nnz = S.getValues().size();
+                S_nnz = S.getValues().size();
 
                 int   A_size = M * K;
                 int   B_size = K * N;
@@ -33,12 +34,15 @@ namespace Competitors {
                 cudaMalloc(&dS_offsets, (M + 1) * sizeof(int));
                 cudaMalloc(&dS_columns, S_nnz * sizeof(int));
                 cudaMalloc(&dS_values,  S_nnz * sizeof(float));
+                cudaMalloc(&scaling_values, S_nnz * sizeof(float));
+                cudaMalloc(&scaled_result, S_nnz * sizeof(float));
 
                 cudaMemcpy(dA, &A.getValue(0, 0), A_size * sizeof(float), cudaMemcpyHostToDevice);
                 cudaMemcpy(dB, &B.getValue(0, 0), B_size * sizeof(float), cudaMemcpyHostToDevice);
                 cudaMemcpy(dS_offsets, S.getRowPositions().data(), (M + 1) * sizeof(int), cudaMemcpyHostToDevice);
                 cudaMemcpy(dS_columns, S.getColPositions().data(), S_nnz * sizeof(int), cudaMemcpyHostToDevice);
                 cudaMemcpy(dS_values, S.getValues().data(), S_nnz * sizeof(float), cudaMemcpyHostToDevice);
+                cudaMemcpy(scaling_values, S.getValues().data(), S_nnz * sizeof(float), cudaMemcpyHostToDevice);
 
                 // Create handle
                 cusparseCreate(&handle);
@@ -61,6 +65,14 @@ namespace Competitors {
 
                 // execute SDDMM
                 cusparseSDDMM(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, matB, &beta, matS, CUDA_R_32F, CUSPARSE_SDDMM_ALG_DEFAULT, dBuffer);
+
+                // scale result according to https://forums.developer.nvidia.com/t/cublas-vector-multiply/2824/21
+                int m = S_nnz;
+                int n = 1;
+                int lda = S_nnz;
+                int incx = 1;
+                int ldc = S_nnz;
+                cublasSdgmm(handle, CUBLAS_SIDE_LEFT, m, n, dS_values, lda, scaling_values, incx, scaled_result, ldc);
             }
 
             virtual inline void cleanup_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
@@ -71,8 +83,7 @@ namespace Competitors {
                 cusparseDestroy(handle);
 
                 // copy result back to RAM
-                int S_nnz = S.getValues().size();
-                cudaMemcpy(P.getValues().data(), dS_values, S_nnz * sizeof(float), cudaMemcpyDeviceToHost);
+                cudaMemcpy(P.getValues().data(), scaled_result, S_nnz * sizeof(float), cudaMemcpyDeviceToHost);
                 
                 P.setColPositions(S.getColPositions());
                 P.setRowPositions(S.getRowPositions());
@@ -84,6 +95,8 @@ namespace Competitors {
                 cudaFree(dS_offsets);
                 cudaFree(dS_columns);
                 cudaFree(dS_values);
+                cudaFree(scaling_values);
+                cudaFree(scaled_result);
             }
             
             virtual inline void run_coo(Dense<T> &A, Dense<T> &B, COO<T> &S, COO<T> &P) {}
@@ -98,8 +111,8 @@ namespace Competitors {
             float beta         = 0.0f;
 
             // Device memory management
-            int   *dS_offsets, *dS_columns;
-            float *dS_values, *dB, *dA;
+            int   *dS_offsets, *dS_columns, S_nnz;
+            float *dS_values, *scaling_values, *scaled_result, *dB, *dA;
 
             // cuSPARSE APIs
             cusparseHandle_t     handle = NULL;
