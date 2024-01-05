@@ -73,6 +73,8 @@ namespace Competitors {
                 int incx = 1;
                 int ldc = S_nnz;
                 cublasSdgmm(handle, CUBLAS_SIDE_LEFT, m, n, dS_values, lda, scaling_values, incx, scaled_result, ldc);
+                
+                cudaDeviceSynchronize();
             }
 
             virtual inline void cleanup_csr(Dense<T> &A, Dense<T> &B, CSR<T> &S, CSR<T> &P) override {
