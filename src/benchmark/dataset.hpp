@@ -332,14 +332,14 @@ namespace SDDMM {
     class RandomWithDensityDataset : public Dataset<T> {
         public:
 
-            RandomWithDensityDataset(const int M, const int N, const int K, double density) : Dataset<T>("RandomWithDensity"), M(M), N(N), K(K), density(density)
+            RandomWithDensityDataset(const int M, const int N, const int K, double density, std::string name) : Dataset<T>(name), M(M), N(N), K(K), density(density)
             {
                 density = std::clamp(density, 0.0, 1.0);
                 assert(0 <= density && density <= 1.0);
 
                 this->generateDense(M, N, K);
 
-                const int nbSamples = density * (M * N);
+                const size_t nbSamples = static_cast<size_t>(density * M) * static_cast<size_t>(N);
                 std::vector<Triplet<T>> triplets = sampleTriplets<T>(M, N, nbSamples);
 
                 this->S_csr = CSR<T>(M, N, triplets);

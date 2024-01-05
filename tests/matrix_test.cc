@@ -109,7 +109,7 @@ TEST(BasicTest, BiggerConversion) {
     for(int i = 100; i <= 1500; i += 25) {
         int cols = i;
         int rows = 2*i;
-        int nbSamples = i;
+        size_t nbSamples = i;
 
         std::vector<Triplet<float>> triplets = sampleTriplets<float>(rows, cols, nbSamples);
 

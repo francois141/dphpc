@@ -6,6 +6,9 @@
 #include <type_traits>
 #include <map>
 #include <numeric>
+#include <mutex>
+#include <thread>
+#include <chrono>
 
 // https://stackoverflow.com/a/69646192/8803949 & https://stackoverflow.com/a/32887614/8803949
 template<typename T>
@@ -47,7 +50,7 @@ inline T randomValue(distributor<T>& distribution, std::mt19937 &generator) {
 // TODO: Francois Costa - if sampling is too slow, make a faster algorithm
 template<typename T>
 std::vector<Triplet<T>>
-sampleTriplets(const int M, const int N, const int nbSamples) {
+sampleTriplets(const int M, const int N, const size_t nbSamples) {
     assert(M > 0 && N > 0);
 
     static std::random_device                  rand_dev;
@@ -58,13 +61,14 @@ sampleTriplets(const int M, const int N, const int nbSamples) {
     distributor<int> distributorCol = getDistributor<int>(0, N-1);
 
     std::map<std::pair<int,int>, T> mp;
-    while(mp.size() < (size_t)nbSamples) {
+
+    while(mp.size() < nbSamples) {
         const int row = randomValue<int>(distributorRow, generator);
         const int col = randomValue<int>(distributorCol, generator);
+        const T randVal = randomValue<T>(distributorValues, generator);
 
         assert(row <= M-1 && col <= N-1);
-
-        mp[ std::make_pair(row, col)]= randomValue<T>(distributorValues, generator);
+        mp[ std::make_pair(row, col)] = randVal;
     }
 
     std::vector<Triplet<T>> triplets;
