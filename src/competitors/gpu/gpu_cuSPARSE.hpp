@@ -6,6 +6,10 @@
 #include <cuda_runtime_api.h>
 #include <cusparse.h>         // cusparseSDDMM
 
+
+template <typename T>
+void gpu_cuSPARSE_scale_wrapper(T* S, T* P, int S_nnz);
+
 namespace Competitors {
 
     class GPUcuSPARSE : public SDDMM::Competitor<float> {
@@ -23,7 +27,7 @@ namespace Competitors {
                 unsigned int K = A.getCols();
                 unsigned int N = B.getRows();
 
-                int S_nnz = S.getValues().size();
+                S_nnz = S.getValues().size();
 
                 int   A_size = M * K;
                 int   B_size = K * N;
@@ -33,12 +37,14 @@ namespace Competitors {
                 cudaMalloc(&dS_offsets, (M + 1) * sizeof(int));
                 cudaMalloc(&dS_columns, S_nnz * sizeof(int));
                 cudaMalloc(&dS_values,  S_nnz * sizeof(float));
+                cudaMalloc(&dS_orig_values,  S_nnz * sizeof(float));
 
                 cudaMemcpy(dA, &A.getValue(0, 0), A_size * sizeof(float), cudaMemcpyHostToDevice);
                 cudaMemcpy(dB, &B.getValue(0, 0), B_size * sizeof(float), cudaMemcpyHostToDevice);
                 cudaMemcpy(dS_offsets, S.getRowPositions().data(), (M + 1) * sizeof(int), cudaMemcpyHostToDevice);
                 cudaMemcpy(dS_columns, S.getColPositions().data(), S_nnz * sizeof(int), cudaMemcpyHostToDevice);
                 cudaMemcpy(dS_values, S.getValues().data(), S_nnz * sizeof(float), cudaMemcpyHostToDevice);
+                cudaMemcpy(dS_orig_values, S.getValues().data(), S_nnz * sizeof(float), cudaMemcpyHostToDevice);
 
                 // Create handle
                 cusparseCreate(&handle);
@@ -61,7 +67,9 @@ namespace Competitors {
 
                 // execute SDDMM
                 cusparseSDDMM(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, matB, &beta, matS, CUDA_R_32F, CUSPARSE_SDDMM_ALG_DEFAULT, dBuffer);
-                
+                cudaDeviceSynchronize(); // is this needed?
+
+                gpu_cuSPARSE_scale_wrapper(dS_orig_values, dS_values, S_nnz);
                 cudaDeviceSynchronize();
             }
 
@@ -100,8 +108,8 @@ namespace Competitors {
             float beta         = 0.0f;
 
             // Device memory management
-            int   *dS_offsets, *dS_columns;
-            float *dS_values, *dB, *dA;
+            int   *dS_offsets, *dS_columns, S_nnz;
+            float *dS_values, *dS_orig_values, *dB, *dA;
 
             // cuSPARSE APIs
             cusparseHandle_t     handle = NULL;
