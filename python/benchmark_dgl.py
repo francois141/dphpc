@@ -30,6 +30,7 @@ def benchmark(S, K):
     start = time.time_ns()
     # result is not checked
     result = dglsp.sddmm(S,A,B)
+    torch.cuda.synchronize()
     timing = time.time_ns() - start
     return timing
 
