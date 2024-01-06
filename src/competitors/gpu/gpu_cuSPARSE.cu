@@ -3,17 +3,18 @@
 
 __global__ void gpu_cuSPARSE_scale_kernel(float* S, float* P, int S_nnz) {
    	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int stride = blockDim.x * gridDim.x;
 
-	if (i >= S_nnz) return;
+	for (; i < S_nnz; i += stride)
+		P[i] = S[i] * P[i];
 
-	P[i] = S[i] * P[i];
 }
 
 template <typename T>
 void gpu_cuSPARSE_scale_wrapper(T* S, T* P, int S_nnz) {
 
 	int threads_per_block = 1024;
-	int thread_blocks = (S_nnz / threads_per_block) + 1;
+	int thread_blocks = (S_nnz + threads_per_block - 1) / threads_per_block;
 
 	// Perform SDDMM on the GPU
 	gpu_cuSPARSE_scale_kernel<<<thread_blocks, threads_per_block>>>(S, P, S_nnz);
