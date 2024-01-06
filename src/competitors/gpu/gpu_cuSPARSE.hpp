@@ -8,7 +8,7 @@
 
 
 template <typename T>
-void gpu_cuSPARSE_scale_wrapper(T* S, T* P, int S_nnz);
+void gpu_cuSPARSE_scale_wrapper(T* S, T* P, int S_nnz, int thread_blocks, int threads_per_block);
 
 namespace Competitors {
 
@@ -67,9 +67,15 @@ namespace Competitors {
 
                 // execute SDDMM
                 cusparseSDDMM(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, matB, &beta, matS, CUDA_R_32F, CUSPARSE_SDDMM_ALG_DEFAULT, dBuffer);
+
+                int threads_per_block = 1024;
+                int thread_blocks = (S_nnz + threads_per_block - 1) / threads_per_block;
+                this->set_num_thread_blocks(thread_blocks);
+		        this->set_num_threads_per_block(threads_per_block);
+
                 cudaDeviceSynchronize(); // is this needed?
 
-                gpu_cuSPARSE_scale_wrapper(dS_orig_values, dS_values, S_nnz);
+                gpu_cuSPARSE_scale_wrapper(dS_orig_values, dS_values, S_nnz, thread_blocks, threads_per_block);
                 cudaDeviceSynchronize();
             }
 
