@@ -27,6 +27,7 @@ def benchmark(S, K):
     A = torch.rand((M,K)).to('cuda')
     B = torch.rand((K,N)).to('cuda')
 
+    torch.cuda.synchronize()
     start = time.time_ns()
     # result is not checked
     result = dglsp.sddmm(S,A,B)
