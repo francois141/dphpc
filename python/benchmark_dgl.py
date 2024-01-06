@@ -40,7 +40,7 @@ def benchmark_dataset(dataset_name, filename, K, num_runs):
 
     for _ in range(num_runs):
         timing = benchmark(S, K)
-        line = "GPU-Dgl,"+dataset_name+",CSR,"+str(M)+","+str(N)+","+str(K)+","+str(S.nnz)+","+str(timing)+","+str(0)+","+str(timing)+","+str(0)+",-1,-1,-1"
+        line = "GPU-Dgl,"+dataset_name+",CSR,"+str(M)+","+str(N)+","+str(K)+","+str(S.nnz)+","+str(timing)+","+str(0)+","+str(timing)+","+str(0)+",1,1,1"
         print(line)
 
 # Parsing
@@ -53,7 +53,7 @@ parser.add_argument('--num_runs', default=1)
 parser.add_argument('-k', default=32)
 args = parser.parse_args()
 
-print("Running benchmark with K="+str(args.k)+" and num_runs="+str(args.num_runs))
+#print("Running benchmark with K="+str(args.k)+" and num_runs="+str(args.num_runs))
 
 K = int(args.k)
 num_runs = int(args.num_runs)
