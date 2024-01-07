@@ -61,7 +61,7 @@ sampleTriplets(const int M, const int N, const size_t nbSamples) {
     distributor<int> distributorCol = getDistributor<int>(0, N-1);
 
     std::map<std::pair<int,int>, T> mp;
-    size_t totalSize = static_cast<long>(50000)*static_cast<long>(50000);
+    /*-size_t totalSize = static_cast<long>(50000)*static_cast<long>(50000);
     size_t stride = totalSize / nbSamples;
 
     std::vector<Triplet<T>> triplets;
@@ -71,9 +71,9 @@ sampleTriplets(const int M, const int N, const size_t nbSamples) {
         if(i % 10000 == 0) std::cout << i << " " << nbSamples << std::endl;
         size_t val = i * stride;
         triplets.push_back(Triplet<T>{val / 50000, val % 50000, 1.0});
-    }
+    }*/
 
-    /*while(mp.size() < nbSamples) {
+    while(mp.size() < nbSamples) {
         if(mp.size() % 10000 == 0) std::cout << mp.size() << " " << nbSamples << std::endl;
         const int row = randomValue<int>(distributorRow, generator);
         const int col = randomValue<int>(distributorCol, generator);
@@ -88,7 +88,7 @@ sampleTriplets(const int M, const int N, const size_t nbSamples) {
 
     for(auto &entry: mp) {
         triplets.push_back(Triplet<T>{entry.first.first, entry.first.second, entry.second});
-    }*/
+    }
 
     return triplets;
 }

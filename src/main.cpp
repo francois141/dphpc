@@ -128,7 +128,7 @@ void benchmark_warmup(const int K, const int num_runs) {
 }
 
 void benchmark_random(const int K, const int num_runs, const float density, std::string name) {
-    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(50000, 50000, K, density, name); // 40k x 40k with 0.01/0.05
+    SDDMM::RandomWithDensityDataset<float> random_matrix_dataset(20000, 20000, K, density, name); // 40k x 40k with 0.01/0.05
     SDDMM::Benchmark<float> benchmark(random_matrix_dataset, float_competitors, "random-matrix-measures.csv", num_runs);
 
     /* Run the benchmark */
@@ -332,13 +332,8 @@ int main(int argc, char* argv[]) {
 
     // // Artificial datasets
 
-
     DEBUG_OUT("\n=====================================================\n" << std::endl);
     benchmark_random(config.K, config.num_runs, 0.1, "random-0.1");
-
-
-
-
 
     return 0;
 }
