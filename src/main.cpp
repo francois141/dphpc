@@ -334,7 +334,7 @@ int main(int argc, char* argv[]) {
 
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_random(config.K, config.num_runs, 0.01, "random-0.1");
+    benchmark_random(config.K, config.num_runs, 0.1, "random-0.1");
 
 
 

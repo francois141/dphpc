@@ -63,6 +63,7 @@ sampleTriplets(const int M, const int N, const size_t nbSamples) {
     std::map<std::pair<int,int>, T> mp;
 
     while(mp.size() < nbSamples) {
+        if(mp.size() % 10000 == 0) std::cout << mp.size() << " " << nbSamples << std::endl;
         const int row = randomValue<int>(distributorRow, generator);
         const int col = randomValue<int>(distributorCol, generator);
         const T randVal = randomValue<T>(distributorValues, generator);
