@@ -18,7 +18,7 @@ python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gp
 python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 32 --percentile 0.95
 python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 64 --percentile 0.95
 python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 128 --percentile 0.95
-# python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 256 --percentile 0.95
+python3 plot_bars_percentile.py --input $input_a100 --output_folder $folder --gpu a100 --K 256 --percentile 0.95
 
 ## ================ Violin plots ================ ###
 
