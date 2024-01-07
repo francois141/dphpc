@@ -15,3 +15,4 @@
 #include "competitors/gpu/gpu_convert.hpp"
 #include "competitors/gpu/gpu_preprocessing.hpp"
 #include "competitors/gpu/gpu_dynamic.hpp"
+#include "competitors/gpu/gpu_cuSPARSE.hpp"

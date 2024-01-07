@@ -167,7 +167,7 @@ namespace SDDMM {
                 while (fscanf(c_file, "%u %u %f\n", &row, &col, &value) == 3) {
                     row--; col--;
 
-                    if(std::fabs(value) < 1e-7) {
+                    if (std::fabs(value) < 1e-7) {
                         continue;
                     }
 

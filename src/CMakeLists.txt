@@ -3,6 +3,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(CMAKE_BUILD_TYPE Debug) # Remove for measurements
 
+
 set(SRC_FILES
         # Matrix representations 
         matrices/Dense.hpp
@@ -39,6 +40,8 @@ set(SRC_FILES
         competitors/gpu/gpu_convert.hpp
         competitors/gpu/gpu_preprocessing.cu
         competitors/gpu/gpu_preprocessing.hpp
+        competitors/gpu/gpu_cuSPARSE.cu
+        competitors/gpu/gpu_cuSPARSE.hpp
 
         #Helpers
         utils/util.hpp
