@@ -333,7 +333,22 @@ int main(int argc, char* argv[]) {
     // // Artificial datasets
 
     DEBUG_OUT("\n=====================================================\n" << std::endl);
-    benchmark_random(config.K, config.num_runs, 0.25, "random-0.1");
+    benchmark_random(config.K, config.num_runs, 0.00001, "random-0.00001");
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K, config.num_runs, 0.0001, "random-0.0001");
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K, config.num_runs, 0.001, "random-0.001");
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K, config.num_runs, 0.01, "random-0.01");
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K, config.num_runs, 0.1, "random-0.1");
+
+    DEBUG_OUT("\n=====================================================\n" << std::endl);
+    benchmark_random(config.K, config.num_runs, 0.25, "random-0.25");
 
     return 0;
 }
