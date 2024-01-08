@@ -20,6 +20,11 @@ SPECS = {
     "a100": { "cpu": "AMD EPYC 7742 @ 2.25 GHz", "gpu": "NVIDIA A100", "peak_perf": 19.49 * 10e12, "mem_bandwidth": 1.555 * 10e12 },
 }
 
+DATASETS_SMALL = [ "Fluid", "Oil", "Biochemical", "Circuit", "Heat", "Mass", "Adder", "Trackball" ]
+DATASETS_DENSE = [ "HumanGene2", "ND12K", "Mix", "Mechanics", "Power", "Combinatorics", "Stress", "Mouse-gene" ]
+DATASETS_SPARSE = [ "Boeing", "Boeing Diagonal", "Stiffness", "Semi-conductor", "VLSI", "Stack-overflow", "Chip" ]
+DATASETS = np.array(DATASETS_SMALL + DATASETS_DENSE + DATASETS_SPARSE)
+
 RUNTIME_FIELD = "comp_ns" # total_ns, init_ns, comp_ns, cleanup_ns
 flops = lambda NZ, K : 2*K * NZ + NZ # each NZ requires K multiplications and K additions to sum up. Finally to scale the result by S need NZ multiplications.
 trans_bytes = lambda M, N, K, NZ: (M*K + N*K)*4 + NZ*4  # Assuming infinite cache and floats: need to bring in dense A and B and sparse S (ignoring writes to P)
@@ -102,15 +107,16 @@ def plot_roofline_all(args: argparse.Namespace, df: pd.DataFrame):
     ### Legend ###
     handles, labels = ax.get_legend_handles_labels()
     empty_legend_label(labels.index("comp_repr"), labels, handles) # insert empty label & handle to balance columns
+    empty_legend_label(labels.index("comp_repr"), labels, handles) # insert empty label & handle to balance columns
 
     del handles[labels.index("dataset")] # Remove legend sub-titles
     labels.remove("dataset")
     del handles[labels.index("comp_repr")]
     labels.remove("comp_repr")
 
-    ax.legend(handles=handles, labels=labels, loc="upper left", ncol=4, fancybox=True, fontsize="small")
+    ax.legend(handles=handles, labels=labels, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=6, fancybox=True, fontsize="small")
 
-    plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
+    plt.tight_layout(rect=[ 0.01, 0.01, 0.99, 0.99 ])
     
     plot_dir = f"{args.output_folder}{args.gpu}/roofline/"
     os.makedirs(plot_dir, exist_ok=True)
@@ -199,7 +205,7 @@ def plot_roofline(args: argparse.Namespace, df: pd.DataFrame, dataset_name: str)
 
     ax.legend(handles=handles, labels=labels, loc="best", ncol=3, fancybox=True, fontsize="small")
 
-    plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
+    plt.tight_layout(rect=[ 0.01, 0.01, 0.99, 0.99 ])
     
     plot_dir = f"{args.output_folder}{args.gpu}/roofline/"
     os.makedirs(plot_dir, exist_ok=True)
@@ -213,15 +219,24 @@ def main(args: argparse.Namespace):
 
     df = read_df(args.input)
     
+    df = df.apply(lambda row: row if math.log2(row['K']).is_integer() else None, axis=1).dropna()
+    df['K'] = df['K'].apply(int)
+
     drop_mask = df['competitor'] == 'CPU-Basic'
     drop_mask |= df['competitor'] == 'CPU-PyTorch'
     drop_mask |= df['competitor'] == 'GPU-Basic'
     drop_mask |= df['competitor'] == 'GPU-Thread-Dispatcher'
     drop_mask |= df['competitor'] == 'GPU-Tiled'
+    drop_mask |= df['competitor'] == 'GPU-Shared'
+    drop_mask |= df['competitor'] == 'GPU-Convert'
+    drop_mask |= df['dataset'] == 'RandomWithDensity'
+    drop_mask |= df['dataset'] == 'LatinHypercube'
+    drop_mask |= df['dataset'] == 'EMail-Enron'
+    drop_mask |= df['K'] == 256
     df = df.drop(df.index[drop_mask])
 
-    df = df.apply(lambda row: row if math.log2(row['K']).is_integer() else None, axis=1).dropna()
-    df['K'] = df['K'].apply(int)
+    df['dataset'] = df['dataset'].apply(lambda name: str(name[0].upper() + name[1:]))
+    # df = df[df['dataset'].isin(DATASETS_SPARSE)] # DATASET_SMALL, DATASET_DENSE, DATASET_SPARSE
 
     plot_roofline_all(args, df)
 

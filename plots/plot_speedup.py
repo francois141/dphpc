@@ -17,6 +17,8 @@ SPECS = {
 
 BASELINE = { "competitor": "GPU-PyTorch", "mat_repr": "CSR" }
 
+COMPETITORS = [ "GPU-PyTorch", "GPU-DGL", "GPU-Dynamic", "GPU-cuSPARSE", "GPU-Preprocessing" ]
+
 RUNTIME_FIELD = "comp_ns" # total_ns, init_ns, comp_ns, cleanup_ns
 
 def read_df(path):
@@ -38,12 +40,12 @@ def plot_speedup(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     fig, ax = plt.subplots()
 
     # Change figure size before plotting
-    fig.set_size_inches((12, 10))
+    fig.set_size_inches((12, 8))
 
     # Device & Input Metadata
     cpu, gpu = SPECS[args.gpu]
-    first = df.iloc[0]
-    runs = df[ (df["competitor"] == first['competitor']) & (df['mat_repr'] == first['mat_repr']) & (df['K'] == first['K']) ].shape[0]
+    # first = df.iloc[0]
+    runs = 20 # df[ (df["competitor"] == first['competitor']) & (df['mat_repr'] == first['mat_repr']) & (df['K'] == first['K']) ].shape[0]
     N = df.iloc[0]['N']
     M = df.iloc[0]['M']
     NZ = df.iloc[0]['NZ']
@@ -83,15 +85,20 @@ def plot_speedup(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
     df['comp_repr'] = df[['competitor', 'mat_repr']].agg(' - '.join, axis=1)
     df['speedup'] = 0.0
     df = df.groupby([ "competitor", "mat_repr" ]).apply(lambda group: calc_speedup(group, baseline_times))
+    df = df.reset_index(drop=True)
+    df = df.sort_values(by=[ 'competitor' ], key=lambda x: x.map(lambda comp: COMPETITORS.index(comp))) # sort by custom dataset order
+
+    # dyn_df = df[df['competitor'] == BASELINE['competitor']]
+    # print(f"{dyn_df['speedup'].min()} ; {dyn_df['speedup'].max()}")
 
     sns.lineplot(df, x="K", y="speedup", hue="comp_repr", legend=True, zorder=1, errorbar=("ci", ci), err_style="band", ax=ax)
 
     sns.despine(left=True, bottom=False) # do not show axis line on the left but show it on the bottom (needs axes.linewidth & axes.edgecolor set)
 
     ### Legend ###
-    plt.legend(loc="upper center", bbox_to_anchor=(0.5, -0.175), ncol=4, fancybox=True, fontsize="small")
+    plt.legend(loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=5, fancybox=True, fontsize="small")
 
-    plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
+    plt.tight_layout(rect=[ 0.01, 0.01, 0.99, 0.99 ])
     
     plot_dir = f"{args.output_folder}{args.gpu}/speedup_{args.runtime_field.split('_')[0]}/"
     os.makedirs(plot_dir, exist_ok=True)
@@ -100,17 +107,25 @@ def plot_speedup(args: argparse.Namespace, df: pd.DataFrame, dataset_name):
 
 def main(args: argparse.Namespace):
     sns.set_theme(context="notebook", font_scale=1, style="darkgrid", rc={ "lines.linewidth": 2, "axes.linewidth": 1, "axes.edgecolor":"black", "xtick.bottom": True, "ytick.left": True }) # rc={ "xtick.top": True, "ytick.left": True }
+    sns.set_palette("Set1")
 
     df = read_df(args.input)
+
+    df = df.apply(lambda row: row if math.log2(row['K']).is_integer() else None, axis=1).dropna()
+    df['K'] = df['K'].apply(int)
 
     drop_mask = df['competitor'] == 'CPU-Basic'
     drop_mask |= df['competitor'] == 'CPU-PyTorch'
     drop_mask |= df['competitor'] == 'GPU-Basic'
     drop_mask |= df['competitor'] == 'GPU-Thread-Dispatcher'
     drop_mask |= df['competitor'] == 'GPU-Tiled'
+    drop_mask |= df['competitor'] == 'GPU-Shared'
+    drop_mask |= df['competitor'] == 'GPU-Convert'
+    drop_mask |= df['dataset'] == 'RandomWithDensity'
+    drop_mask |= df['dataset'] == 'LatinHypercube'
+    drop_mask |= df['dataset'] == 'EMail-Enron'
+    drop_mask |= df['K'] == 256
     df = df.drop(df.index[drop_mask])
-    
-    # df = df.apply(lambda row: row if math.log2(row['K']).is_integer() else None, axis=1).dropna()
 
     datasets = pd.unique(df['dataset'])
     for dataset in datasets:
