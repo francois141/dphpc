@@ -5,7 +5,7 @@ import seaborn as sns
 
 val = pd.read_csv("results/motivation/v100/results-v100.csv")
 val = val[['competitor', 'dataset', 'comp_ns']]
-val = val.groupby(by= ["competitor", "dataset"]).mean()
+val = val.groupby(by= ["competitor", "dataset"]).quantile(0.5)
 val['comp_ns'] /= 1000
 print(val)
 
@@ -26,11 +26,11 @@ v100_2 = np.array([24466,10394,2634,1464,1461,1625])
 #fig, (ax1, ax2) = plt.subplots(2, 1)
 fig, ax1 = plt.subplots(figsize=(6,2.5))
 
-ax1.plot(y, x2, '.-', label="Tiling")
-ax1.plot(y, x1, '.-', label="No tiling")
+ax1.plot(y, x2, '.-', label="Tiling (GPU Shared)")
+ax1.plot(y, x1, '.-', label="No tiling (GPU Convert)")
 ax1.set_xscale('log')
 #ax1.set_yscale('log')
-ax1.set_ylabel('A100 runtime [ms]')
+ax1.set_ylabel('p50 runtime [ms]')
 ax1.set_xlabel('Density (%)')
 ax1.legend(loc="upper right")
 ax1.invert_xaxis()
@@ -45,6 +45,6 @@ ax1.invert_xaxis()
 # ax2.legend(loc="upper right")
 # ax2.invert_xaxis()
 #ax2.set_ylim([0, 1600])
-plt.tight_layout()
+plt.tight_layout(rect=[ 0, 0, 0.95, 1 ])
 plt.savefig("output.png", dpi = 300)
 plt.show()
