@@ -19,9 +19,14 @@ SPECS = {
 
 K = [ 32, 64, 128 ]
 ALPHABET = list(string.ascii_lowercase)
-COMPETITORS = [ "GPU-PyTorch", "GPU-DGL", "GPU-Dynamic" ]
-
 BAR_WIDTH = 0.25
+
+COMPETITORS = [ "GPU-PyTorch", "GPU-DGL", "GPU-Dynamic" ]
+DATASETS_SMALL = [ "Fluid", "Oil", "Biochemical", "Circuit", "Heat", "Mass", "Adder", "Trackball" ]
+DATASETS_DENSE = [ "HumanGene2", "ND12K", "Mix", "Mechanics", "Power", "Combinatorics", "Stress", "Mouse-gene" ]
+DATASETS_SPARSE = [ "Boeing", "Boeing Diagonal", "Stiffness", "Semi-conductor", "VLSI", "Stack-overflow", "Chip" ]
+DATASETS = np.array(DATASETS_SMALL + DATASETS_DENSE + DATASETS_SPARSE)
+
 
 def read_df(path):
     df = pd.read_csv(path)
@@ -46,16 +51,16 @@ def plot_bars(args: argparse.Namespace, ax: plt.Axes, df: pd.DataFrame, k: int):
     plot_df = plot_df.sort_values(by=[ "dataset", "competitor", "mat_repr" ])
     plot_df = plot_df.reset_index()
 
-    datasets = plot_df['dataset'].unique()
-    competitors = COMPETITORS
+    datasets = DATASETS # plot_df['dataset'].unique()
+    competitors = COMPETITORS # plot_df['competitors'].unique()
 
     multiplier = 0
     x = np.arange(len(datasets))
     for competitor in competitors:
         comp_df = plot_df[plot_df['competitor'] == competitor]
+        comp_df = comp_df.sort_values(by=[ 'dataset' ], key=lambda x: x.map(lambda ds: datasets.tolist().index(ds))) # sort by custom dataset order
         if (comp_df.shape[0] != datasets.shape[0]): # missing measurements
             print("not done " + str(k) + " " + str(competitor))
-            print(comp_df['dataset'].unique())
             continue
 
         offset = BAR_WIDTH * multiplier
@@ -75,6 +80,10 @@ def plot_bars(args: argparse.Namespace, ax: plt.Axes, df: pd.DataFrame, k: int):
         plt.xticks(rotation=90)
     else:
         ax.set_xticks(x + BAR_WIDTH, [])
+    
+    ### Dataset seperators ###
+    ax.axvline(x=len(DATASETS_SMALL) - BAR_WIDTH, ymin=0, ymax=df['computation'].max(), linestyle="--", color="black")
+    ax.axvline(x=len(DATASETS_SMALL) + len(DATASETS_DENSE) - BAR_WIDTH, ymin=0, ymax=df['computation'].max(), linestyle="--", color="black")
 
     ### Axes Titles ###
     ax.text(-0.5, 10e6 * 2, f"{ALPHABET[K.index(k)]}.) K={k}")
@@ -84,7 +93,7 @@ def plot_all(args: argparse.Namespace, df: pd.DataFrame):
     fig, ax = plt.subplots(3, 1)
 
     # Change figure size before plotting
-    fig.set_size_inches((14, 8))
+    fig.set_size_inches((15, 8))
 
     # Device & Input Metadata
     cpu, gpu = SPECS[args.gpu]
@@ -97,15 +106,14 @@ def plot_all(args: argparse.Namespace, df: pd.DataFrame):
         df_K = df[df["K"] == k]
         plot_bars(args, ax[i], df_K, k)
 
-    
     sns.despine(left=True, bottom=False) # do not show axis line on the left but show it on the bottom (needs axes.linewidth & axes.edgecolor set)
 
     ### Titles ###
     plt.xlabel("Dataset", loc="center", fontdict={ "size": "medium" })
-    ax[0].set_title(f"SDDMM {percentile}-percentile runtime with R={runs}\nRunning on {cpu} and {gpu}\n", loc="center", fontdict={ "weight": "bold", "size": "large" })
+    ax[0].set_title(f"SDDMM {percentile}-percentile runtime with R={runs} runs\nRunning on {cpu} and {gpu}\n", loc="center", fontdict={ "weight": "bold", "size": "large" })
 
     ### Legend (first Axes only) ###
-    ax[0].legend(loc="best", ncols=3, fancybox=True, fontsize="small")
+    ax[0].legend(loc="upper center", bbox_to_anchor=(0.52, 1.0), ncols=3, fancybox=True, fontsize="small")
 
     plt.tight_layout(rect=[ 0.01, 0.01, 0.99, 0.99 ])
     

@@ -59,7 +59,7 @@ python3 plot_roofline.py --input $input_a100 --output_folder $folder --gpu a100 
 ### ================ Bar plot ================ ###
 
 ### V100 ###
-python3 plot_bars.py --input $input_v100 --output_folder $folder --gpu v100 --percentile 0.95
+python3 plot_bars.py --input $input_v100 --output_folder $folder --gpu v100 --percentile 0.5
 
 ### A100 ###
-python3 plot_bars.py --input $input_a100 --output_folder $folder --gpu a100 --percentile 0.95
+python3 plot_bars.py --input $input_a100 --output_folder $folder --gpu a100 --percentile 0.5
