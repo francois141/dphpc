@@ -24,7 +24,7 @@ v100_2 = np.array([13867*10, 13867,8301,7034,7583])
 
 
 #fig, (ax1, ax2) = plt.subplots(2, 1)
-fig, ax1 = plt.subplots(1, 1)
+fig, ax1 = plt.subplots(figsize=(6,2.5))
 
 ax1.plot(y, x2, '.-', label="Tiling")
 ax1.plot(y, x1, '.-', label="No tiling")
@@ -45,6 +45,6 @@ ax1.invert_xaxis()
 # ax2.legend(loc="upper right")
 # ax2.invert_xaxis()
 #ax2.set_ylim([0, 1600])
-# plt.tight_layout(rect=[ 0.05, 0.1, 0.95, 0.9 ])
+plt.tight_layout()
 plt.savefig("output.png", dpi = 300)
 plt.show()
