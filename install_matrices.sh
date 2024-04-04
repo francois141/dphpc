@@ -103,7 +103,3 @@ tar -xf smt.tar.gz
 wget https://suitesparse-collection-website.herokuapp.com/MM/Belcastro/mouse_gene.tar.gz
 tar -xf mouse_gene.tar.gz
 
-#cd
-#wget https://download.pytorch.org/libtorch/cu121/libtorch-cxx11-abi-shared-with-deps-2.1.0%2Bcu121.zip
-#unzip libtorch-shared-with-deps-latest.zip
-#rm libtorch-shared-with-deps-latest.zip

@@ -17,39 +17,39 @@ static std::vector<std::shared_ptr<SDDMM::Competitor<float>>> float_competitors;
 
 void init_float_competitors() {
     /* CPU Competitors */
-    // auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
-    // float_competitors.push_back(cpu_basic);
+    auto cpu_basic = std::make_shared<Competitors::CPUBasic<float>>();
+    float_competitors.push_back(cpu_basic);
 
-    // auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
-    // float_competitors.push_back(cpu_pytorch);
+    auto cpu_pytorch = std::make_shared<Competitors::CPUPyTorch<float>>();
+    float_competitors.push_back(cpu_pytorch);
 
     /* GPU Competitors */
-    // auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
-    // float_competitors.push_back(gpu_basic);
+    auto gpu_basic = std::make_shared<Competitors::GPUBasic<float>>();
+    float_competitors.push_back(gpu_basic);
 
-    // auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
-    // float_competitors.push_back(gpu_pytorch);
+    auto gpu_pytorch = std::make_shared<Competitors::GPUPyTorch<float>>();
+    float_competitors.push_back(gpu_pytorch);
 
-    // auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
-    // float_competitors.push_back(gpu_tiled);
+    auto gpu_tiled = std::make_shared<Competitors::GPUTiled<float>>();
+    float_competitors.push_back(gpu_tiled);
 
-    // auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
-    // float_competitors.push_back(gpu_thread_dispatcher);
+    auto gpu_thread_dispatcher = std::make_shared<Competitors::GPUThreadDispatcher<float>>();
+    float_competitors.push_back(gpu_thread_dispatcher);
 
-    // auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
-    // float_competitors.push_back(gpu_tensor);
+    auto gpu_tensor = std::make_shared<Competitors::GPUTensor<float>>();
+    float_competitors.push_back(gpu_tensor);
 
-    // auto gpu_shared = std::make_shared<Competitors::GPUShared>();
-    // float_competitors.push_back(gpu_shared);
+    auto gpu_shared = std::make_shared<Competitors::GPUShared>();
+    float_competitors.push_back(gpu_shared);
 
     auto gpu_convert = std::make_shared<Competitors::GPUConvert>();
     float_competitors.push_back(gpu_convert);
 
-    // auto gpu_preprocessing = std::make_shared<Competitors::GPUPreprocessing>();
-    // float_competitors.push_back(gpu_preprocessing);
+    auto gpu_preprocessing = std::make_shared<Competitors::GPUPreprocessing>();
+    float_competitors.push_back(gpu_preprocessing);
 
-    // auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>();
-    // float_competitors.push_back(gpu_dynamic);
+    auto gpu_dynamic = std::make_shared<Competitors::GPUDynamic<float>>();
+    float_competitors.push_back(gpu_dynamic);
 
     auto gpu_cuSPARSE = std::make_shared<Competitors::GPUcuSPARSE>();
     float_competitors.push_back(gpu_cuSPARSE);

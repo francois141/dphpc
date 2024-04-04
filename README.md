@@ -1,6 +1,19 @@
-# SDDMM Project
+# Efficient SDDMM Algorithms on GPU, a dynamic approach
 
-### List of matrices we have until now
+### Introduction
+The Sampled Dense-Dense Matrix Multiplication (SDDMM) represents a foundational operation crucial for numerous significant machine learning factor analysis algorithms. Among these algorithms are Alternating Least Squares (ALS), Latent Dirichlet Allocation (LDA), Sparse Factor Analysis (SFA), and Gama Poisson. In this repository, we present both our code and the comprehensive findings detailed in our [final report](/sddmm-report.pdf). Our focus lies on the development of `GPU-Dynamic`, an efficient GPU-based implementation of the SDDMM kernel. Our solution boasts remarkable performance enhancements, surpassing current implementations found in Torch with notable speedups of up to 100x. Furthermore, our implementation delivers competitive outcomes when compared to DGL.
+
+### Dataset
+At the bottom of this README is a representation of all matrices that we have used for evaluation. The matrices range different dimensions as well as different densities. All matrices originate from the [SuiteSparse Matrix Collection](https://sparse.tamu.edu/) and can be downloaded by executing the `install_matrices.sh` script.
+
+### How to run the code?
+To run the code, you need to install LibTorch for C++ which cou can download from [here](https://pytorch.org/). We recommend using `PyTorch >= 2.1.0` and `CUDA >= 12.1`. In addition you should have `gcc >= 10.2.0` and `cmake >= 3.21` installed.
+
+Make sure to update the `run_cmake.sh` file by updating the path to your `libtorch` library. You can finally compile and run the code by executing
+```console
+./run_cmake.sh
+./build/src/dphpc --K 32 --data_folder data/
+```
 
 #### Small matrices
 
